@@ -52,7 +52,7 @@ class NrvRepository {
         $stmt->execute();
         return $stmt->fetchObject();
     }
-    
+
     public function getAllSpectacles(): array
     {
         try {
@@ -65,7 +65,6 @@ class NrvRepository {
                     idSoiree, 
                     idStyle, 
                     statut, 
-                    lienImage, 
                     lienAudio, 
                     description 
                 FROM spectacle
