@@ -29,4 +29,17 @@ class AuthnProvider
         ];
     }
 
+    public static function createStaff(string $email, string $password)
+    {
+        $repo = NrvRepository::getInstance();
+        $user = $repo->findInfos($email);
+
+        if ($user) {
+            throw new AuthnException("Email déjà utilisé");
+        }
+
+        $hash = password_hash($password, PASSWORD_DEFAULT);
+        $repo->createStaff($email, $hash);
+    }
+
 }
