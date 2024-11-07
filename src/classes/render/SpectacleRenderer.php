@@ -53,7 +53,7 @@ class SpectacleRenderer implements Renderer
         }   
 
         $html .= "<audio controls>
-                <source src='{$this->spectacle->lienAudio}' type='audio/mpeg'>
+                <source src='media/audio/{$this->spectacle->lienAudio}' type='audio/mpeg'>
                 Votre navigateur ne supporte pas la balise audio.
             </audio>";
 
