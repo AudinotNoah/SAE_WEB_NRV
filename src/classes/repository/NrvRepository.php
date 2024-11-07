@@ -5,12 +5,10 @@ namespace iutnc\nrv\repository;
 use Exception;
 use PDO;
 
-
-// le code pour __construct et getInstance  vient du cours
-class DeefyRepository {
+class NrvRepository {
 
     private PDO $pdo;
-    private static ?DeefyRepository $instance = null;
+    private static ?NrvRepository $instance = null;
     private static array $config = [];
 
     private function __construct()
@@ -28,12 +26,12 @@ class DeefyRepository {
         }
     }
 
-    public static function getInstance(): DeefyRepository {
+    public static function getInstance(): NrvRepository {
         if (is_null(self::$instance)) {
             if (empty(self::$config)) {
                 throw new \Exception("Database configuration not set. Use setConfig() before getInstance().");
             }
-            self::$instance = new DeefyRepository(self::$config);
+            self::$instance = new NrvRepository(self::$config);
         }
         return self::$instance;
     }

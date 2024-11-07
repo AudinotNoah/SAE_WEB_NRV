@@ -3,6 +3,8 @@
 namespace iutnc\nrv\dispatch;
 
 
+use iutnc\nrv\action\DefaultAction;
+
 class Dispatcher {
 
     private string $action;
@@ -15,10 +17,6 @@ class Dispatcher {
         $html = ''; 
 
         switch ($this->action) {
-            case 'default':
-                $actionInstance = new DefaultAction();
-                $html = $actionInstance->execute();
-                break;
 
             default:
                 $actionInstance = new DefaultAction();
@@ -30,11 +28,8 @@ class Dispatcher {
     }
 
     private function renderPage(string $html): void {
-        
-        $menu = <<<HTML
-        HTML;
-    
-        echo $menu;
+
+        echo $html;
     }
     
     
