@@ -4,7 +4,6 @@ namespace iutnc\nrv\repository;
 
 use Exception;
 use PDO;
-use iutnc\nrv\festival\Spectacle;
 
 class NrvRepository {
 
@@ -46,6 +45,13 @@ class NrvRepository {
         self::$config = $conf;
     }
 
+
+    public function findInfos(string $email) {
+        $stmt = $this->pdo->prepare("SELECT * FROM utilisateur WHERE email = :email");
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        return $stmt->fetchObject();
+    }
     public function getAllSpectacles(): array
     {
         try {
