@@ -4,6 +4,7 @@ namespace iutnc\nrv\dispatch;
 
 
 use iutnc\nrv\action\DefaultAction;
+use iutnc\nrv\action\DisplaySpectablesAction;
 
 class Dispatcher {
 
@@ -17,6 +18,11 @@ class Dispatcher {
         $html = ''; 
 
         switch ($this->action) {
+
+            case("programme"):
+                $actionInstance = new DisplaySpectablesAction();
+                $html = $actionInstance->execute();
+                break;
 
             default:
                 $actionInstance = new DefaultAction();
