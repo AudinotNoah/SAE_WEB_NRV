@@ -95,7 +95,8 @@ class NrvRepository {
     {
         $stmt = $this->pdo->prepare("INSERT INTO utilisateur (email, mdp, role, droit) VALUES (:email, :mdp, 'staff', 50)");
         $stmt->bindParam(':email', $email);
-        $stmt->bindParam(':mdp', password_hash($mdp, PASSWORD_BCRYPT));
+        $password_hash = password_hash($mdp, PASSWORD_BCRYPT);
+        $stmt->bindParam(':mdp', $password_hash);
         return $stmt->execute();
     }
 
