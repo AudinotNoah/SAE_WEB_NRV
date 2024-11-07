@@ -45,6 +45,13 @@ class SpectacleRenderer implements Renderer
         $html .= "<p><strong>Style :</strong> " . htmlspecialchars($spectacle->__get('style')) . "</p>";
         //mettre ici images et video
 
+        $html .= "<img src='" . htmlspecialchars($this->spectacle->lienImage) . "' alt='Image de {$spectacle->__get('nom')}'>";
+
+        $html .= "<audio controls>
+                <source src='{$this->spectacle->lienAudio}' type='audio/mpeg'>
+                Votre navigateur ne supporte pas la balise audio.
+            </audio>";
+
         return $html;
     }
 

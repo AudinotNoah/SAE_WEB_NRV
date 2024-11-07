@@ -13,6 +13,8 @@ class Spectacle
     protected string $style;
     protected string $description;
     protected array $artistes = [];
+    protected string $lienImage;
+    protected string $lienAudio;
 
     public function __construct($nom, $horaireDebut, $horaireFin, $style = "Inconnu", $description = "Aucune description")
     {
