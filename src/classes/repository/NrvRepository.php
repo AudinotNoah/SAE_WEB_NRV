@@ -52,6 +52,7 @@ class NrvRepository {
         $stmt->execute();
         return $stmt->fetchObject();
     }
+    
     public function getAllSpectacles(): array
     {
         try {
@@ -79,6 +80,8 @@ class NrvRepository {
             return [];
         }
     }
+
+
 
     public function getStyleNom(string $id){
         $stmt = $this->pdo->prepare("SELECT nomStyle FROM style WHERE idStyle = :id");

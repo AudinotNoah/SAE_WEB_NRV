@@ -22,12 +22,18 @@ class DisplaySpectaclesAction extends Action {
                 $html = $html . $spec_html;
                 $html = $html . "<li><a href='?action=programme&id={$sp['idSpectacle']}'>Plus d'info</a></li>";
             }
-            return $html;
         }
         else{
-            
+            $html = "<h2>Infos : </h2><ul>";
+            $spectacles = $repo->getAllSpectacles();
+            $sp = $spectacles[$id-1];
+            $stylenom = $repo->getStyleNom($sp['idSpectacle']);
+            $s = new Spectacle($sp['nomSpectacle'],$sp['horaireDebut'],$sp['horaireFin'],$stylenom,$sp['description']);
+            $renderer = new SpectacleRenderer($s);
+            $spec_html = $renderer->render(1);
+            $html = $html . $spec_html;
         }
-        
+        return $html;
     } 
 
 }
