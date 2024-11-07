@@ -89,5 +89,15 @@ class NrvRepository {
         return $stmt->fetchColumn();
     }
 
+
+
+    public function createStaff(string $email, string $mdp)
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO utilisateur (email, mdp, role, droit) VALUES (:email, :mdp, 'staff', 50)");
+        $stmt->bindParam(':email', $email);
+        $stmt->bindParam(':mdp', password_hash($mdp, PASSWORD_BCRYPT));
+        return $stmt->execute();
+    }
+
  
 }
