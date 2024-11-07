@@ -18,12 +18,12 @@ class AuthnProvider
             throw new AuthnException("Email invalide");
         }
 
-        if (!password_verify($password, $user->passwd)) {
-            throw new AuthnException("mdp invalide");
+        if (!password_verify($password, $user->mdp)) {
+            throw new AuthnException("Mot de passe invalide");
         }
 
         $_SESSION['user'] = [
-            'id' => $user->id,
+            'id' => $user->idUtil,
             'email' => $user->email,
             'role' => $user->role
         ];
