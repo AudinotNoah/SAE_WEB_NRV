@@ -72,7 +72,14 @@ class NrvRepository {
         } catch (Exception $e) {
             return [];
         }
-}
+    }
+
+    public function getStyleNom(string $id){
+        $stmt = $this->pdo->prepare("SELECT nomStyle FROM style WHERE idStyle = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
 
  
 }
