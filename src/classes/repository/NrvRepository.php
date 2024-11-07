@@ -52,4 +52,40 @@ class NrvRepository {
         $stmt->execute();
         return $stmt->fetchObject();
     }
+    public function getAllSpectacles(): array
+    {
+        try {
+            $stmt = $this->pdo->prepare('
+                SELECT 
+                    idSpectacle, 
+                    nomSpectacle, 
+                    horaireDebut, 
+                    horaireFin, 
+                    idSoiree, 
+                    idStyle, 
+                    statut, 
+                    lienImage, 
+                    lienAudio, 
+                    description 
+                FROM spectacle
+            ');
+            $stmt->execute();
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result ?: []; 
+
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
+    public function getStyleNom(string $id){
+        $stmt = $this->pdo->prepare("SELECT nomStyle FROM style WHERE idStyle = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
+
+ 
 }

@@ -55,8 +55,9 @@ class AddSpectacleAction extends Action
      */
     private function validateTimeFormat(string $time): bool
     {
-        return preg_match('/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/', $time) === 1;
+        return preg_match('/^([01]\d|2[0-3]):[0-5]\d$/', $time) === 1;
     }
+
 
 
 }
