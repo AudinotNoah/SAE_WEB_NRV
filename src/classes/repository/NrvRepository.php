@@ -46,5 +46,10 @@ class NrvRepository {
     }
 
 
-    
+    public function findInfos(string $email) {
+        $stmt = $this->pdo->prepare("SELECT * FROM utilisateur WHERE email = :email");
+        $stmt->bindParam(':email', $email);
+        $stmt->execute();
+        return $stmt->fetchObject();
+    }
 }
