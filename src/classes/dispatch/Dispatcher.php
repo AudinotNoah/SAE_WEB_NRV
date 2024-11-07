@@ -21,7 +21,7 @@ class Dispatcher {
         switch ($this->action) {
 
             case 'programme':
-                $actionInstance = new DisplaySpectablesAction();
+                $actionInstance = new DisplaySpectaclesAction();
                 $html = $actionInstance->execute();
                 break;
 
