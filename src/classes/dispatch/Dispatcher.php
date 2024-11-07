@@ -2,7 +2,7 @@
 
 namespace iutnc\nrv\dispatch;
 
-
+use iutnc\nrv\action\AddSpectacleAction;
 use iutnc\nrv\action\DefaultAction;
 use iutnc\nrv\action\DisplaySpectablesAction;
 use iutnc\nrv\action\LoginAction;
@@ -29,7 +29,10 @@ class Dispatcher {
                 $actionInstance = new LoginAction();
                 $html = $actionInstance->execute();
                 break;
-
+            case 'add-spectacle':
+                $actionInstance = new AddSpectacleAction();
+                $html = $actionInstance->execute();
+                break;
             default:
                 $actionInstance = new DefaultAction();
                 $html = $actionInstance->execute();

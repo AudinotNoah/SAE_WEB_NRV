@@ -3,6 +3,7 @@
 namespace iutnc\nrv\festival;
 
 use iutnc\nrv\exception\InvalidPropertyNameException;
+use iutnc\nrv\festival\Artiste;
 
 class Spectacle
 {
@@ -11,7 +12,7 @@ class Spectacle
     protected string $horaireFin;
     protected string $style;
     protected string $description;
-    protected Artiste $artistes = [];
+    protected array $artistes = [];
 
     public function __construct($nom, $horaireDebut, $horaireFin, $style = "Inconnu", $description = "Aucune description")
     {
@@ -50,6 +51,11 @@ class Spectacle
         } else {
             throw new InvalidPropertyNameException($property);
         }
+    }
+
+    public function ajouterArtiste(Artiste $artiste): void
+    {
+        $this->artistes[] = $artiste;
     }
 
     
