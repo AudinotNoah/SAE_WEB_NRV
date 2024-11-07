@@ -80,6 +80,7 @@ class DefaultAction extends Action {
         <a href='?action=artistes'>Artistes</a>
         <a href='?action=infos'>Infos pratiques</a>
         <a href='?action=contact'>Contact</a>
+        <a href='?action=login'>Connexion</a>
     </nav>
 
     <!-- Contenu de la page par défaut -->

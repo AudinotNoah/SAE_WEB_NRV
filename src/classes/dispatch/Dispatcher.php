@@ -5,6 +5,7 @@ namespace iutnc\nrv\dispatch;
 
 use iutnc\nrv\action\DefaultAction;
 use iutnc\nrv\action\DisplaySpectablesAction;
+use iutnc\nrv\action\LoginAction;
 
 class Dispatcher {
 
@@ -21,6 +22,11 @@ class Dispatcher {
 
             case("programme"):
                 $actionInstance = new DisplaySpectablesAction();
+                $html = $actionInstance->execute();
+                break;
+
+            case("login"):
+                $actionInstance = new LoginAction();
                 $html = $actionInstance->execute();
                 break;
 
