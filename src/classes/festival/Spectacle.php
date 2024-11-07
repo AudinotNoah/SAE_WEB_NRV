@@ -11,6 +11,7 @@ class Spectacle
     protected string $horaireFin;
     protected string $style;
     protected string $description;
+    protected Artiste $artistes = [];
 
     public function __construct($nom, $horaireDebut, $horaireFin, $style = "Inconnu", $description = "Aucune description")
     {
@@ -51,10 +52,5 @@ class Spectacle
         }
     }
 
-    /**jsp si ca va être utilise #inshallah
-    private function validateTimeFormat(string $time): bool
-{
-    return preg_match('/^([01]\d|2[0-3]):[0-5]\d:[0-5]\d$/', $time) === 1;
-}
-    */
+    
 }
