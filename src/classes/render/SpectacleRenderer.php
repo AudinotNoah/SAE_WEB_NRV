@@ -34,7 +34,10 @@ class SpectacleRenderer implements Renderer
         $spectacle = $this->spectacle;
 
         $html = "<h2>" . htmlspecialchars($spectacle->__get('nom')) . "</h2>";
-        $html .= "<p><strong>Artistes :</strong> " . htmlspecialchars($spectacle->__get('artistes')) . "</p>";
+        $html .= "<p><strong>Artistes :</strong></p><ul>";
+        foreach ($spectacle->__get('artistes') as $artiste) {
+            $html .= "<li>" . htmlspecialchars($artiste) . "</li>";
+        }
         $html .= "</ul>";
 
         $html .= "<p><strong>Description :</strong> " . htmlspecialchars($spectacle->__get('description')) . "</p>";
