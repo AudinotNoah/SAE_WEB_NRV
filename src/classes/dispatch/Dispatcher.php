@@ -4,7 +4,7 @@ namespace iutnc\nrv\dispatch;
 
 use iutnc\nrv\action\AddSpectacleAction;
 use iutnc\nrv\action\DefaultAction;
-use iutnc\nrv\action\DisplaySpectablesAction;
+use iutnc\nrv\action\DisplaySpectaclesAction;
 use iutnc\nrv\action\LoginAction;
 
 class Dispatcher {
