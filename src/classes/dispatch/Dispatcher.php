@@ -43,8 +43,31 @@ class Dispatcher {
     }
 
     private function renderPage(string $html): void {
-
-        echo $html;
+        echo <<<HTML
+        <!DOCTYPE html>
+        <html lang='fr'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <title>projet web</title>
+        </head>
+        <body>
+            <nav>
+                <a href='?action=programme'>Programme</a>
+                <a href='?action=artistes'>Artistes</a>
+                <a href='?action=infos'>Infos pratiques</a>
+                <a href='?action=contact'>Contact</a>
+                <a href='?action=login'>Connexion</a>
+        </nav>
+            <main>
+                <p></p> <!-- espace -->
+                $html
+            </main>
+        </body>
+        </html>
+        HTML;
+            
+        
     }
     
     
