@@ -2,7 +2,7 @@
 
 namespace iutnc\nrv\festival;
 
-use iutnc\deefy\exception\InvalidPropertyNameException;
+use iutnc\nrv\exception\InvalidPropertyNameException;
 
 class Spectacle
 {
