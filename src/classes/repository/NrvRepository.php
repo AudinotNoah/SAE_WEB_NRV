@@ -52,7 +52,7 @@ class NrvRepository {
         $stmt->execute();
         return $stmt->fetchObject();
     }
-    
+
     public function getAllSpectacles(): array
     {
         try {
@@ -65,7 +65,6 @@ class NrvRepository {
                     idSoiree, 
                     idStyle, 
                     statut, 
-                    lienImage, 
                     lienAudio, 
                     description 
                 FROM spectacle
@@ -88,6 +87,17 @@ class NrvRepository {
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchColumn();
+    }
+
+
+
+    public function createStaff(string $email, string $mdp)
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO utilisateur (email, mdp, role, droit) VALUES (:email, :mdp, 'staff', 50)");
+        $stmt->bindParam(':email', $email);
+        $password_hash = password_hash($mdp, PASSWORD_BCRYPT);
+        $stmt->bindParam(':mdp', $password_hash);
+        return $stmt->execute();
     }
 
  
