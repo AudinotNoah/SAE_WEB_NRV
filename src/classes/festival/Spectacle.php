@@ -25,7 +25,7 @@ class Spectacle
         $this->description = $description;
         $this->artistes = $artistes;
         $this->images = $images;
-        $this->lienAudio;
+        $this->lienAudio = $lienAudio;
     
     }
 
