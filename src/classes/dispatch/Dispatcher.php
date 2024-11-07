@@ -19,7 +19,7 @@ class Dispatcher {
 
         switch ($this->action) {
 
-            case("programme"):
+            case 'programme':
                 $actionInstance = new DisplaySpectablesAction();
                 $html = $actionInstance->execute();
                 break;

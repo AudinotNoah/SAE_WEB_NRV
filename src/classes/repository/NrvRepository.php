@@ -4,6 +4,7 @@ namespace iutnc\nrv\repository;
 
 use Exception;
 use PDO;
+use iutnc\nrv\festival\Spectacle;
 
 class NrvRepository {
 
@@ -45,6 +46,33 @@ class NrvRepository {
         self::$config = $conf;
     }
 
+    public function getAllSpectacles(): array
+    {
+        try {
+            $stmt = $this->pdo->prepare('
+                SELECT 
+                    idSpectacle, 
+                    nomSpectacle, 
+                    horaireDebut, 
+                    horaireFin, 
+                    idSoiree, 
+                    idStyle, 
+                    statut, 
+                    lienImage, 
+                    lienAudio, 
+                    description 
+                FROM spectacle
+            ');
+            $stmt->execute();
 
-    public 
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result ?: []; 
+
+        } catch (Exception $e) {
+            return [];
+        }
+}
+
+ 
 }

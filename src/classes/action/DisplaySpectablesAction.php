@@ -2,10 +2,10 @@
 
 namespace iutnc\nrv\action;
 
-class DefaultAction extends Action {
+class DisplaySpectablesAction extends Action {
     protected function get(): string
     {
-        
+        return "test";
     } 
 
 }
