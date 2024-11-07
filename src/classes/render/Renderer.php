@@ -4,7 +4,7 @@ namespace iutnc\nrv\render;
 
 interface Renderer
 {
-    const COMPACT = 1;
-    const LONG = 2;
+    const COMPACT = 2;
+    const LONG = 1;
     public function render(int $type): string;
 }

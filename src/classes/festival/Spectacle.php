@@ -12,38 +12,21 @@ class Spectacle
     protected string $horaireFin;
     protected string $style;
     protected string $description;
-    protected array $artistes = [];
-    protected string $lienImage;
+    protected string $artistes;
+    protected string $images;
     protected string $lienAudio;
 
-    public function __construct($nom, $horaireDebut, $horaireFin, $style = "Inconnu", $description = "Aucune description")
+    public function __construct($nom, $horaireDebut, $horaireFin, $style = "Inconnu", $description = "Aucune description", $artistes = [], $images = [], $lienAudio)
     {
         $this->nom = $nom;
-        
-        /** 
-         * if ($this->validateTimeFormat($horaireDebut)) {
-     *       $this->horaireDebut = $horaireDebut;
-      *  } else {
-       *     throw new \InvalidArgumentException("Format d'heure invalide pour horaireDebut : $horaireDebut");
-       * }
-            */
-       
-       
         $this->horaireDebut = $horaireDebut;
-        
-        
-        /** 
-       * if ($this->validateTimeFormat($horaireFin)) {
-       *     $this->horaireFin = $horaireFin;
-       * } else {
-       *     throw new \InvalidArgumentException("Format d'heure invalide pour horaireFin : $horaireFin");
-       * }
-            */
-
-
         $this->horaireFin = $horaireFin;
         $this->style = $style;
         $this->description = $description;
+        $this->artistes = $artistes;
+        $this->images = $images;
+        $this->lienAudio;
+    
     }
 
     public function __get(string $property): mixed
@@ -54,11 +37,5 @@ class Spectacle
             throw new InvalidPropertyNameException($property);
         }
     }
-
-    public function ajouterArtiste(Artiste $artiste): void
-    {
-        $this->artistes[] = $artiste;
-    }
-
     
 }

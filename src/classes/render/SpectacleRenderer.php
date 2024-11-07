@@ -18,34 +18,36 @@ class SpectacleRenderer implements Renderer
     {
         
         if ($type === 1) {
-            return $this->renderDetails();
+            return $this->renderLong();
         }
         
         if ($type === 2) {
-            return $this->renderSummary();
+            return $this->renderCompact();
         }
 
         throw new \InvalidArgumentException("Type de rendu inconnu : $type");
     }
 
 
-    private function renderDetails()
+    private function renderLong()
     {
         $spectacle = $this->spectacle;
 
         $html = "<h2>" . htmlspecialchars($spectacle->__get('nom')) . "</h2>";
-
-        $html .= "<h3>Artistes :</h3><ul>";
-        foreach ($spectacle->__get('artistes') as $artiste) {
-            $html .= "<li>" . htmlspecialchars($artiste->__get('nomArtiste')) . "</li>";
-        }
+        $html .= "<p><strong>Artistes :</strong> " . htmlspecialchars($spectacle->__get('artistes')) . "</p>";
         $html .= "</ul>";
 
         $html .= "<p><strong>Description :</strong> " . htmlspecialchars($spectacle->__get('description')) . "</p>";
         $html .= "<p><strong>Style :</strong> " . htmlspecialchars($spectacle->__get('style')) . "</p>";
         //mettre ici images et video
 
-        $html .= "<img src='" . htmlspecialchars($this->spectacle->lienImage) . "' alt='Image de {$spectacle->__get('nom')}'>";
+        $images = $spectacle->__get('images');
+        if (!empty($images)) {
+            $html .= "<h3>Images :</h3>";
+            foreach ($images as $image) {
+                $html .= "<img src='" . htmlspecialchars($image) . "' alt='Image de {$spectacle->__get('nom')}'>";
+            }
+        }   
 
         $html .= "<audio controls>
                 <source src='{$this->spectacle->lienAudio}' type='audio/mpeg'>
@@ -55,7 +57,7 @@ class SpectacleRenderer implements Renderer
         return $html;
     }
 
-    private function renderSummary(): string
+    private function renderCompact(): string
     {
         $spectacle = $this->spectacle;
         $html = "<h2>" . htmlspecialchars($spectacle->__get('nom')) . "</h2>";
