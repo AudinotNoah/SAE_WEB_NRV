@@ -80,6 +80,35 @@ class NrvRepository {
         }
     }
 
+    public function getAllSoirees(): array
+    {
+        try {
+            $stmt = $this->pdo->prepare('
+                SELECT 
+                    idSoiree, 
+                    nomSoiree, 
+                    dateSoiree, 
+                    idLieu,
+                    tarif,
+                    thematique,
+                    horaire
+                FROM soiree
+            ');
+            $stmt->execute();
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if (empty($result)) {
+                echo "Aucune donnée n'a été trouvée dans la table `soiree`.";
+            }
+
+            return $result ?: [];
+
+        } catch (Exception $e) {
+            return [];
+        }
+    }
+
 
 
     public function getStyleNom(string $id){
@@ -149,6 +178,14 @@ class NrvRepository {
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+    }
+
+    public function getLieuNom(mixed $idLieu)
+    {
+        $stmt = $this->pdo->prepare("SELECT nomLieu FROM lieu WHERE idLieu = :idLieu");
+        $stmt->bindParam(':idLieu', $idLieu);
+        $stmt->execute();
+        return $stmt->fetchColumn();
     }
 
  
