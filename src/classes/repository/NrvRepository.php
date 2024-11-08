@@ -89,6 +89,8 @@ class NrvRepository {
         return $stmt->fetchColumn();
     }
 
+
+
     public function createStaff(string $email, string $mdp)
     {
         $stmt = $this->pdo->prepare("INSERT INTO utilisateur (email, mdp, role, droit) VALUES (:email, :mdp, 'staff', 50)");
@@ -96,6 +98,29 @@ class NrvRepository {
         $password_hash = password_hash($mdp, PASSWORD_BCRYPT);
         $stmt->bindParam(':mdp', $password_hash);
         return $stmt->execute();
+    }
+
+
+    public function getAllStyles(){
+        $stmt = $this->pdo->prepare('SELECT nomStyle FROM style');
+            $stmt->execute();
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result ?: []; 
+    }
+    public function getImagesBySpectacleId(int $idSpectacle)
+    {
+        $query = "SELECT i.nomfichier 
+                  FROM Image i
+                  JOIN SpectacleImage si ON si.idImage = i.idImage
+                  WHERE si.idSpectacle = :idSpectacle";
+                  
+        $stmt = $this->pdo->prepare($query);
+        $stmt->bindParam(':idSpectacle', $idSpectacle, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
  
