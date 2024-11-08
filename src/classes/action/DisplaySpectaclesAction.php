@@ -19,7 +19,7 @@ class DisplaySpectaclesAction extends Action {
     
         $html = "<label for='trie'>Trier par :</label>";
         $html .= "<form method='GET' action='' id='filterForm'>";
-        $html .= "<select name='trie' id='trie' onchange='this.form.submit()'>"; // Add onchange event
+        $html .= "<select name='trie' id='trie' onchange='this.form.submit()'>";
         $html .= "<option value=''>Pas de filtre</option>";
         $html .= "<option value='style'" . ($trieselect === 'style' ? ' selected' : '') . ">Style</option>";
         $html .= "<option value='date'" . ($trieselect === 'date' ? ' selected' : '') . ">Date</option>";
@@ -30,7 +30,7 @@ class DisplaySpectaclesAction extends Action {
             $styles = $repo->getAllStyles();
             $stylechoix = $_GET['style'] ?? '';
             $html .= "<label for='style'>Choisir un style :</label>";
-            $html .= "<select name='style' id='style' onchange='this.form.submit()'>"; // Add onchange event to the style dropdown
+            $html .= "<select name='style' id='style' onchange='this.form.submit()'>"; 
             $html .= "<option value=''>Sélectionner</option>";
             foreach ($styles as $style) {
                 $nomstyle = $style['nomStyle'];
@@ -38,8 +38,20 @@ class DisplaySpectaclesAction extends Action {
             }
             $html .= "</select>";
         }
+        else if ($trieselect === 'date'){
+            $dates = $repo->getAllDates();
+            $datechoix = $_GET['date'] ?? '';
+            $html .= "<label for='date'>Choisir une date :</label>";
+            $html .= "<select name='date' id='date' onchange='this.form.submit()'>"; 
+            $html .= "<option value=''>Sélectionner</option>";
+            foreach ($dates as $date) {
+                $datechoisis = $date['dateSoiree'];
+                $html .= "<option value='{$datechoisis}'" . ($datechoix === $datechoisis ? ' selected' : '') . ">{$datechoisis}</option>";
+            }
+            $html .= "</select>";
+        }
     
-        $html .= "</form>"; // End the form tag
+        $html .= "</form>"; 
         return $html;
     }
     
@@ -49,6 +61,7 @@ class DisplaySpectaclesAction extends Action {
         $id = $_GET['id'] ?? null;
         $trie = $_GET['trie'] ?? null;
         $style = $_GET['style'] ?? null;
+        $date = $_GET['date'] ?? null;
         $spectacles = $repo->getAllSpectacles();
 
         if (!$id) {
@@ -68,6 +81,14 @@ class DisplaySpectaclesAction extends Action {
                         }
                         break;
                     } // on break pas pour trigger le default
+                case 'date':
+                    // if ($date){
+                    //     foreach ($spectacles as $sp) {
+                    //         if ($date === $sp[])) {
+                    //             $html .= DisplaySpectaclesAction::createSpec($sp, $repo) . "<li><a href='?action=programme&id={$sp['idSpectacle']}'>Plus d'info</a></li>";
+                    //         }
+                    //     }
+                    // }
 
                 default:
                     foreach ($spectacles as $sp) {
