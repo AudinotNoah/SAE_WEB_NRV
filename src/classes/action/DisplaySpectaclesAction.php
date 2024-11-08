@@ -16,20 +16,21 @@ class DisplaySpectaclesAction extends Action {
 
     private static function getOptions($repo): string {
         $trieselect = $_GET['trie'] ?? '';
-
+    
         $html = "<label for='trie'>Trier par :</label>";
-        $html .= "<select name='trie' id='trie'>";
-        $html .= "<option value=''>Sélectionner</option>";
+        $html .= "<form method='GET' action='' id='filterForm'>";
+        $html .= "<select name='trie' id='trie' onchange='this.form.submit()'>"; // Add onchange event
+        $html .= "<option value=''>Pas de filtre</option>";
         $html .= "<option value='style'" . ($trieselect === 'style' ? ' selected' : '') . ">Style</option>";
         $html .= "<option value='date'" . ($trieselect === 'date' ? ' selected' : '') . ">Date</option>";
         $html .= "<option value='lieu'" . ($trieselect === 'lieu' ? ' selected' : '') . ">Lieu</option>";
         $html .= "</select>";
-
+    
         if ($trieselect === 'style') {
             $styles = $repo->getAllStyles();
             $stylechoix = $_GET['style'] ?? '';
             $html .= "<label for='style'>Choisir un style :</label>";
-            $html .= "<select name='style' id='style'>";
+            $html .= "<select name='style' id='style' onchange='this.form.submit()'>"; // Add onchange event to the style dropdown
             $html .= "<option value=''>Sélectionner</option>";
             foreach ($styles as $style) {
                 $nomstyle = $style['nomStyle'];
@@ -37,11 +38,11 @@ class DisplaySpectaclesAction extends Action {
             }
             $html .= "</select>";
         }
-
-        $html .= "<button type='submit'>Filtrer</button>";
-
+    
+        $html .= "</form>"; // End the form tag
         return $html;
     }
+    
 
     protected function get(): string {
         $repo = NrvRepository::getInstance();
@@ -65,10 +66,8 @@ class DisplaySpectaclesAction extends Action {
                                 $html .= DisplaySpectaclesAction::createSpec($sp, $repo) . "<li><a href='?action=programme&id={$sp['idSpectacle']}'>Plus d'info</a></li>";
                             }
                         }
-                    } else {
-                        $html .= "Aucun style sélectionné";
-                    }
-                    break;
+                        break;
+                    } // on break pas pour trigger le default
 
                 default:
                     foreach ($spectacles as $sp) {
