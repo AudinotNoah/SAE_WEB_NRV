@@ -63,10 +63,12 @@ class Dispatcher {
         <head>
             <meta charset='UTF-8'>
             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <link rel='stylesheet' href='src/assets/css/style.css'>
             <title>projet web</title>
         </head>
         <body>
             <nav>
+                <a href='?action=default'>Accueil</a>
                 <a href='?action=programme'>Programme</a>
                 <a href='?action=list-soirees'>Liste des Soirées</a>
                 <a href='?action=createStaff'>Créer un Staff</a>
