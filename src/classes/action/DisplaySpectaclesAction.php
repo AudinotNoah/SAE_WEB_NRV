@@ -27,7 +27,6 @@ class DisplaySpectaclesAction extends Action {
         $html .= "<option value='lieu'" . ($trieselect === 'lieu' ? ' selected' : '') . ">Lieu</option>";
         $html .= "</select>";
 
-        // If 'style' is selected in 'trie', display the 'style' options
         if ($trieselect === 'style') {
             $html .= "<label for='style'>Choisir un style :</label>";
             $html .= "<select name='style' id='style'>";
