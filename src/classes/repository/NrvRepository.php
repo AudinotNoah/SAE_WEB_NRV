@@ -100,5 +100,14 @@ class NrvRepository {
         return $stmt->execute();
     }
 
+
+    public function getAllStyles(){
+        $stmt = $this->pdo->prepare('SELECT nomStyle FROM style');
+            $stmt->execute();
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            return $result ?: []; 
+    }
  
 }
