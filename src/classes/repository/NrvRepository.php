@@ -62,7 +62,6 @@ class NrvRepository {
                     nomSpectacle, 
                     horaireDebut, 
                     horaireFin, 
-                    idSoiree, 
                     idStyle, 
                     statut, 
                     lienAudio, 
@@ -186,6 +185,18 @@ class NrvRepository {
         $stmt->bindParam(':idLieu', $idLieu);
         $stmt->execute();
         return $stmt->fetchColumn();
+    }
+
+
+    public function getAllDates() : array{
+        $stmt = $this->pdo->prepare("SELECT dateSoiree FROM soiree");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+    }
+
+    public function getAllSpecAtDate(string $date){
+        
     }
 
  
