@@ -5,8 +5,7 @@ namespace iutnc\nrv\repository;
 use Exception;
 use PDO;
 
-class NrvRepository
-{
+class NrvRepository {
 
     private PDO $pdo;
     private static ?NrvRepository $instance = null;
@@ -27,8 +26,7 @@ class NrvRepository
         }
     }
 
-    public static function getInstance(): NrvRepository
-    {
+    public static function getInstance(): NrvRepository {
         if (is_null(self::$instance)) {
             if (empty(self::$config)) {
                 throw new \Exception("Database configuration not set. Use setConfig() before getInstance().");
@@ -48,8 +46,7 @@ class NrvRepository
     }
 
 
-    public function findInfos(string $email)
-    {
+    public function findInfos(string $email) {
         $stmt = $this->pdo->prepare("SELECT * FROM utilisateur WHERE email = :email");
         $stmt->bindParam(':email', $email);
         $stmt->execute();
@@ -75,7 +72,7 @@ class NrvRepository
 
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            return $result ?: [];
+            return $result ?: []; 
 
         } catch (Exception $e) {
             return [];
@@ -112,13 +109,14 @@ class NrvRepository
     }
 
 
-    public function getStyleNom(string $id)
-    {
+
+    public function getStyleNom(string $id){
         $stmt = $this->pdo->prepare("SELECT nomStyle FROM style WHERE idStyle = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetchColumn();
     }
+
 
 
     public function createStaff(string $email, string $mdp)
@@ -131,48 +129,46 @@ class NrvRepository
     }
 
 
-    public function getAllStyles()
-    {
+    public function getAllStyles(){
         $stmt = $this->pdo->prepare('SELECT nomStyle FROM style');
-        $stmt->execute();
+            $stmt->execute();
 
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        return $result ?: [];
+            return $result ?: []; 
     }
-
     public function getImagesBySpectacleId(int $idSpectacle)
     {
         $query = "SELECT i.nomfichier 
                   FROM Image i
                   JOIN SpectacleImage si ON si.idImage = i.idImage
                   WHERE si.idSpectacle = :idSpectacle";
-
+                  
         $stmt = $this->pdo->prepare($query);
         $stmt->bindParam(':idSpectacle', $idSpectacle, PDO::PARAM_INT);
         $stmt->execute();
-
+        
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
 
     public function getArtisteBySpectacleId(int $idSpectacle)
     {
-        $artistes = [];
-        $query = "SELECT a.nomArtiste 
+    $artistes = [];
+    $query = "SELECT a.nomArtiste 
               FROM Artiste a
               JOIN Performer p ON a.idArtiste = p.idArtiste
               WHERE p.idSpectacle = :idSpectacle";
-
-        $stmt = $this->pdo->prepare($query);
-        $stmt->bindParam(':idSpectacle', $idSpectacle, PDO::PARAM_INT);
-        $stmt->execute();
-
-        while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
-            $artistes[] = $row['nomArtiste'];
-        }
-
-        return $artistes;
+    
+    $stmt = $this->pdo->prepare($query);
+    $stmt->bindParam(':idSpectacle', $idSpectacle, PDO::PARAM_INT);
+    $stmt->execute();
+    
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $artistes[] = $row['nomArtiste'];
+    }
+    
+    return $artistes;
     }
 
     public function getAllNomArtiste(): array
@@ -192,26 +188,23 @@ class NrvRepository
     }
 
 
-    public function getAllDates(): array
-    {
+    public function getAllDates() : array{
         $stmt = $this->pdo->prepare("SELECT dateSoiree FROM soiree");
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
 
     }
 
-    public function getAllSpecAtDate(string $datesoir): array
-    {
-        $stmt = $this->pdo->prepare("SELECT idspectacle FROM soiree
+    public function getAllSpecAtDate(string $datesoir) : array{
+        $stmt = $this->pdo->prepare('SELECT idspectacle FROM soiree
                                     inner join spectaclesoiree as ss on ss.idsoiree = soiree.idsoiree
-                                    where datesoiree = :datesoir");
-        $stmt->bindParam(':datesoir', $datesoir, PDO::PARAM_INT);
+                                    WHERE datesoiree = :datesoir');
+        $stmt->bindParam(':datesoir', $datesoir, PDO::PARAM_STR);
         $stmt->execute();
-        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-        return $results ?: [];
+        
+        return $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
     }
 
-    
+ 
 }
 

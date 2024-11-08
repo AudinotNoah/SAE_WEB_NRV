@@ -83,13 +83,13 @@ class DisplaySpectaclesAction extends Action {
                     } // on break pas pour trigger le default
                 case 'date':
                     if ($date){
-                        print_r($repo->getAllSpecAtDate($date));
                         $liste_spec_date = $repo->getAllSpecAtDate($date);
                         foreach ($spectacles as $sp) {
-                            if (in_array($sp['idSpectacle'],$repo->getAllSpecAtDate($date))) {
+                            if (in_array($sp['idSpectacle'],$liste_spec_date)) {
                                 $html .= DisplaySpectaclesAction::createSpec($sp, $repo) . "<li><a href='?action=programme&id={$sp['idSpectacle']}'>Plus d'info</a></li>";
                             }
                         }
+                        break;
                     }
 
                 default:
