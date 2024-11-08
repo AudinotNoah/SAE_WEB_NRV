@@ -109,5 +109,19 @@ class NrvRepository {
 
             return $result ?: []; 
     }
+    public function getImagesBySpectacleId(int $idSpectacle)
+    {
+        $query = "SELECT i.nomfichier 
+                  FROM Image i
+                  JOIN SpectacleImage si ON si.idImage = i.idImage
+                  WHERE si.idSpectacle = :idSpectacle";
+                  
+        $stmt = $this->pdo->prepare($query);
+        $stmt->bindParam(':idSpectacle', $idSpectacle, PDO::PARAM_INT);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_COLUMN);
+    }
+
  
 }
