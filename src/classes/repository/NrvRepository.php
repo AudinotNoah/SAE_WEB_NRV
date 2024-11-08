@@ -195,8 +195,15 @@ class NrvRepository {
 
     }
 
-    public function getAllSpecAtDate(string $date){
-        
+    public function getAllSpecAtDate(string $datesoir) : array{
+        $stmt = $this->pdo->prepare("SELECT idspectacle FROM soiree
+                                    inner join spectaclesoiree as ss on ss.idsoiree = soiree.idsoiree
+                                    where datesoiree = :datesoir");
+        $stmt->bindParam(':datesoir', $datesoir, PDO::PARAM_INT);
+        $stmt->execute();
+        $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        return $results ?: [];
     }
 
  

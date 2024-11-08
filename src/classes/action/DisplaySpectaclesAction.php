@@ -82,13 +82,15 @@ class DisplaySpectaclesAction extends Action {
                         break;
                     } // on break pas pour trigger le default
                 case 'date':
-                    // if ($date){
-                    //     foreach ($spectacles as $sp) {
-                    //         if ($date === $sp[])) {
-                    //             $html .= DisplaySpectaclesAction::createSpec($sp, $repo) . "<li><a href='?action=programme&id={$sp['idSpectacle']}'>Plus d'info</a></li>";
-                    //         }
-                    //     }
-                    // }
+                    if ($date){
+                        print_r($repo->getAllSpecAtDate($date));
+                        $liste_spec_date = $repo->getAllSpecAtDate($date);
+                        foreach ($spectacles as $sp) {
+                            if (in_array($sp['idSpectacle'],$repo->getAllSpecAtDate($date))) {
+                                $html .= DisplaySpectaclesAction::createSpec($sp, $repo) . "<li><a href='?action=programme&id={$sp['idSpectacle']}'>Plus d'info</a></li>";
+                            }
+                        }
+                    }
 
                 default:
                     foreach ($spectacles as $sp) {
