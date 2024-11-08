@@ -9,6 +9,7 @@ use iutnc\nrv\action\DisplaySoireesAction;
 use iutnc\nrv\action\DisplaySpectaclesAction;
 use iutnc\nrv\action\LoginAction;
 use iutnc\nrv\action\LogoutAction;
+use iutnc\nrv\action\DisplayStaffMenu;
 
 class Dispatcher {
 
@@ -22,6 +23,11 @@ class Dispatcher {
         $html = '';
 
         switch ($this->action) {
+
+            case 'menu-staff':
+                $actionInstance = new DisplayStaffMenu();
+                $html = $actionInstance->execute();
+                break;
 
             case 'list-soirees':
                 $actionInstance = new DisplaySoireesAction();
@@ -48,7 +54,7 @@ class Dispatcher {
                 $html = $actionInstance->execute();
                 break;
 
-            case 'logout';
+            case 'logout':
                 $actionInstance = new LogoutAction();
                 $html = $actionInstance->execute();
                 break;
@@ -87,7 +93,14 @@ class Dispatcher {
             <a href="?action=logout">Se Déconnecter</a>
             <!-- Afficher l'utilisateur connecté -->
             <span>Connecté en tant que : {$_SESSION['user']['email']}</span>
-        HTML;
+            HTML;
+
+            // Si l'utilisateur est staff, afficher le menu staff
+            if ($userRole === 'staff') {
+                $menu .= <<<HTML
+                <a href="?action=menu-staff">Menu Staff</a>
+                HTML;
+            }
 
             // Si l'utilisateur est admin, afficher "Créer un Staff"
             if ($userRole === 'admin') {
@@ -99,7 +112,6 @@ class Dispatcher {
             // Si l'utilisateur n'est pas connecté, afficher les options suivantes
             $menu .= <<<HTML
             <a href="?action=login">Se Connecter</a>
-            <a href="?action=register">Inscription</a>
         HTML;
         }
 
@@ -126,6 +138,4 @@ class Dispatcher {
     </html>
     HTML;
     }
-
-
 }
