@@ -2,25 +2,26 @@
 
 namespace iutnc\nrv\render;
 
+use iutnc\nrv\festival\Soiree;
 use iutnc\nrv\festival\Spectacle;
 
-class SpectacleRenderer implements Renderer
+class SoireeRenderer implements Renderer
 {
-    protected Spectacle $spectacle;
+    protected Soiree $soiree;
 
-    public function __construct(Spectacle $spectacle)
+    public function __construct(Spectacle $soiree)
     {
-        $this->spectacle = $spectacle;
+        $this->soiree = $soiree;
     }
 
     //1 pour tous avoir, 2 pour un résumé
     public function render(int $type = 1): string
     {
-        
+
         if ($type === 1) {
             return $this->renderLong();
         }
-        
+
         if ($type === 2) {
             return $this->renderCompact();
         }
@@ -31,33 +32,34 @@ class SpectacleRenderer implements Renderer
 
     private function renderLong()
     {
-        $spectacle = $this->spectacle;
+        $soiree = $this->soiree;
 
-        $html = "<h2>" . htmlspecialchars($spectacle->__get('nom')) . "</h2>";
+        $html = "<h2>" . htmlspecialchars($soiree->__get('nom')) . "</h2>";
         $html .= "<p><strong>Artistes :</strong></p><ul>";
-        foreach ($spectacle->__get('artistes') as $artiste) {
+        foreach ($soiree->__get('artistes') as $artiste) {
             $html .= "<li>" . htmlspecialchars($artiste) . "</li>";
         }
         $html .= "</ul>";
 
-        $html .= "<p><strong>Description :</strong> " . htmlspecialchars($spectacle->__get('description')) . "</p>";
-        $html .= "<p><strong>Style :</strong> " . htmlspecialchars($spectacle->__get('style')) . "</p>";
+        $html .= "<p><strong>Description :</strong> " . htmlspecialchars($soiree->__get('description')) . "</p>";
+        $html .= "<p><strong>Style :</strong> " . htmlspecialchars($soiree->__get('style')) . "</p>";
         //mettre ici images et video
 
-        $images = $spectacle->__get('images');
+        $images = $soiree->__get('images');
         if (!empty($images)) {
             $html .= "<h3>Images :</h3>";
             foreach ($images as $image) {
-                $html .= "<img src='src/assets/images/spectacle-img/" . htmlspecialchars($image) . "' alt='Image de {$spectacle->__get('nom')}'>";
+                $html .= "<img src='" . htmlspecialchars($image) . "' alt='Image de {$soiree->__get('nom')}'>";
             }
-        }   
+        }
 
         $html .= "<audio controls>
-                <source src='media/audio/{$this->spectacle->lienAudio}' type='audio/mpeg'>
+                <source src='media/audio/{$this->soiree->lienAudio}' type='audio/mpeg'>
                 Votre navigateur ne supporte pas la balise audio.
             </audio>";
 
         return $html;
+
     }
 
     private function renderCompact(): string

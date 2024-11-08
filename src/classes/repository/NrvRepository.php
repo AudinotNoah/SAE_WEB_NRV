@@ -98,11 +98,5 @@ class NrvRepository {
         return $stmt->execute();
     }
 
-    public function getAllNomArtiste(): array
-    {
-        $stmt = $this->pdo->prepare("SELECT idArtiste, nomArtiste FROM artiste");
-        $stmt->execute();
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
-    }
  
 }
