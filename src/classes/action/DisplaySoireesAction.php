@@ -23,39 +23,14 @@ class DisplaySoireesAction extends Action {
         $repo = NrvRepository::getInstance();
 
         $id = $_GET['id'] ?? null;
-        $trie = $_GET['trie'] ?? null;
-        $thematique = $_GET['thematique'] ?? null;
         $soirees = $repo->getAllSoirees();
 
-
         if (!$id) {
+            // Afficher toutes les soirées disponibles
             $html = "<h2>Soirées Disponibles</h2><ul>";
-
-            switch ($trie) {
-                case 'date':
-                    // Option de tri par date (à implémenter)
-                    return "Tri par date non disponible pour le moment";
-                case 'thematique':
-                    if ($thematique) {
-                        foreach ($soirees as $sr) {
-                            if (strtolower($sr['thematique']) === strtolower($thematique)) {
-                                $html .= DisplaySoireesAction::createSoiree($sr, $repo) .
-                                    "<li><a href='?action=programme&id={$sr['idSoiree']}'>Plus d'info</a></li>";
-                            }
-                        }
-                    } else {
-                        return "Aucune thématique sélectionnée";
-                    }
-                    break;
-                case 'lieu':
-                    // Option de tri par lieu (à implémenter)
-                    return "Tri par lieu non disponible pour le moment";
-                default:
-                    foreach ($soirees as $sr) {
-                        $html .= DisplaySoireesAction::createSoiree($sr, $repo) .
-                            "<li><a href='?action=programme&id={$sr['idSoiree']}'>Liste des spectacles</a></li>";
-                    }
-                    break;
+            foreach ($soirees as $sr) {
+                $html .= DisplaySoireesAction::createSoiree($sr, $repo) .
+                    "<li><a href='?action=programme&id={$sr['idSoiree']}'>Informations supplémentaires</a></li>";
             }
         } else {
             // Afficher les informations détaillées pour une soirée spécifique
