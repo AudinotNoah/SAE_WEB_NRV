@@ -89,8 +89,6 @@ class NrvRepository {
         return $stmt->fetchColumn();
     }
 
-
-
     public function createStaff(string $email, string $mdp)
     {
         $stmt = $this->pdo->prepare("INSERT INTO utilisateur (email, mdp, role, droit) VALUES (:email, :mdp, 'staff', 50)");
@@ -100,5 +98,11 @@ class NrvRepository {
         return $stmt->execute();
     }
 
+    public function getAllNomArtiste(): array
+    {
+        $stmt = $this->pdo->prepare("SELECT idArtiste, nomArtiste FROM artiste");
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
  
 }
