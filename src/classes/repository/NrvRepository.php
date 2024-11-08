@@ -123,5 +123,24 @@ class NrvRepository {
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
 
+    public function getArtisteBySpectacleId(int $idSpectacle)
+    {
+    $artistes = [];
+    $query = "SELECT a.nomArtiste 
+              FROM Artiste a
+              JOIN Performer p ON a.idArtiste = p.idArtiste
+              WHERE p.idSpectacle = :idSpectacle";
+    
+    $stmt = $this->pdo->prepare($query);
+    $stmt->bindParam(':idSpectacle', $idSpectacle, PDO::PARAM_INT);
+    $stmt->execute();
+    
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $artistes[] = $row['nomArtiste'];
+    }
+    
+    return $artistes;
+    }
+
  
 }
