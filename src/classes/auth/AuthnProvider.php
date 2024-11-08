@@ -42,4 +42,18 @@ class AuthnProvider
         $repo->createStaff($email, $hash);
     }
 
+    public static function getUserRole($email)
+    {
+        $repo = NrvRepository::getInstance();
+        $user = $repo->findInfos($email);
+        return $user->role;
+    }
+
+    public static function getUserId($email)
+    {
+        $repo = NrvRepository::getInstance();
+        $user = $repo->findInfos($email);
+        return $user->idUtil;
+    }
+
 }
