@@ -27,10 +27,10 @@ class LoginAction extends Action {
             // Tentative de connexion de l'utilisateur
             AuthnProvider::signin($email, $password);
 
-            // Enregistrer l'utilisateur dans la session
-            $_SESSION['user']['id'] = AuthnProvider::getUserId($email);
-            $_SESSION['user']['email'] = $email;
-            $_SESSION['user']['role'] = AuthnProvider::getUserRole($email);
+            // // Enregistrer l'utilisateur dans la session
+            // $_SESSION['user']['id'] = AuthnProvider::getUserId($email);
+            // $_SESSION['user']['email'] = $email;
+            // $_SESSION['user']['role'] = AuthnProvider::getUserRole($email);
 
             return "Vous êtes connecté"; // Après avoir mis à jour la session
         }
