@@ -5,6 +5,7 @@ namespace iutnc\nrv\dispatch;
 use iutnc\nrv\action\AddSpectacleAction;
 use iutnc\nrv\action\CreateStaffAction;
 use iutnc\nrv\action\DefaultAction;
+use iutnc\nrv\action\DisplaySoireesAction;
 use iutnc\nrv\action\DisplaySpectaclesAction;
 use iutnc\nrv\action\LoginAction;
 
@@ -20,6 +21,12 @@ class Dispatcher {
         $html = ''; 
 
         switch ($this->action) {
+
+
+            case 'list-soirees':
+                $actionInstance = new DisplaySoireesAction();
+                $html = $actionInstance->execute();
+                break;
 
             case 'createStaff':
                 $actionInstance = new CreateStaffAction();
@@ -61,6 +68,7 @@ class Dispatcher {
         <body>
             <nav>
                 <a href='?action=programme'>Programme</a>
+                <a href='?action=list-soirees'>Liste des Soirées</a>
                 <a href='?action=createStaff'>Créer un Staff</a>
                 <a href='?action=infos'>Infos pratiques</a>
                 <a href='?action=contact'>Contact</a>

@@ -3,21 +3,19 @@
 namespace iutnc\nrv\render;
 
 use iutnc\nrv\festival\Soiree;
-use iutnc\nrv\festival\Spectacle;
 
 class SoireeRenderer implements Renderer
 {
     protected Soiree $soiree;
 
-    public function __construct(Spectacle $soiree)
+    public function __construct(Soiree $soiree)
     {
         $this->soiree = $soiree;
     }
 
-    //1 pour tous avoir, 2 pour un résumé
+    // 1 pour tout afficher, 2 pour un résumé
     public function render(int $type = 1): string
     {
-
         if ($type === 1) {
             return $this->renderLong();
         }
@@ -29,44 +27,42 @@ class SoireeRenderer implements Renderer
         throw new \InvalidArgumentException("Type de rendu inconnu : $type");
     }
 
-
-    private function renderLong()
+    private function renderLong(): string
     {
         $soiree = $this->soiree;
 
-        $html = "<h2>" . htmlspecialchars($soiree->__get('nom')) . "</h2>";
-        $html .= "<p><strong>Artistes :</strong></p><ul>";
-        foreach ($soiree->__get('artistes') as $artiste) {
-            $html .= "<li>" . htmlspecialchars($artiste) . "</li>";
+        $html = "<h2>" . htmlspecialchars($soiree->__get('nomSoiree')) . "</h2>";
+        $html .= "<p><strong>Date :</strong> " . htmlspecialchars($soiree->__get('dateSoiree')) . "</p>";
+        $html .= "<p><strong>Lieu :</strong> " . htmlspecialchars($soiree->__get('lieu')) . "</p>";
+        $html .= "<p><strong>Tarif :</strong> " . htmlspecialchars(number_format($soiree->__get('tarif'), 2)) . " €</p>";
+        $html .= "<p><strong>Thématique :</strong> " . htmlspecialchars($soiree->__get('thematique')) . "</p>";
+        $html .= "<p><strong>Horaire :</strong> " . htmlspecialchars($soiree->__get('horaire')) . "</p>";
+
+        // Si un lien audio est disponible, l'afficher
+        if ($soiree->__get('lienAudio') ?? false) {
+            $html .= "<audio controls>
+                        <source src='media/audio/" . htmlspecialchars($soiree->__get('lienAudio')) . "' type='audio/mpeg'>
+                        Votre navigateur ne supporte pas la balise audio.
+                      </audio>";
         }
-        $html .= "</ul>";
-
-        $html .= "<p><strong>Description :</strong> " . htmlspecialchars($soiree->__get('description')) . "</p>";
-        $html .= "<p><strong>Style :</strong> " . htmlspecialchars($soiree->__get('style')) . "</p>";
-        //mettre ici images et video
-
-        $images = $soiree->__get('images');
-        if (!empty($images)) {
-            $html .= "<h3>Images :</h3>";
-            foreach ($images as $image) {
-                $html .= "<img src='" . htmlspecialchars($image) . "' alt='Image de {$soiree->__get('nom')}'>";
-            }
-        }
-
-        $html .= "<audio controls>
-                <source src='media/audio/{$this->soiree->lienAudio}' type='audio/mpeg'>
-                Votre navigateur ne supporte pas la balise audio.
-            </audio>";
 
         return $html;
-
     }
 
     private function renderCompact(): string
     {
-        $spectacle = $this->spectacle;
-        $html = "<h2>" . htmlspecialchars($spectacle->__get('nom')) . "</h2>";
-        $html .= "<p><strong>Style :</strong> " . htmlspecialchars($spectacle->__get('style')) . "</p>";
+        $soiree = $this->soiree;
+
+        $html = "<h2>" . htmlspecialchars($soiree->__get('nomSoiree')) . "</h2>";
+        $html .= "<p><strong>Date :</strong> " . htmlspecialchars($soiree->__get('dateSoiree')) . "</p>";
+        $html .= "<p><strong>Lieu :</strong> " . htmlspecialchars($soiree->__get('lieu')) . "</p>";
+        $html .= "<p><strong>Thématique :</strong> " . htmlspecialchars($soiree->__get('thematique')) . "</p>";
+
         return $html;
     }
 }
+
+
+
+
+
