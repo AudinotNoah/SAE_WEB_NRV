@@ -68,9 +68,45 @@ class Dispatcher {
     }
 
     private function renderPage(string $html): void {
-        // Vérification si l'utilisateur est connecté
-        $userEmail = $_SESSION['user']['email'] ?? null;
+        // Vérifie si l'utilisateur est connecté
+        $isConnected = isset($_SESSION['user']);
+        $userRole = $_SESSION['user']['role'] ?? null;
 
+        // Menu de base
+        $menu = <<<HTML
+        <nav>
+            <a href="?action=default">Accueil</a>
+            <a href="?action=programme">Programme</a>
+            <a href="?action=list-soirees">Liste des Soirées</a>
+            <a href="?action=infos">Infos pratiques</a>
+    HTML;
+
+        if ($isConnected) {
+            // Si l'utilisateur est connecté, afficher les options suivantes
+            $menu .= <<<HTML
+            <a href="?action=logout">Se Déconnecter</a>
+            <!-- Afficher l'utilisateur connecté -->
+            <span>Connecté en tant que : {$_SESSION['user']['email']}</span>
+        HTML;
+
+            // Si l'utilisateur est admin, afficher "Créer un Staff"
+            if ($userRole === 'admin') {
+                $menu .= <<<HTML
+            <a href="?action=createStaff">Créer un Staff</a>
+            HTML;
+            }
+        } else {
+            // Si l'utilisateur n'est pas connecté, afficher les options suivantes
+            $menu .= <<<HTML
+            <a href="?action=login">Se Connecter</a>
+            <a href="?action=register">Inscription</a>
+        HTML;
+        }
+
+        // Fermeture du menu
+        $menu .= "</nav>";
+
+        // Génération du HTML final
         echo <<<HTML
     <!DOCTYPE html>
     <html lang='fr'>
@@ -81,19 +117,7 @@ class Dispatcher {
         <title>projet web</title>
     </head>
     <body>
-        <nav>
-            <a href='?action=default'>Accueil</a>
-            <a href='?action=programme'>Programme</a>
-            <a href='?action=list-soirees'>Liste des Soirées</a>
-            <a href='?action=infos'>Infos pratiques</a>
-            <a href='?action=login'>Connexion
-            <a href='?action=logout'>Déconnexion</a>
-            <a href='?action=createStaff'>Créer un Staff</a>
-            <!-- Afficher l'utilisateur connecté -->
-            <span>
-                Connecter en tant que : $userEmail 
-            </span>
-        </nav>
+        $menu
         <main>
             <p></p> <!-- espace -->
             $html
@@ -102,5 +126,6 @@ class Dispatcher {
     </html>
     HTML;
     }
+
 
 }
