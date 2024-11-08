@@ -223,6 +223,33 @@ class NrvRepository {
         return $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
     }
 
+    public function getAllSoireeForSpec(int $idSpectacle) : array{
+        $stmt = $this->pdo->prepare('
+                SELECT 
+                    soiree.idSoiree, 
+                    nomSoiree, 
+                    dateSoiree, 
+                    idLieu,
+                    tarif,
+                    thematique,
+                    horaire
+                FROM soiree
+                inner join spectaclesoiree ss on ss.idsoiree = soiree.idsoiree
+                where :idSpectacle = ss.idSpectacle
+
+            ');
+            $stmt->bindParam(':idSpectacle', $idSpectacle, PDO::PARAM_INT);
+            $stmt->execute();
+
+            $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+            if (empty($result)) {
+                echo "Aucune donnée n'a été trouvée dans la table `soiree`.";
+            }
+
+            return $result ?: [];
+    }
+
  
 }
 

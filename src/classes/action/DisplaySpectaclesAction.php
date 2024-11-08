@@ -3,7 +3,10 @@
 namespace iutnc\nrv\action;
 use iutnc\nrv\repository\NrvRepository;
 use iutnc\nrv\festival\Spectacle;
+use iutnc\nrv\festival\Soiree;
 use iutnc\nrv\render\SpectacleRenderer;
+use iutnc\nrv\render\SoireeRenderer;
+
 
 class DisplaySpectaclesAction extends Action {
 
@@ -139,6 +142,15 @@ class DisplaySpectaclesAction extends Action {
             $renderer = new SpectacleRenderer($s);
             $spec_html = $renderer->render(1);
             $html .= $spec_html;
+            $soirees = $repo->getAllSoireeForSpec($sp['idSpectacle']);
+            $html .= "<h1>Dispo dans les soirées suivantes : </h1>";
+            foreach ($soirees as $sp) {
+                // $html .= DisplaySpectaclesAction::createSpec($sp, $repo) . "<li><a href='?action=programme&id={$sp['idSpectacle']}'>Plus d'info</a></li>";
+                $s = new Soiree($sp['nomSoiree'],$sp['dateSoiree'],$sp['idLieu'],$sp['thematique'],$sp['horaire'],floatval($sp['tarif']));
+                $renderer = new SoireeRenderer($s);
+                $spec_html = $renderer->render(1);
+                $html .= $spec_html;
+            }
             return $html;
         }
     }
