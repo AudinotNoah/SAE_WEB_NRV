@@ -9,7 +9,7 @@ class DisplaySpectaclesAction extends Action {
 
     private static function createSpec($sp, $repo): string {
         $stylenom = $repo->getStyleNom($sp['idSpectacle']);
-        $s = new Spectacle($sp['nomSpectacle'],$sp['horaireDebut'],$sp['horaireFin'],$stylenom,$sp['description'],[],[],$sp['lienAudio']);
+        $s = new Spectacle($sp['nomSpectacle'],$sp['horaireDebut'],$sp['horaireFin'],$stylenom,$sp['description'],[],[],$sp['lienAudio'],$sp['statut']);
         $renderer = new SpectacleRenderer($s);
         return $renderer->render(2);
     }
@@ -86,7 +86,7 @@ class DisplaySpectaclesAction extends Action {
 
             $artistes = $repo->getArtisteBySpectacleId($sp['idSpectacle']);
 
-            $s = new Spectacle($sp['nomSpectacle'],$sp['horaireDebut'],$sp['horaireFin'],$stylenom,$sp['description'],$artistes,$images,$sp['lienAudio']);
+            $s = new Spectacle($sp['nomSpectacle'],$sp['horaireDebut'],$sp['horaireFin'],$stylenom,$sp['description'],$artistes,$images,$sp['lienAudio'],$sp['statut']);
             $renderer = new SpectacleRenderer($s);
             $spec_html = $renderer->render(1);
             $html .= $spec_html;
