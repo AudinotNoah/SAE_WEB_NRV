@@ -8,6 +8,7 @@ use iutnc\nrv\action\DefaultAction;
 use iutnc\nrv\action\DisplaySoireesAction;
 use iutnc\nrv\action\DisplaySpectaclesAction;
 use iutnc\nrv\action\LoginAction;
+use iutnc\nrv\action\LogoutAction;
 
 class Dispatcher {
 
@@ -47,6 +48,11 @@ class Dispatcher {
                 $html = $actionInstance->execute();
                 break;
 
+            case 'logout';
+                $actionInstance = new LogoutAction();
+                $html = $actionInstance->execute();
+                break;
+
             case 'add-spectacle':
                 $actionInstance = new AddSpectacleAction();
                 $html = $actionInstance->execute();
@@ -80,7 +86,8 @@ class Dispatcher {
             <a href='?action=programme'>Programme</a>
             <a href='?action=list-soirees'>Liste des Soirées</a>
             <a href='?action=infos'>Infos pratiques</a>
-            <a href='?action=login'>Connexion</a>
+            <a href='?action=login'>Connexion
+            <a href='?action=logout'>Déconnexion</a>
             <a href='?action=createStaff'>Créer un Staff</a>
             <!-- Afficher l'utilisateur connecté -->
             <span>
