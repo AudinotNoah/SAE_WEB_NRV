@@ -10,7 +10,7 @@ class LogoutAction extends Action {
 
         // Redirige vers la page d'accueil
         header('Location: ?action=default');
-        exit; 
+        exit;
     }
 
     protected function post(): string {
