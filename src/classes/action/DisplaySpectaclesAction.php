@@ -15,9 +15,7 @@ class DisplaySpectaclesAction extends Action {
     }
 
     private static function getOptions($repo): string {
-        $styles = $repo->getAllStyles();
         $trieselect = $_GET['trie'] ?? '';
-        $selectedStyle = $_GET['style'] ?? '';
 
         $html = "<label for='trie'>Trier par :</label>";
         $html .= "<select name='trie' id='trie'>";
@@ -28,12 +26,14 @@ class DisplaySpectaclesAction extends Action {
         $html .= "</select>";
 
         if ($trieselect === 'style') {
+            $styles = $repo->getAllStyles();
+            $stylechoix = $_GET['style'] ?? '';
             $html .= "<label for='style'>Choisir un style :</label>";
             $html .= "<select name='style' id='style'>";
             $html .= "<option value=''>Sélectionner</option>";
             foreach ($styles as $style) {
                 $nomstyle = $style['nomStyle'];
-                $html .= "<option value='{$nomstyle}'" . ($selectedStyle === $nomstyle ? ' selected' : '') . ">{$nomstyle}</option>";
+                $html .= "<option value='{$nomstyle}'" . ($stylechoix === $nomstyle ? ' selected' : '') . ">{$nomstyle}</option>";
             }
             $html .= "</select>";
         }
