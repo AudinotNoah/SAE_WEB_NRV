@@ -38,13 +38,6 @@ class SoireeRenderer implements Renderer
         $html .= "<p><strong>Thématique :</strong> " . htmlspecialchars($soiree->__get('thematique')) . "</p>";
         $html .= "<p><strong>Horaire :</strong> " . htmlspecialchars($soiree->__get('horaire')) . "</p>";
 
-        // Si un lien audio est disponible, l'afficher
-        if ($soiree->__get('lienAudio') ?? false) {
-            $html .= "<audio controls>
-                        <source src='media/audio/" . htmlspecialchars($soiree->__get('lienAudio')) . "' type='audio/mpeg'>
-                        Votre navigateur ne supporte pas la balise audio.
-                      </audio>";
-        }
 
         return $html;
     }

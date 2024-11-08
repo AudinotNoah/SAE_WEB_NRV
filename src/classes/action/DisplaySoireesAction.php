@@ -15,7 +15,7 @@ class DisplaySoireesAction extends Action {
 
         // Utilisation du renderer pour générer le HTML
         $renderer = new SoireeRenderer($soiree);
-        $soiree_html = $renderer->render(2); // Mode d'affichage spécifique
+        $soiree_html = $renderer->render(1); // Mode d'affichage spécifique
         return $soiree_html;
     }
 
@@ -53,7 +53,7 @@ class DisplaySoireesAction extends Action {
                 default:
                     foreach ($soirees as $sr) {
                         $html .= DisplaySoireesAction::createSoiree($sr, $repo) .
-                            "<li><a href='?action=programme&id={$sr['idSoiree']}'>Plus d'info</a></li>";
+                            "<li><a href='?action=programme&id={$sr['idSoiree']}'>Liste des spectacles</a></li>";
                     }
                     break;
             }
