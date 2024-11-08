@@ -48,7 +48,7 @@ class SpectacleRenderer implements Renderer
         if (!empty($images)) {
             $html .= "<h3>Images :</h3>";
             foreach ($images as $image) {
-                $html .= "<img src='" . htmlspecialchars($image) . "' alt='Image de {$spectacle->__get('nom')}'>";
+                $html .= "<img src='media/festival-img/spectacle-img/" . htmlspecialchars($image) . "' alt='Image de {$spectacle->__get('nom')}'>";
             }
         }   
 

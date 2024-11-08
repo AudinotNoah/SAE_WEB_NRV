@@ -56,7 +56,8 @@ class DisplaySpectaclesAction extends Action {
             $html = "<h2>Infos : </h2><ul>";
             $sp = $spectacles[$id-1];
             $stylenom = $repo->getStyleNom($sp['idSpectacle']);
-            $s = new Spectacle($sp['nomSpectacle'],$sp['horaireDebut'],$sp['horaireFin'],$stylenom,$sp['description'],[],[],$sp['lienAudio']);
+            $images = $repo->getImagesBySpectacleId($sp['idSpectacle']);
+            $s = new Spectacle($sp['nomSpectacle'],$sp['horaireDebut'],$sp['horaireFin'],$stylenom,$sp['description'],[],$images,$sp['lienAudio']);
             $renderer = new SpectacleRenderer($s);
             $spec_html = $renderer->render(1);
             $html = $html . $spec_html;
