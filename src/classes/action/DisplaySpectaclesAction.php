@@ -50,6 +50,20 @@ class DisplaySpectaclesAction extends Action {
             }
             $html .= "</select>";
         }
+        else if ($trieselect === 'lieu'){
+            $lieux = $repo->getAllLieux();
+            $lieuchoix = $_GET['lieu'] ?? '';
+            $html .= "<label for='date'>Choisir un lieu :</label>";
+            $html .= "<select name='lieu' id='lieu' onchange='this.form.submit()'>"; 
+            $html .= "<option value=''>Sélectionner</option>";
+            foreach ($lieux as $lieu) {
+                $lieuid = $lieu['idLieu'];
+                $lieuchoisis = $lieu['lieuAdresse'];
+                $html .= "<option value='{$lieuid}'" . ($lieuchoix === $lieuchoisis ? ' selected' : '') . ">{$lieuchoisis}</option>";
+            }
+            $html .= "</select>";
+
+        }
     
         $html .= "</form>"; 
         return $html;
@@ -59,9 +73,11 @@ class DisplaySpectaclesAction extends Action {
     protected function get(): string {
         $repo = NrvRepository::getInstance();
         $id = $_GET['id'] ?? null;
+
         $trie = $_GET['trie'] ?? null;
         $style = $_GET['style'] ?? null;
         $date = $_GET['date'] ?? null;
+        $lieu = $_GET['lieu'] ?? null;
         $spectacles = $repo->getAllSpectacles();
 
         if (!$id) {
@@ -86,6 +102,16 @@ class DisplaySpectaclesAction extends Action {
                         $liste_spec_date = $repo->getAllSpecAtDate($date);
                         foreach ($spectacles as $sp) {
                             if (in_array($sp['idSpectacle'],$liste_spec_date)) {
+                                $html .= DisplaySpectaclesAction::createSpec($sp, $repo) . "<li><a href='?action=programme&id={$sp['idSpectacle']}'>Plus d'info</a></li>";
+                            }
+                        }
+                        break;
+                    }
+                case 'lieu':
+                    if ($lieu){
+                        $liste_spec_lieu = $repo->getAllSpecAtLieu($lieu);
+                        foreach ($spectacles as $sp) {
+                            if (in_array($sp['idSpectacle'],$liste_spec_lieu)) {
                                 $html .= DisplaySpectaclesAction::createSpec($sp, $repo) . "<li><a href='?action=programme&id={$sp['idSpectacle']}'>Plus d'info</a></li>";
                             }
                         }

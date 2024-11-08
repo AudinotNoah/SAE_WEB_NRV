@@ -205,6 +205,24 @@ class NrvRepository {
         return $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
     }
 
+
+    public function getAllLieux() : array {
+        $stmt = $this->pdo->prepare('SELECT idLieu, CONCAT(nomLieu, ", ", adresse) AS lieuAdresse FROM lieu');
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
+    
+    public function getAllSpecAtLieu(string $idLieu) : array{
+        $stmt = $this->pdo->prepare('SELECT idspectacle FROM soiree
+                                    inner join spectaclesoiree as ss on ss.idsoiree = soiree.idsoiree
+                                    WHERE idLieu = :idLieu');
+        $stmt->bindParam(':idLieu', $idLieu, PDO::PARAM_STR);
+        $stmt->execute();
+        
+        return $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+    }
+
  
 }
 
