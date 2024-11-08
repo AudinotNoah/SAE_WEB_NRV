@@ -15,8 +15,9 @@ class Spectacle
     protected array $artistes;
     protected array $images;
     protected string $lienAudio;
+    protected string $statut;
 
-    public function __construct($nom, $horaireDebut, $horaireFin, $style = "Inconnu", $description = "Aucune description", $artistes = [], $images = [], $lienAudio)
+    public function __construct($nom, $horaireDebut, $horaireFin, $style = "Inconnu", $description = "Aucune description", $artistes = [], $images = [], $lienAudio, $statut = " ")
     {
         $this->nom = $nom;
         $this->horaireDebut = $horaireDebut;
@@ -26,6 +27,7 @@ class Spectacle
         $this->artistes = $artistes;
         $this->images = $images;
         $this->lienAudio = $lienAudio;
+        $this->statut = $statut;
     
     }
 

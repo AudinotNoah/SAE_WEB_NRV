@@ -33,7 +33,7 @@ class SpectacleRenderer implements Renderer
     {
         $spectacle = $this->spectacle;
 
-        $html = "<h2>" . htmlspecialchars($spectacle->__get('nom')) . "</h2>";
+        $html = "<h2>" . htmlspecialchars($spectacle->nom) . " - " . htmlspecialchars($spectacle->statut) . "</h2>";
         $html .= "<p><strong>Artistes :</strong></p><ul>";
         foreach ($spectacle->__get('artistes') as $artiste) {
             $html .= "<li>" . htmlspecialchars($artiste) . "</li>";
@@ -63,7 +63,7 @@ class SpectacleRenderer implements Renderer
     private function renderCompact(): string
     {
         $spectacle = $this->spectacle;
-        $html = "<h2>" . htmlspecialchars($spectacle->__get('nom')) . "</h2>";
+        $html = "<h2>" . htmlspecialchars($spectacle->nom) . " - " . htmlspecialchars($spectacle->statut) . "</h2>";
         $html .= "<p><strong>Style :</strong> " . htmlspecialchars($spectacle->__get('style')) . "</p>";
         return $html;
     }
