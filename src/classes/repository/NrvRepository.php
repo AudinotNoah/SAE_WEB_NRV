@@ -4,6 +4,7 @@ namespace iutnc\nrv\repository;
 
 use Exception;
 use PDO;
+use PDOException; // pour eviter l'erreur sur certains pc avec vscode
 
 class NrvRepository {
 
