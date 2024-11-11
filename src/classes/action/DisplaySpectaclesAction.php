@@ -122,8 +122,32 @@ class DisplaySpectaclesAction extends Action {
             return $html;
 
         } else {
-            $html = "<h2>Infos : </h2><ul>";
-            $sp = $spectacles[$id - 1];
+            $html = <<<HTML
+            <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const preferences = getPreferences();
+                const spectacleId = document.getElementById('pref').dataset.id;
+                if (preferences.includes(spectacleId)) {
+                    document.getElementById('pref').textContent = "Retirer des préférences";
+                } else {
+                    document.getElementById('pref').textContent = "Ajouter aux préférences";
+                }
+            });
+            </script>
+            HTML;
+            
+            $messagebut = "Ajouter aux préférences";
+            if (isset($_COOKIE['preferences']) && $_COOKIE['preferences'] !== "") {
+                $liste_pref = explode(",", $_COOKIE['preferences']);
+                if (in_array($id, $liste_pref)){
+                    $messagebut = "Retirer des préférences";
+                }
+            }
+            $html .= "<button id='pref' data-id='{$id}' onclick='switchPrefs({$id})'>{$messagebut}</button>";
+
+
+            $html .= "<h2>Infos : </h2><ul>";
+            $sp = $spectacles[$id - 1]; // GROSSE ERREUR L'ELEMENT 1 N' A PAS FORCEMENT L'ID 1 ERREUR LOGIQUEE FAAUT FIX
             $html .= self::createSpec($sp, $repo,1);
 
             $soirees = $repo->getAllSoireeForSpec($sp['idSpectacle']);
