@@ -14,7 +14,7 @@ class AddSpectacleAction extends Action
     {
         $repository = NrvRepository::getInstance();
         $artistes = $repository->getAllNomArtiste();
-        
+        $soirees = $repository->getAllSoirees();
         $styles = $repository->getAllStyles();
 
         $artistesListe = '';
@@ -24,7 +24,12 @@ class AddSpectacleAction extends Action
 
         $stylesListe = '';
         foreach ($styles as $style) {
-            $stylesListe .= "<label><input type='radio' name='spectacle_style' value='{$style['idStyle']} required'> {$style['nomStyle']}</label><br>";
+            $stylesListe .= "<label><input type='radio' name='spectacle_style' value='{$style['idStyle']}'required> {$style['nomStyle']}</label><br>";
+        }
+
+        $soireesListe = '';
+        foreach ($soirees as $soiree) {
+            $soireesListe .= "<label><input type='checkbox' name='spectacle_soirees[]' value='{$soiree['idSoiree']}'> {$soiree['nomSoiree']}</label><br>";
         }
 
         return <<<HTML
@@ -46,6 +51,11 @@ class AddSpectacleAction extends Action
             <label for="spectacle-description">Description du spectacle :</label>
             <textarea id="spectacle-description" name="spectacle_description" rows="4" cols="50" required></textarea>
 
+            <fieldset>
+            <legend>Choisir les soirées où ce spectacle sera joué :</legend>
+            $soireesListe
+            </fieldset>
+        
             <fieldset>
                 <legend>Artistes :</legend>
                 $artistesListe
@@ -71,6 +81,7 @@ class AddSpectacleAction extends Action
         $horaireDebut = $_POST['spectacle_horaireDebut'];
         $horaireFin = $_POST['spectacle_horaireFin'];
         $style = $_POST['spectacle_style'] ?? 'Inconnu';
+        $soirees = isset($_POST['spectacle_soirees']) ? (array)$_POST['spectacle_soirees'] : [];
         $description = $_POST['spectacle_description'] ?? 'Aucune description';
 
         if (!$this->validateTimeFormat($horaireDebut) || !$this->validateTimeFormat($horaireFin)) {
@@ -156,6 +167,9 @@ class AddSpectacleAction extends Action
             $repository->associerArtisteAuSpectacle($idArtiste, $idSpectacle);
         }
 
+        $repository->associeSpectacleSoiree($idSpectacle, $soirees);
+
+    
         // $renderer = new SpectacleRenderer($spectacle);
         // $spectacleHtml = $renderer->render(1);
         $url = "Location: index.php?action=programme&id=" . $idSpectacle;

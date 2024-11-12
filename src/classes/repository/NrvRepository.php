@@ -297,14 +297,6 @@ class NrvRepository {
         $stmt->execute();
         $id = $stmt->fetchColumn();
 
-        if ($id === false) {
-            $insertStmt = $this->pdo->prepare("INSERT INTO style (nomStyle) VALUES (:style)");
-            $insertStmt->bindParam(':style', $style);
-            $insertStmt->execute();
-            
-            return (int) $this->pdo->lastInsertId();
-        }
-
         return (int) $id;
     }
 
@@ -347,7 +339,7 @@ class NrvRepository {
                                             idStyle = :style,
                                             horaireDebut = :debut,
                                             horaireFin = :fin,
-                                            statut = :statut
+                                            statut = :statut,
                                             lienAudio = :audio
                                         WHERE idSpectacle = :id");
         $stmt->bindParam(':id', $id);
@@ -375,6 +367,16 @@ class NrvRepository {
         }
     }
 
+    public function associeSpectacleSoiree(int $spectacleId, array $soireeIds)
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
+        $stmt->bindParam(':idSpectacle', $spectacleId);
+
+        foreach ($soireeIds as $soireeId) {
+            $stmt->bindParam(':idSoiree', $soireeId);
+            $stmt->execute();
+        }
+    }
 
     public function getSpecAtSoiree(int $idSoiree){
         $stmt = $this->pdo->prepare("SELECT idSpectacle
