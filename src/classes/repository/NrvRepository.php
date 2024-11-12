@@ -261,7 +261,7 @@ class NrvRepository {
     }
 
 
-    public function setSpectacle(Spectacle $s): int
+    public function setSpectacle(Spectacle $s,string $idStyle): int
     {
         $stmt = $this->pdo->prepare(
             "INSERT INTO spectacle (nomSpectacle, horaireDebut, horaireFin, idStyle, statut, lienAudio, description) 
@@ -271,7 +271,8 @@ class NrvRepository {
         $nomSpectacle = $s->nom;
         $horaireDebut = $s->horaireDebut;
         $horaireFin = $s->horaireFin;
-        $idStyle = $this->getIdStyleByName($s->style);
+        echo $this->getIdStyleByName($s->style);
+        // $idStyle = $this->getIdStyleByName($s->style);
         $statut = "à venir"; // Par défaut
         $lienAudio = $s->lienAudio;
         $description = $s->description;
