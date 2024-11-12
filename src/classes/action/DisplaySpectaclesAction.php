@@ -11,7 +11,7 @@ class DisplaySpectaclesAction extends Action {
 
     // public pour display action
     public static function createSpec($sp, $repo,$choixRendu): string {
-        $stylenom = $repo->getStyleNom($sp['idSpectacle']);
+        $stylenom = $repo->getStyleNom($sp['idStyle']);
         $images = $repo->getImagesBySpectacleId($sp['idSpectacle']);
         $artistes = $repo->getArtisteBySpectacleId($sp['idSpectacle']);
         $s = new Spectacle($sp['nomSpectacle'], $sp['horaireDebut'], $sp['horaireFin'], $stylenom, $sp['description'], $artistes, $images, $sp['lienAudio'], $sp['statut']);
