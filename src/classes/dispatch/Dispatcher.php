@@ -10,7 +10,7 @@ use iutnc\nrv\action\DisplaySpectaclesAction;
 use iutnc\nrv\action\LoginAction;
 use iutnc\nrv\action\LogoutAction;
 use iutnc\nrv\action\DisplayStaffMenu;
-use iutnc\nrv\action\Preference;
+use iutnc\nrv\action\PreferenceAction;
 
 class Dispatcher {
 
@@ -66,7 +66,7 @@ class Dispatcher {
                 break;
             
             case 'preference':
-                $actionInstance = new Preference();
+                $actionInstance = new PreferenceAction();
                 $html = $actionInstance->execute();
                 break;
 

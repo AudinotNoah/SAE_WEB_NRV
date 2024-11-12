@@ -5,7 +5,7 @@ namespace iutnc\nrv\action;
 use iutnc\nrv\exception\AuthnException;
 use iutnc\nrv\auth\AuthnProvider;
 
-class Preference extends Action {
+class PreferenceAction extends Action {
 
     public function get(): string {
         $html = "<h2>Liste des préférences</h2><ul>";
