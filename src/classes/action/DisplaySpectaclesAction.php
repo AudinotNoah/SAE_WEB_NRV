@@ -147,7 +147,13 @@ class DisplaySpectaclesAction extends Action {
 
 
             $html .= "<h2>Infos : </h2><ul>";
-            $sp = $spectacles[$id - 1]; // GROSSE ERREUR L'ELEMENT 1 N' A PAS FORCEMENT L'ID 1 ERREUR LOGIQUEE FAAUT FIX
+            // $sp = $spectacles[$id - 1]; // GROSSE ERREUR L'ELEMENT 1 N' A PAS FORCEMENT L'ID 1 ERREUR LOGIQUEE FAAUT FIX
+            foreach ($spectacles as $spectacle) {
+                if ($spectacle['idSpectacle'] == $id) {
+                    $sp = $spectacle;
+                    break;
+                }
+            }
             $html .= self::createSpec($sp, $repo,1);
 
             $soirees = $repo->getAllSoireeForSpec($sp['idSpectacle']);
