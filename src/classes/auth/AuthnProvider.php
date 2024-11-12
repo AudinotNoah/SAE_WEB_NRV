@@ -25,7 +25,8 @@ class AuthnProvider
         $_SESSION['user'] = [
             'id' => $user->idUtil,
             'email' => $user->email,
-            'role' => $user->role
+            'role' => $user->role,
+            'droit'=> $user->droit
         ];
     }
 
@@ -55,5 +56,18 @@ class AuthnProvider
         $user = $repo->findInfos($email);
         return $user->idUtil;
     }
+
+    public static function getSignedInUser(): array {
+        if (!isset($_SESSION['user'])) {
+            throw new AuthnException("Pas connecté.");
+        }
+    
+        if (!isset($_SESSION['user']['droit'])) {
+            throw new AuthnException("Droit non défini dans la session.");
+        }
+    
+        return $_SESSION['user'];
+    }
+    
 
 }

@@ -11,6 +11,7 @@ use iutnc\nrv\action\DisplaySpectaclesAction;
 use iutnc\nrv\action\LoginAction;
 use iutnc\nrv\action\LogoutAction;
 use iutnc\nrv\action\DisplayStaffMenu;
+use iutnc\nrv\auth\Authz;
 
 class Dispatcher {
 
@@ -91,40 +92,29 @@ class Dispatcher {
             <a href="?action=programme">Programme</a>
             <a href="?action=list-soirees">Liste des Soirées</a>
             <a href="?action=programme&trie=preferences">Votre liste de préférence</a>
-    HTML;
-
-        if ($isConnected) {
-            // Si l'utilisateur est connecté, afficher les options suivantes
+        HTML;
+        $user = Authz::checkRole(50); 
+        if (!is_string($user)) {
             $menu .= <<<HTML
-            <a href="?action=logout">Se Déconnecter</a>
-            <!-- Afficher l'utilisateur connecté -->
-            <span>Connecté en tant que : {$_SESSION['user']['email']}</span>
-            HTML;
-
-            // Si l'utilisateur est staff, afficher le menu staff
-            if ($userRole === 'staff') {
-                $menu .= <<<HTML
                 <a href="?action=menu-staff">Menu Staff</a>
                 HTML;
-            }
-
-            // Si l'utilisateur est admin, afficher "Créer un Staff"
-            if ($userRole === 'admin') {
-                $menu .= <<<HTML
-            <a href="?action=createStaff">Créer un Staff</a>
-            HTML;
-            }
-        } else {
-            // Si l'utilisateur n'est pas connecté, afficher les options suivantes
-            $menu .= <<<HTML
-            <a href="?action=login">Se Connecter</a>
-        HTML;
         }
 
-        // Fermeture du menu
+        $user = Authz::checkRole(0); 
+        if (!is_string($user)) {
+            $menu .= <<<HTML
+            <a href="?action=logout">Se Déconnecter</a>
+            <span>Connecté en tant que : {$_SESSION['user']['email']}</span>
+            HTML;
+        }
+        else{
+            $menu .= <<<HTML
+            <a href="?action=login">Se Connecter</a>
+            HTML;
+        }
+
         $menu .= "</nav>";
 
-        // Génération du HTML final
         echo <<<HTML
     <!DOCTYPE html>
     <html lang='fr'>
