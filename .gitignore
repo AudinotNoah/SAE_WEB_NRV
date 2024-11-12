@@ -1,5 +1,7 @@
 # Fichier de configuration
 config.db.ini
+src/assets/images/*
+src/assets/audio/*
 
 
 # Fichiers Intellij IDEA
