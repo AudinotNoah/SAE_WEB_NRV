@@ -45,6 +45,8 @@ class DisplaySpectaclesAction extends Action {
         $html .= "<option value='style'" . ($trichoix === 'style' ? ' selected' : '') . ">Style</option>";
         $html .= "<option value='date'" . ($trichoix === 'date' ? ' selected' : '') . ">Date</option>";
         $html .= "<option value='lieu'" . ($trichoix === 'lieu' ? ' selected' : '') . ">Lieu</option>";
+        $html .= "<option value='preferences'" . ($trichoix === 'preferences' ? ' selected' : '') . ">Préférences</option>";
+
         $html .= "</select>";
 
         if ($trichoix === 'style') {
@@ -68,34 +70,37 @@ class DisplaySpectaclesAction extends Action {
     private function renderFilteredSpectacles($repo, array $spectacles, string $trie, ?string $choix): string {
         $html = '';
         foreach ($spectacles as $sp) {
-            if ($choix){
-                $valide = false;
-                switch ($trie) {
-                    case 'style':
-                        if ($choix !== null) {
-                            $valide = strtolower($choix) === strtolower($repo->getStyleNom($sp['idSpectacle']));
-                        }
-                        break;
-                    case 'date':
-                        if ($choix !== null) {
-                            $liste_spec_date = $repo->getAllSpecAtDate($choix);
-                            $valide = in_array($sp['idSpectacle'], $liste_spec_date);
-                        }
-                        break;
-                    case 'lieu':
-                        if ($choix !== null) {
-                            $liste_spec_lieu = $repo->getAllSpecAtLieu($choix);
-                            $valide = in_array($sp['idSpectacle'], $liste_spec_lieu);
-                        }
-                        break;
-                    default:
-                        $valide = true;
-                        break;
-                }
+            $valide = true;
+            switch ($trie) {
+                case 'style':
+                    if ($choix !== null) {
+                        $valide = strtolower($choix) === strtolower($repo->getStyleNom($sp['idSpectacle']));
+                    }
+                    break;
+                case 'date':
+                    if ($choix !== null) {
+                        $liste_spec_date = $repo->getAllSpecAtDate($choix);
+                        $valide = in_array($sp['idSpectacle'], $liste_spec_date);
+                    }
+                    break;
+                case 'lieu':
+                    if ($choix !== null) {
+                        $liste_spec_lieu = $repo->getAllSpecAtLieu($choix);
+                        $valide = in_array($sp['idSpectacle'], $liste_spec_lieu);
+                    }
+                    break;
+                case 'preferences':
+                    if (!empty($_COOKIE['preferences'])) {
+                        $preferences = explode(',', $_COOKIE['preferences']);
+                        $valide = in_array($sp['idSpectacle'], $preferences);
+                    }
+                    break;
+
+                default:
+                    $valide = true;
+                    break;
             }
-            else{
-                $valide = true;
-            }
+            
             if ($valide) {
                 $html .= self::createSpec($sp, $repo,2) . "<li><a href='?action=programme&id={$sp['idSpectacle']}'>Plus d'info</a></li>";
             }
@@ -122,6 +127,7 @@ class DisplaySpectaclesAction extends Action {
             return $html;
 
         } else {
+
             $html = <<<HTML
             <script>
             document.addEventListener("DOMContentLoaded", () => {

@@ -10,7 +10,6 @@ use iutnc\nrv\action\DisplaySpectaclesAction;
 use iutnc\nrv\action\LoginAction;
 use iutnc\nrv\action\LogoutAction;
 use iutnc\nrv\action\DisplayStaffMenu;
-use iutnc\nrv\action\PreferenceAction;
 
 class Dispatcher {
 
@@ -64,11 +63,6 @@ class Dispatcher {
                 $actionInstance = new AddSpectacleAction();
                 $html = $actionInstance->execute();
                 break;
-            
-            case 'preference':
-                $actionInstance = new PreferenceAction();
-                $html = $actionInstance->execute();
-                break;
 
             default:
                 $actionInstance = new DefaultAction();
@@ -90,7 +84,7 @@ class Dispatcher {
             <a href="?action=default">Accueil</a>
             <a href="?action=programme">Programme</a>
             <a href="?action=list-soirees">Liste des Soirées</a>
-            <a href="?action=preference">Votre liste de préférence</a>
+            <a href="?action=programme&trie=preferences">Votre liste de préférence</a>
     HTML;
 
         if ($isConnected) {
