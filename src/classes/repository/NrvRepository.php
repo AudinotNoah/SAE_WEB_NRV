@@ -376,5 +376,16 @@ class NrvRepository {
     }
 
 
+    public function getSpecAtSoiree(int $idSoiree){
+        $stmt = $this->pdo->prepare("SELECT idSpectacle
+                                    FROM spectaclesoiree
+                                    where idSoiree = :idSoiree");
+        $stmt->bindParam(':idSoiree', $idSoiree, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result ?: [];
+
+    }
 }
 
