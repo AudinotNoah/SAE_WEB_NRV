@@ -9,7 +9,8 @@ use iutnc\nrv\render\SoireeRenderer;
 
 class DisplaySpectaclesAction extends Action {
 
-    private static function createSpec($sp, $repo,$choixRendu): string {
+    // public pour display action
+    public static function createSpec($sp, $repo,$choixRendu): string {
         $stylenom = $repo->getStyleNom($sp['idSpectacle']);
         $images = $repo->getImagesBySpectacleId($sp['idSpectacle']);
         $artistes = $repo->getArtisteBySpectacleId($sp['idSpectacle']);
@@ -45,6 +46,8 @@ class DisplaySpectaclesAction extends Action {
         $html .= "<option value='style'" . ($trichoix === 'style' ? ' selected' : '') . ">Style</option>";
         $html .= "<option value='date'" . ($trichoix === 'date' ? ' selected' : '') . ">Date</option>";
         $html .= "<option value='lieu'" . ($trichoix === 'lieu' ? ' selected' : '') . ">Lieu</option>";
+        $html .= "<option value='preferences'" . ($trichoix === 'preferences' ? ' selected' : '') . ">Préférences</option>";
+
         $html .= "</select>";
 
         if ($trichoix === 'style') {
@@ -68,34 +71,37 @@ class DisplaySpectaclesAction extends Action {
     private function renderFilteredSpectacles($repo, array $spectacles, string $trie, ?string $choix): string {
         $html = '';
         foreach ($spectacles as $sp) {
-            if ($choix){
-                $valide = false;
-                switch ($trie) {
-                    case 'style':
-                        if ($choix !== null) {
-                            $valide = strtolower($choix) === strtolower($repo->getStyleNom($sp['idSpectacle']));
-                        }
-                        break;
-                    case 'date':
-                        if ($choix !== null) {
-                            $liste_spec_date = $repo->getAllSpecAtDate($choix);
-                            $valide = in_array($sp['idSpectacle'], $liste_spec_date);
-                        }
-                        break;
-                    case 'lieu':
-                        if ($choix !== null) {
-                            $liste_spec_lieu = $repo->getAllSpecAtLieu($choix);
-                            $valide = in_array($sp['idSpectacle'], $liste_spec_lieu);
-                        }
-                        break;
-                    default:
-                        $valide = true;
-                        break;
-                }
+            $valide = true;
+            switch ($trie) {
+                case 'style':
+                    if ($choix !== null) {
+                        $valide = strtolower($choix) === strtolower($repo->getStyleNom($sp['idSpectacle']));
+                    }
+                    break;
+                case 'date':
+                    if ($choix !== null) {
+                        $liste_spec_date = $repo->getAllSpecAtDate($choix);
+                        $valide = in_array($sp['idSpectacle'], $liste_spec_date);
+                    }
+                    break;
+                case 'lieu':
+                    if ($choix !== null) {
+                        $liste_spec_lieu = $repo->getAllSpecAtLieu($choix);
+                        $valide = in_array($sp['idSpectacle'], $liste_spec_lieu);
+                    }
+                    break;
+                case 'preferences':
+                    if (!empty($_COOKIE['preferences'])) {
+                        $preferences = explode(',', $_COOKIE['preferences']);
+                        $valide = in_array($sp['idSpectacle'], $preferences);
+                    }
+                    break;
+
+                default:
+                    $valide = true;
+                    break;
             }
-            else{
-                $valide = true;
-            }
+            
             if ($valide) {
                 $html .= self::createSpec($sp, $repo,2) . "<li><a href='?action=programme&id={$sp['idSpectacle']}'>Plus d'info</a></li>";
             }
@@ -124,6 +130,7 @@ class DisplaySpectaclesAction extends Action {
             return $html;
 
         } else {
+
             $html = <<<HTML
             <script>
             document.addEventListener("DOMContentLoaded", () => {
@@ -170,7 +177,7 @@ class DisplaySpectaclesAction extends Action {
                 $s = new Soiree($soiree['nomSoiree'], $soiree['dateSoiree'], $soiree['idLieu'], $soiree['thematique'], $soiree['horaire'], floatval($soiree['tarif']));
                 $renderer = new SoireeRenderer($s);
                 $html .= $renderer->render(1);
-                $html .= $this->getNavigationLinks($repo->getStyleNom($sp['idSpectacle']), $soiree['idLieu'], $soiree['dateSoiree']);
+                $html .= $this->getNavigationLinks($repo->getStyleNom($sp['idSpectacle']), $soiree['idLieu'], $soiree['dateSoiree'],$soiree['idSoiree']);
             }
 
             // $html .= $this->getNavigationLinks($stylenom, "dd", "dd");
@@ -178,15 +185,17 @@ class DisplaySpectaclesAction extends Action {
         }
     }
 
-    private function getNavigationLinks(string $style, string $lieu, string $date): string {
+    private function getNavigationLinks(string $style, string $lieu, string $date,string $idSoiree): string {
         $styleLink = "?action=programme&trie=style&style=" . urlencode($style);
         $lieuLink = "?action=programme&trie=lieu&lieu=" . urlencode($lieu);
         $dateLink = "?action=programme&trie=date&date=" . urlencode($date);
+        $soireeLink = "?action=list-soirees&id=" . urlencode($idSoiree);
 
         return "<div class='navigation-links'>
                     <a href='$lieuLink'>Voir les spectacles au même lieu</a> |
                     <a href='$styleLink'>Voir les spectacles du même style</a> |
-                    <a href='$dateLink'>Voir les spectacles à la même date</a>
+                    <a href='$dateLink'>Voir les spectacles à la même date</a> |
+                    <a href='$soireeLink'>Plus d'infos sur cette soirée</a>
                 </div>";
     }
 }
