@@ -127,7 +127,7 @@ class AddSpectacleAction extends Action
                 $randomNumberAudio = random_int(100000, 999999); // Génère un nombre aléatoire de 6 chiffres
                 $audioFilename = 'audio_' . $randomNumberAudio . '.mp3';
 
-                $audioDir = "src/assets/audio/spectacle-audio/";
+                $audioDir = "src/assets/media";
                 if (!is_dir($audioDir)) {
                     mkdir($audioDir, 0777, true);
                 }
