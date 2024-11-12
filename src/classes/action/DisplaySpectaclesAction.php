@@ -9,7 +9,8 @@ use iutnc\nrv\render\SoireeRenderer;
 
 class DisplaySpectaclesAction extends Action {
 
-    private static function createSpec($sp, $repo,$choixRendu): string {
+    // public pour display action
+    public static function createSpec($sp, $repo,$choixRendu): string {
         $stylenom = $repo->getStyleNom($sp['idSpectacle']);
         $images = $repo->getImagesBySpectacleId($sp['idSpectacle']);
         $artistes = $repo->getArtisteBySpectacleId($sp['idSpectacle']);
@@ -168,7 +169,7 @@ class DisplaySpectaclesAction extends Action {
                 $s = new Soiree($soiree['nomSoiree'], $soiree['dateSoiree'], $soiree['idLieu'], $soiree['thematique'], $soiree['horaire'], floatval($soiree['tarif']));
                 $renderer = new SoireeRenderer($s);
                 $html .= $renderer->render(1);
-                $html .= $this->getNavigationLinks($repo->getStyleNom($sp['idSpectacle']), $soiree['idLieu'], $soiree['dateSoiree']);
+                $html .= $this->getNavigationLinks($repo->getStyleNom($sp['idSpectacle']), $soiree['idLieu'], $soiree['dateSoiree'],$soiree['idSoiree']);
             }
 
             // $html .= $this->getNavigationLinks($stylenom, "dd", "dd");
@@ -176,15 +177,17 @@ class DisplaySpectaclesAction extends Action {
         }
     }
 
-    private function getNavigationLinks(string $style, string $lieu, string $date): string {
+    private function getNavigationLinks(string $style, string $lieu, string $date,string $idSoiree): string {
         $styleLink = "?action=programme&trie=style&style=" . urlencode($style);
         $lieuLink = "?action=programme&trie=lieu&lieu=" . urlencode($lieu);
         $dateLink = "?action=programme&trie=date&date=" . urlencode($date);
+        $soireeLink = "?action=list-soirees&id=" . urlencode($idSoiree);
 
         return "<div class='navigation-links'>
                     <a href='$lieuLink'>Voir les spectacles au même lieu</a> |
                     <a href='$styleLink'>Voir les spectacles du même style</a> |
-                    <a href='$dateLink'>Voir les spectacles à la même date</a>
+                    <a href='$dateLink'>Voir les spectacles à la même date</a> |
+                    <a href='$soireeLink'>Plus d'infos sur cette soirée</a>
                 </div>";
     }
 }
