@@ -76,10 +76,12 @@ protected function post(): string
     if (isset($_FILES['new_images']) && !empty($_FILES['new_images']['tmp_name'][0])) {
         foreach ($_FILES['new_images']['tmp_name'] as $index => $tmpName) {
             if ($_FILES['new_images']['error'][$index] === UPLOAD_ERR_OK) {
+                // Génération d'un nom de fichier unique avec uniquement des chiffres
                 $extension = pathinfo($_FILES['new_images']['name'][$index], PATHINFO_EXTENSION);
-                $nomfichier = uniqid('img_', true) . '.' . $extension;
-                $dossierImage = "src/assets/images/spectacle-img/";
+                $randomNumber = random_int(100000, 999999); // Génère un nombre aléatoire de 6 chiffres
+                $nomfichier = 'img_' . $randomNumber . '.' . $extension;
 
+                $dossierImage = "src/assets/images/spectacle-img/";
                 if (!is_dir($dossierImage)) {
                     mkdir($dossierImage, 0777, true);
                 }
@@ -99,22 +101,24 @@ protected function post(): string
         return "<p>Erreur : Vous devez importer au moins une image</p>" . $this->get();
     }
 
+    // Traitement de l'upload du fichier audio .mp3
     $audioFile = null;
     if (isset($_FILES['audio_file']) && $_FILES['audio_file']['error'] === UPLOAD_ERR_OK) {
         $audioExtension = pathinfo($_FILES['audio_file']['name'], PATHINFO_EXTENSION);
         if ($audioExtension === 'mp3') {
-            $audioFilename = uniqid('audio_', true) . '.mp3';
-            $audioDir = "src/assets/audio/spectacle-audio/";
+            $randomNumberAudio = random_int(100000, 999999); // Génère un nombre aléatoire de 6 chiffres
+            $audioFilename = 'audio_' . $randomNumberAudio . '.mp3';
 
+            $audioDir = "src/assets/audio/spectacle-audio/";
             if (!is_dir($audioDir)) {
                 mkdir($audioDir, 0777, true);
             }
 
             $audioDestination = "$audioDir/$audioFilename";
             if (move_uploaded_file($_FILES['audio_file']['tmp_name'], $audioDestination)) {
-                $audioFile = $audioFilename;
+                $audioFile = $audioFilename; // Stocke le nom de l'audio
             } else {
-                return "<p>Erreur : Impossible de télécharger le fichier audio</p>" . $this->get();
+                return "<p>Erreur : Impossible de télécharger le fichier audio.</p>" . $this->get();
             }
         } else {
             return "<p>Erreur : Le fichier audio doit être au format .mp3</p>" . $this->get();
@@ -144,10 +148,15 @@ protected function post(): string
         $repository->associerArtisteAuSpectacle($idArtiste, $idSpectacle);
     }
 
-    $renderer = new SpectacleRenderer($spectacle);
-    $spectacleHtml = $renderer->render(1);
+    // $renderer = new SpectacleRenderer($spectacle);
+    // $spectacleHtml = $renderer->render(1);
+    $url = "Location: index.php?action=programme&id=" . $idSpectacle;
+    header($url);
+    exit;
 
-    return $spectacleHtml . '<a href="?action=programme">Programme</a>';
+
+
+    return "";
 }
 
 
