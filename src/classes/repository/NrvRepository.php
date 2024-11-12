@@ -325,6 +325,55 @@ class NrvRepository {
     }
 
 
- 
+    public function getSpectacleById(mixed $id)
+    {
+        $stmt = $this->pdo->prepare("SELECT s.*, GROUP_CONCAT(soiree.idSoiree) AS soirees_id
+        FROM spectacle s
+        LEFT JOIN spectaclesoiree ss ON s.idSpectacle = ss.idSpectacle
+        LEFT JOIN soiree soiree ON ss.idSoiree = soiree.idSoiree
+        WHERE s.idSpectacle = :id
+        GROUP BY s.idSpectacle");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function updateSpectacle(mixed $id, array $array): bool
+    {
+        $stmt = $this->pdo->prepare("UPDATE spectacle SET 
+                                            nomSpectacle = :nom,
+                                            description = :description,
+                                            idStyle = :style,
+                                            horaireDebut = :debut,
+                                            horaireFin = :fin,
+                                            statut = :statut
+                                            lienAudio = :audio
+                                        WHERE idSpectacle = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':nom', $array['nomSpectacle']);
+        $stmt->bindParam(':description', $array['description']);
+        $stmt->bindParam(':style', $array['idStyle']);
+        $stmt->bindParam(':debut', $array['horaireDebut']);
+        $stmt->bindParam(':fin', $array['horaireFin']);
+        $stmt->bindParam(':statut', $array['statut']);
+        $stmt->bindParam(':audio', $array['lienAudio']);
+        return $stmt->execute();
+    }
+
+    public function updateSoireesForSpectacle($id, $soirees)
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM spectaclesoiree WHERE idSpectacle = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+
+        $stmt = $this->pdo->prepare("INSERT INTO spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
+        $stmt->bindParam(':idSpectacle', $id);
+        foreach ($soirees as $soiree) {
+            $stmt->bindParam(':idSoiree', $soiree);
+            $stmt->execute();
+        }
+    }
+
+
 }
 

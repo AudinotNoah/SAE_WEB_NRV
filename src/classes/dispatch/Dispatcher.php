@@ -3,6 +3,7 @@
 namespace iutnc\nrv\dispatch;
 
 use iutnc\nrv\action\AddSpectacleAction;
+use iutnc\nrv\action\ChangeSpectacleAction;
 use iutnc\nrv\action\CreateStaffAction;
 use iutnc\nrv\action\DefaultAction;
 use iutnc\nrv\action\DisplaySoireesAction;
@@ -24,6 +25,11 @@ class Dispatcher {
         $html = '';
 
         switch ($this->action) {
+
+            case 'modify-spectacle':
+                $actionInstance = new ChangeSpectacleAction();
+                $html = $actionInstance->execute();
+                break;
 
             case 'menu-staff':
                 $actionInstance = new DisplayStaffMenu();
