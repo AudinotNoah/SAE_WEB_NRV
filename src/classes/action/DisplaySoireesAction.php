@@ -5,6 +5,8 @@ namespace iutnc\nrv\action;
 use iutnc\nrv\repository\NrvRepository;
 use iutnc\nrv\festival\Soiree;
 use iutnc\nrv\render\SoireeRenderer;
+use iutnc\nrv\action\DisplaySpectaclesAction;
+
 
 class DisplaySoireesAction extends Action {
 
@@ -26,23 +28,41 @@ class DisplaySoireesAction extends Action {
         $soirees = $repo->getAllSoirees();
 
         if (!$id) {
-            // Afficher toutes les soirées disponibles
             $html = "<h2>Soirées Disponibles</h2><ul>";
             foreach ($soirees as $sr) {
                 $html .= DisplaySoireesAction::createSoiree($sr, $repo) .
-                    "<li><a href='?action=programme&id={$sr['idSoiree']}'>Informations supplémentaires</a></li>";
+                    "<li><a href='?action=list-soirees&id={$sr['idSoiree']}'>Informations supplémentaires</a></li>";
             }
         } else {
-            // Afficher les informations détaillées pour une soirée spécifique
             $html = "<h2>Infos Soirée : </h2><ul>";
-            $sr = $soirees[$id - 1]; // Sélection de la soirée par son ID
+            foreach ($soirees as $soiree) {
+                if ($soiree['idSoiree'] == $id) {
+                    $sr = $soiree;
+                    break;
+                }
+            }
+
+
+
             $lieuNom = $repo->getLieuNom($sr['idLieu']);
             $soiree = new Soiree($sr['nomSoiree'], $sr['dateSoiree'], $lieuNom, $sr['thematique'], $sr['horaire'], $sr['tarif']);
 
-            // Utilisation du renderer pour afficher les détails
             $renderer = new SoireeRenderer($soiree);
-            $soiree_html = $renderer->render(1); // Mode d'affichage pour les détails
+            $soiree_html = $renderer->render(1); 
             $html .= $soiree_html;
+
+            $spectacles = $repo->getAllSpectacles();
+            $specAtSoiree = $repo->getSpecAtSoiree((int) $id);
+            $specAtSoiree = array_column($specAtSoiree, 'idSpectacle');
+
+            $html .= "<h2>Les spectacles disponibles sont :</h2>";
+            foreach ($spectacles as $sp) {
+                if (in_array($sp['idSpectacle'], $specAtSoiree)) {
+                    $html .= DisplaySpectaclesAction::createSpec($sp, $repo, 2) . "<li><a href='?action=programme&id={$sp['idSpectacle']}'>Plus d'info</a></li>";
+                }
+            }
+
+
         }
 
         return $html;
