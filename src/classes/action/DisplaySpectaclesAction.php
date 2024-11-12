@@ -11,7 +11,7 @@ class DisplaySpectaclesAction extends Action {
 
     // public pour display action
     public static function createSpec($sp, $repo,$choixRendu): string {
-        $stylenom = $repo->getStyleNom($sp['idSpectacle']);
+        $stylenom = $repo->getStyleNom($sp['idStyle']);
         $images = $repo->getImagesBySpectacleId($sp['idSpectacle']);
         $artistes = $repo->getArtisteBySpectacleId($sp['idSpectacle']);
         $s = new Spectacle($sp['nomSpectacle'], $sp['horaireDebut'], $sp['horaireFin'], $stylenom, $sp['description'], $artistes, $images, $sp['lienAudio'], $sp['statut']);
@@ -117,6 +117,8 @@ class DisplaySpectaclesAction extends Action {
         $choix = $_GET[$trie] ?? null;
         $spectacles = $repo->getAllSpectacles();
 
+        $isStaffOrAdmin = $_SESSION['user'] && $_SESSION['user']['role'] === 'staff' || $_SESSION['user']['role'] === 'admin';
+
         if (!$id) {
             $html = "<h2>Spectacles Disponibles</h2>";
             $html .= "<form method='GET' action=''>";
@@ -162,6 +164,12 @@ class DisplaySpectaclesAction extends Action {
                 }
             }
             $html .= self::createSpec($sp, $repo,1);
+
+
+            // Ajoute un bouton "Modifier" pour les utilisateurs staff ou admin
+            if ($isStaffOrAdmin) {
+                $html .= "<button><a href='?action=modify-spectacle&id={$sp['idSpectacle']}'\">Modifier ce spectacle</button>";
+            }
 
             $soirees = $repo->getAllSoireeForSpec($sp['idSpectacle']);
             $html .= "<h1>Dispo dans les soirées suivantes : </h1>";

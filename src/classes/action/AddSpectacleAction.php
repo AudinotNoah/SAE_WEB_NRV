@@ -24,7 +24,7 @@ class AddSpectacleAction extends Action
 
         $stylesListe = '';
         foreach ($styles as $style) {
-            $stylesListe .= "<label><input type='radio' name='spectacle_style' value='{$style['idStyle']}' required> {$style['nomStyle']}</label><br>";
+            $stylesListe .= "<label><input type='radio' name='spectacle_style' value='{$style['idStyle']} required'> {$style['nomStyle']}</label><br>";
         }
 
         return <<<HTML
@@ -38,10 +38,10 @@ class AddSpectacleAction extends Action
             </fieldset>
 
             <label for="spectacle-horaireDebut">Heure de début (HH:MM) :</label>
-            <input type="text" id="spectacle-horaireDebut" name="spectacle_horaireDebut" required>
+            <input type="time" id="spectacle-horaireDebut" name="spectacle_horaireDebut" required>
 
             <label for="spectacle-horaireFin">Heure de fin (HH:MM) :</label>
-            <input type="text" id="spectacle-horaireFin" name="spectacle_horaireFin" required>
+            <input type="time" id="spectacle-horaireFin" name="spectacle_horaireFin" required>
 
             <label for="spectacle-description">Description du spectacle :</label>
             <textarea id="spectacle-description" name="spectacle_description" rows="4" cols="50" required></textarea>
@@ -146,7 +146,7 @@ class AddSpectacleAction extends Action
             $audioFile
         );
 
-        $idSpectacle = $repository->setSpectacle($spectacle);
+        $idSpectacle = $repository->setSpectacle($spectacle,$style);
 
         foreach ($images as $idImage) {
             $repository->associerImageAuSpectacle($idImage, $idSpectacle);
