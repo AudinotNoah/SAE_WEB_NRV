@@ -261,51 +261,51 @@ class NrvRepository {
     }
 
 
-public function setSpectacle(Spectacle $s): int
-{
-    $stmt = $this->pdo->prepare(
-        "INSERT INTO spectacle (nomSpectacle, horaireDebut, horaireFin, idStyle, statut, lienAudio, description) 
-        VALUES (:nomSpectacle, :horaireDebut, :horaireFin, :idStyle, :statut, :lienAudio, :description)"
-    );
+    public function setSpectacle(Spectacle $s): int
+    {
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO spectacle (nomSpectacle, horaireDebut, horaireFin, idStyle, statut, lienAudio, description) 
+            VALUES (:nomSpectacle, :horaireDebut, :horaireFin, :idStyle, :statut, :lienAudio, :description)"
+        );
 
-    $nomSpectacle = $s->nom;
-    $horaireDebut = $s->horaireDebut;
-    $horaireFin = $s->horaireFin;
-    $idStyle = $this->getIdStyleByName($s->style);
-    $statut = "à venir"; // Par défaut
-    $lienAudio = $s->lienAudio;
-    $description = $s->description;
+        $nomSpectacle = $s->nom;
+        $horaireDebut = $s->horaireDebut;
+        $horaireFin = $s->horaireFin;
+        $idStyle = $this->getIdStyleByName($s->style);
+        $statut = "à venir"; // Par défaut
+        $lienAudio = $s->lienAudio;
+        $description = $s->description;
 
-    $stmt->bindParam(':nomSpectacle', $nomSpectacle);
-    $stmt->bindParam(':horaireDebut', $horaireDebut);
-    $stmt->bindParam(':horaireFin', $horaireFin);
-    $stmt->bindParam(':idStyle', $idStyle);
-    $stmt->bindParam(':statut', $statut);
-    $stmt->bindParam(':lienAudio', $lienAudio);
-    $stmt->bindParam(':description', $description);
+        $stmt->bindParam(':nomSpectacle', $nomSpectacle);
+        $stmt->bindParam(':horaireDebut', $horaireDebut);
+        $stmt->bindParam(':horaireFin', $horaireFin);
+        $stmt->bindParam(':idStyle', $idStyle);
+        $stmt->bindParam(':statut', $statut);
+        $stmt->bindParam(':lienAudio', $lienAudio);
+        $stmt->bindParam(':description', $description);
 
-    $stmt->execute();
+        $stmt->execute();
 
-    return (int) $this->pdo->lastInsertId();
-}
-
-private function getIdStyleByName(string $style): int
-{
-    $stmt = $this->pdo->prepare("SELECT idStyle FROM style WHERE nomStyle = :style");
-    $stmt->bindParam(':style', $style);
-    $stmt->execute();
-    $id = $stmt->fetchColumn();
-
-    if ($id === false) {
-        $insertStmt = $this->pdo->prepare("INSERT INTO style (nomStyle) VALUES (:style)");
-        $insertStmt->bindParam(':style', $style);
-        $insertStmt->execute();
-        
         return (int) $this->pdo->lastInsertId();
     }
 
-    return (int) $id;
-}
+    private function getIdStyleByName(string $style): int
+    {
+        $stmt = $this->pdo->prepare("SELECT idStyle FROM style WHERE nomStyle = :style");
+        $stmt->bindParam(':style', $style);
+        $stmt->execute();
+        $id = $stmt->fetchColumn();
+
+        if ($id === false) {
+            $insertStmt = $this->pdo->prepare("INSERT INTO style (nomStyle) VALUES (:style)");
+            $insertStmt->bindParam(':style', $style);
+            $insertStmt->execute();
+            
+            return (int) $this->pdo->lastInsertId();
+        }
+
+        return (int) $id;
+    }
 
 
     public function associerImageAuSpectacle(int $idImage, int $idSpectacle): void
@@ -317,12 +317,12 @@ private function getIdStyleByName(string $style): int
     }
 
     public function associerArtisteAuSpectacle(int $idArtiste, int $idSpectacle): void
-{
-    $stmt = $this->pdo->prepare("INSERT INTO performer (idArtiste, idSpectacle) VALUES (:idArtiste, :idSpectacle)");
-    $stmt->bindParam(':idArtiste', $idArtiste, PDO::PARAM_INT);
-    $stmt->bindParam(':idSpectacle', $idSpectacle, PDO::PARAM_INT);
-    $stmt->execute();
-}
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO performer (idArtiste, idSpectacle) VALUES (:idArtiste, :idSpectacle)");
+        $stmt->bindParam(':idArtiste', $idArtiste, PDO::PARAM_INT);
+        $stmt->bindParam(':idSpectacle', $idSpectacle, PDO::PARAM_INT);
+        $stmt->execute();
+    }
 
 
  
