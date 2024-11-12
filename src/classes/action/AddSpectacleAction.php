@@ -3,6 +3,7 @@
 namespace iutnc\nrv\action;
 
 use iutnc\nrv\festival\Spectacle;
+use iutnc\nrv\render\SpectacleRenderer;
 use iutnc\nrv\repository\NrvRepository;
 use PDO;
 
@@ -14,9 +15,9 @@ class AddSpectacleAction extends Action
     $repository = NrvRepository::getInstance();
     $artistes = $repository->getAllNomArtiste();
 
-    $artistesCheckboxes = '';
+    $artistesListe = '';
     foreach ($artistes as $artiste) {
-        $artistesCheckboxes .= "<label><input type='checkbox' name='spectacle_artistes[]' value='{$artiste['idArtiste']}'> {$artiste['nomArtiste']}</label><br>";
+        $artistesListe .= "<label><input type='checkbox' name='spectacle_artistes[]' value='{$artiste['idArtiste']}'> {$artiste['nomArtiste']}</label><br>";
     }
 
     return <<<HTML
@@ -36,42 +37,118 @@ class AddSpectacleAction extends Action
         <label for="spectacle-horaireFin">Heure de fin (HH:MM) :</label>
         <input type="text" id="spectacle-horaireFin" name="spectacle_horaireFin" required>
 
+        <label for="spectacle-description">Description du spectacle :</label>
+        <textarea id="spectacle-description" name="spectacle_description" rows="4" cols="50" required></textarea>
+
         <fieldset>
             <legend>Artistes :</legend>
-            $artistesCheckboxes
+            $artistesListe
         </fieldset>
 
-        <label for="new-image">Télécharger une nouvelle image :</label>
-        <input type="file" id="new-image" name="new_image" accept="image/*">
+        <label for="liste-image">Importer des images pour le spectacle :</label>
+        <input type="file" id="liste-image" name="new_images[]" accept="image/*" multiple required>
+
+        <label for="audio-file">Importez un audio (.mp3) :</label>
+        <input type="file" id="audio-file" name="audio_file" accept=".mp3" required>
 
         <button type="submit">Créer le spectacle</button>
     </form>
     HTML;
 }
 
-    protected function post(): string
+
+protected function post(): string
 {
     $nom = $_POST['spectacle_name'];
     $horaireDebut = $_POST['spectacle_horaireDebut'];
     $horaireFin = $_POST['spectacle_horaireFin'];
-    $style = $_POST['spectacle_style'];
-    $description = $_POST['spectacle_description'] ?? "Aucune description";
+    $style = $_POST['spectacle_style'] ?? 'Inconnu';
+    $description = $_POST['spectacle_description'] ?? 'Aucune description';
 
     if (!$this->validateTimeFormat($horaireDebut) || !$this->validateTimeFormat($horaireFin)) {
         return "<p>Erreur : L'heure de début ou de fin est invalide. Veuillez utiliser le format HH:MM.</p>" . $this->get();
     }
 
+    $artisteSelection = $_POST['spectacle_artistes'] ?? [];
     $repository = NrvRepository::getInstance();
 
-    // Récupération des ID des artistes sélectionnés
-    $selectedArtistes = $_POST['spectacle_artistes'] ?? []; // Liste des ID des artistes
+    $images = [];
+    if (isset($_FILES['new_images']) && !empty($_FILES['new_images']['tmp_name'][0])) {
+        foreach ($_FILES['new_images']['tmp_name'] as $index => $tmpName) {
+            if ($_FILES['new_images']['error'][$index] === UPLOAD_ERR_OK) {
+                $extension = pathinfo($_FILES['new_images']['name'][$index], PATHINFO_EXTENSION);
+                $nomfichier = uniqid('img_', true) . '.' . $extension;
+                $dossierImage = "src/assets/images/spectacle-img/";
 
-    // Création de l'instance de Spectacle avec les artistes et images
-    $spectacle = new Spectacle($nom, $horaireDebut, $horaireFin, $style, $description, $selectedArtistes, "oui.png", 'test.mp3');
+                if (!is_dir($dossierImage)) {
+                    mkdir($dossierImage, 0777, true);
+                }
 
-    return "<p>Le spectacle '{$spectacle->nom}' a été créé avec succès avec ses artistes et images associés !</p>";
+                $destination = "$dossierImage/$nomfichier";
+                if (move_uploaded_file($tmpName, $destination)) {
+                    $nouvelleIdImage = $repository->uploadImage($nomfichier);
+                    $images[] = $nouvelleIdImage;
+                } else {
+                    return "<p>Erreur : Impossible d'importer l'image {$index}</p>" . $this->get();
+                }
+            } else {
+                return "<p>Erreur : Un problème est survenu avec l'image {$index}</p>" . $this->get();
+            }
+        }
+    } else {
+        return "<p>Erreur : Vous devez importer au moins une image</p>" . $this->get();
+    }
+
+    $audioFile = null;
+    if (isset($_FILES['audio_file']) && $_FILES['audio_file']['error'] === UPLOAD_ERR_OK) {
+        $audioExtension = pathinfo($_FILES['audio_file']['name'], PATHINFO_EXTENSION);
+        if ($audioExtension === 'mp3') {
+            $audioFilename = uniqid('audio_', true) . '.mp3';
+            $audioDir = "src/assets/audio/spectacle-audio/";
+
+            if (!is_dir($audioDir)) {
+                mkdir($audioDir, 0777, true);
+            }
+
+            $audioDestination = "$audioDir/$audioFilename";
+            if (move_uploaded_file($_FILES['audio_file']['tmp_name'], $audioDestination)) {
+                $audioFile = $audioFilename;
+            } else {
+                return "<p>Erreur : Impossible de télécharger le fichier audio</p>" . $this->get();
+            }
+        } else {
+            return "<p>Erreur : Le fichier audio doit être au format .mp3</p>" . $this->get();
+        }
+    } else {
+        return "<p>Erreur : Vous devez importer un fichier audio .mp3</p>" . $this->get();
+    }
+
+    $spectacle = new Spectacle(
+        $nom,
+        $horaireDebut,
+        $horaireFin,
+        $style,
+        $description,
+        $artisteSelection,
+        $images,
+        $audioFile
+    );
+
+    $idSpectacle = $repository->setSpectacle($spectacle);
+
+    foreach ($images as $idImage) {
+        $repository->associerImageAuSpectacle($idImage, $idSpectacle);
+    }
+
+    foreach ($artisteSelection as $idArtiste) {
+        $repository->associerArtisteAuSpectacle($idArtiste, $idSpectacle);
+    }
+
+    $renderer = new SpectacleRenderer($spectacle);
+    $spectacleHtml = $renderer->render(1);
+
+    return $spectacleHtml . '<a href="?action=programme">Programme</a>';
 }
-
 
 
     /**
