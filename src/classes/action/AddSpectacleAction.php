@@ -14,17 +14,12 @@ class AddSpectacleAction extends Action
     {
         $repository = NrvRepository::getInstance();
         $artistes = $repository->getAllNomArtiste();
-        $lieux = $repository->getAllLieux();
+        
         $styles = $repository->getAllStyles();
 
         $artistesListe = '';
         foreach ($artistes as $artiste) {
             $artistesListe .= "<label><input type='checkbox' name='spectacle_artistes[]' value='{$artiste['idArtiste']}'> {$artiste['nomArtiste']}</label><br>";
-        }
-
-        $lieuxListe = '';
-        foreach ($lieux as $lieu) {
-            $lieuxListe .= "<label><input type='radio' name='spectacle_lieu' value='{$lieu['idLieu']}' required> {$lieu['lieuAdresse']}</label><br>";
         }
 
         $stylesListe = '';
@@ -36,11 +31,6 @@ class AddSpectacleAction extends Action
         <form method="post" action="?action=add-spectacle" enctype="multipart/form-data">
             <label for="spectacle-name">Nom du spectacle :</label>
             <input type="text" id="spectacle-name" name="spectacle_name" required>
-
-            <fieldset>
-                <legend>Lieu :</legend>
-                $lieuxListe
-            </fieldset>
 
             <fieldset>
                 <legend>Style de musique :</legend>

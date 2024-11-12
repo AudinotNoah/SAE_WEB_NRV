@@ -296,14 +296,6 @@ class NrvRepository {
         $stmt->execute();
         $id = $stmt->fetchColumn();
 
-        if ($id === false) {
-            $insertStmt = $this->pdo->prepare("INSERT INTO style (nomStyle) VALUES (:style)");
-            $insertStmt->bindParam(':style', $style);
-            $insertStmt->execute();
-            
-            return (int) $this->pdo->lastInsertId();
-        }
-
         return (int) $id;
     }
 
