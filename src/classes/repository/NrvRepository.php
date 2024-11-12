@@ -339,7 +339,7 @@ class NrvRepository {
                                             idStyle = :style,
                                             horaireDebut = :debut,
                                             horaireFin = :fin,
-                                            statut = :statut
+                                            statut = :statut,
                                             lienAudio = :audio
                                         WHERE idSpectacle = :id");
         $stmt->bindParam(':id', $id);

@@ -13,12 +13,6 @@ class ChangeSpectacleAction extends Action {
         $this->repo = NrvRepository::getInstance();
     }
 
-    public function execute(): string {
-        if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-            return $this->post();
-        }
-        return $this->get();
-    }
 
     protected function get(): string {
         $id = $_GET['id'] ?? null;
@@ -62,8 +56,9 @@ class ChangeSpectacleAction extends Action {
 
         foreach ($styles as $style) {
             $selected = ($spectacle['idStyle'] === $style['idStyle']) ? 'selected' : '';
-            $html .= "<option value='" . $style['nomStyle'] . "' $selected>" . $style['nomStyle'] . "</option>";
+            $html .= "<option value='" . $style['idStyle'] . "' $selected>" . $style['nomStyle'] . "</option>";
         }
+
 
         $html .= "</select><br><br>";
 
@@ -113,20 +108,20 @@ class ChangeSpectacleAction extends Action {
 
         $nom = $_POST['nom'] ?? null;
         $description = $_POST['description'] ?? null;
-        $style = $_POST['style'] ?? null;
+        $idstyle = $_POST['style'] ?? null;
         $horaireDebut = $_POST['horaireDebut'] ?? null;
         $horaireFin = $_POST['horaireFin'] ?? null;
         $statut = $_POST['statut'] ?? null;
         $soirees = $_POST['soirees'] ?? [];
 
-        if (!$nom || !$description || !$style || !$horaireDebut || !$horaireFin || !$statut) {
+        if (!$nom || !$description || !$idstyle || !$horaireDebut || !$horaireFin || !$statut) {
             return "<p>Merci de remplir tous les champs.</p>";
         }
 
         // Traitement du fichier audio
         if (isset($_FILES['audio']) && $_FILES['audio']['error'] === UPLOAD_ERR_OK) {
             $audioFile = $_FILES['audio'];
-            $audioPath = 'path_to_audio_directory/' . basename($audioFile['name']);
+            $audioPath = basename($audioFile['name']);
             move_uploaded_file($audioFile['tmp_name'], $audioPath);
 
         } else {
@@ -137,7 +132,7 @@ class ChangeSpectacleAction extends Action {
         $success = $this->repo->updateSpectacle($id, [
             'nomSpectacle' => $nom,
             'description' => $description,
-            'idStyle' => $style,
+            'idStyle' => $idstyle,
             'horaireDebut' => $horaireDebut,
             'horaireFin' => $horaireFin,
             'statut' => $statut,
