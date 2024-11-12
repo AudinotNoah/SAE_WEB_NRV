@@ -121,8 +121,9 @@ class ChangeSpectacleAction extends Action {
         // Traitement du fichier audio
         if (isset($_FILES['audio']) && $_FILES['audio']['error'] === UPLOAD_ERR_OK) {
             $audioFile = $_FILES['audio'];
-            $audioPath = basename($audioFile['name']);
+            $audioPath = "src/assets/media/" . basename($audioFile['name']);
             move_uploaded_file($audioFile['tmp_name'], $audioPath);
+            $nomFichier = basename($audioFile['name']);
 
         } else {
             $audioPath = $spectacle['lienAudio']; // Garder l'ancien fichier audio si aucun nouveau n'est téléchargé
@@ -136,7 +137,7 @@ class ChangeSpectacleAction extends Action {
             'horaireDebut' => $horaireDebut,
             'horaireFin' => $horaireFin,
             'statut' => $statut,
-            'lienAudio' => $audioPath,
+            'lienAudio' => $nomFichier
         ]);
 
         if ($success) {

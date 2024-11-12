@@ -168,7 +168,7 @@ class DisplaySpectaclesAction extends Action {
 
             // Ajoute un bouton "Modifier" pour les utilisateurs staff ou admin
             if ($isStaffOrAdmin) {
-                $html .= "<button><a href='?action=modify-spectacle&id={$sp['idSpectacle']}'\">Modifier ce spectacle</button>";
+                $html .= "<button><a href='?action=modify-spectacle&id={$sp['idSpectacle']}'\">Modifier ce spectacle</a></button>";
             }
 
             $soirees = $repo->getAllSoireeForSpec($sp['idSpectacle']);
