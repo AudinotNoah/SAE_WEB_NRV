@@ -3,6 +3,8 @@
 namespace iutnc\nrv\action;
 
 use iutnc\nrv\repository\NrvRepository;
+use iutnc\nrv\auth\Authz;
+
 
 class ChangeSpectacleAction extends Action {
 
