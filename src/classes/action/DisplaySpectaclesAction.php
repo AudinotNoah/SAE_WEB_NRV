@@ -154,7 +154,10 @@ class DisplaySpectaclesAction extends Action {
                 }
             }
             $html .= "<button id='pref' data-id='{$id}' onclick='switchPrefs({$id})'>{$messagebut}</button>";
-
+            $user = Authz::checkRole(50); 
+            if (!is_string($user)) {
+                $html .= "<button><a href='?action=modify-spectacle&id={$id}'\">Modifier ce spectacle</a></button>";
+            }
 
             $html .= "<h2>Infos : </h2><ul>";
             // $sp = $spectacles[$id - 1]; // GROSSE ERREUR L'ELEMENT 1 N' A PAS FORCEMENT L'ID 1 ERREUR LOGIQUEE FAAUT FIX
@@ -164,17 +167,15 @@ class DisplaySpectaclesAction extends Action {
                     break;
                 }
             }
-            $user = Authz::checkRole(50); 
-            if (!is_string($user)) {
-                $html .= "<button><a href='?action=modify-spectacle&id={$sp['idSpectacle']}'\">Modifier ce spectacle</a></button>";
-            }
+            
             $html .= self::createSpec($sp, $repo,1);
 
 
             $soirees = $repo->getAllSoireeForSpec($sp['idSpectacle']);
             $html .= "<h1>Dispo dans les soirées suivantes : </h1>";
             foreach ($soirees as $soiree) {
-                $s = new Soiree($soiree['nomSoiree'], $soiree['dateSoiree'], $soiree['idLieu'], $soiree['thematique'], $soiree['horaire'], floatval($soiree['tarif']));
+                $lieuNom = $repo->getLieuNom($soiree['idLieu']);
+                $s = new Soiree($soiree['nomSoiree'], $soiree['dateSoiree'], $lieuNom, $soiree['thematique'], $soiree['horaire'], floatval($soiree['tarif']));
                 $renderer = new SoireeRenderer($s);
                 $html .= $renderer->render(1);
                 $html .= $this->getNavigationLinks($repo->getStyleNom($sp['idSpectacle']), $soiree['idLieu'], $soiree['dateSoiree'],$soiree['idSoiree']);

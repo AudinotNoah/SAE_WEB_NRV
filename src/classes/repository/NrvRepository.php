@@ -183,7 +183,7 @@ class NrvRepository {
 
     public function getLieuNom(mixed $idLieu)
     {
-        $stmt = $this->pdo->prepare("SELECT nomLieu FROM lieu WHERE idLieu = :idLieu");
+        $stmt = $this->pdo->prepare("SELECT CONCAT(nomLieu, ', ', adresse) AS lieuAdresse FROM lieu WHERE idLieu = :idLieu");
         $stmt->bindParam(':idLieu', $idLieu);
         $stmt->execute();
         return $stmt->fetchColumn();
