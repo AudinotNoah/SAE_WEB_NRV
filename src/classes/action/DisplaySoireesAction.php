@@ -45,7 +45,7 @@ class DisplaySoireesAction extends Action {
 
             $user = Authz::checkRole(50);
             if (!is_string($user)) {
-                $html .= "<button><a href='?action=modify-spectacle&id={$id}'\">Modifier ce spectacle</a></button>";
+                $html .= "<button><a href='?action=modify-soiree&id={$id}'\">Modifier ce spectacle</a></button>";
             }
 
 
