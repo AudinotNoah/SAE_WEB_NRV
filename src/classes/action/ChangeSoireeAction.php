@@ -14,9 +14,10 @@ class ChangeSoireeAction extends Action {
         $id = $_GET['id'] ?? null;
 
         // Vérifier si l'utilisateur est connecté et a le rôle nécessaire
-        $user = Authz::checkRole('staff');
+        $user = Authz::checkRole(50);
         if (is_string($user)) {
-            return "<p>$user</p>";
+            $errorMessage = $user;
+            return $errorMessage;
         }
 
         if (!$id) {

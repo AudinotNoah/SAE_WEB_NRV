@@ -2,6 +2,7 @@
 
 namespace iutnc\nrv\action;
 
+use iutnc\nrv\auth\Authz;
 use iutnc\nrv\repository\NrvRepository;
 use iutnc\nrv\festival\Soiree;
 use iutnc\nrv\render\SoireeRenderer;
@@ -42,6 +43,10 @@ class DisplaySoireesAction extends Action {
                 }
             }
 
+            $user = Authz::checkRole(50);
+            if (!is_string($user)) {
+                $html .= "<button><a href='?action=modify-spectacle&id={$id}'\">Modifier ce spectacle</a></button>";
+            }
 
 
             $lieuNom = $repo->getLieuNom($sr['idLieu']);
