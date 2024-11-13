@@ -13,7 +13,7 @@ class DisplayStaffMenu extends Action
         <div class='content'>
             <h2>Menu du Staff</h2>
             <ul>
-                <li><a href='index.php?action=add-soirees'>Ajouter une soirée</a></li>
+                <li><a href='index.php?action=add-soiree'>Ajouter une soirée</a></li>
                 <li><a href='index.php?action=modif-soiree'>Modifier une soirée</a></li>
                 <li><a href='index.php?action=add-spectacle'>Ajouter un spectacle</a></li>
                 <li><a href='index.php?action=modif-spectacle'>Modifier un spectacle</a></li>

@@ -3,6 +3,7 @@
 namespace iutnc\nrv\repository;
 
 use iutnc\nrv\festival\Spectacle;
+use iutnc\nrv\festival\Soiree;
 use Exception;
 use PDO;
 use PDOException; // pour eviter l'erreur sur certains pc avec vscode
@@ -388,6 +389,56 @@ class NrvRepository {
         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
         return $result ?: [];
 
+    }
+
+
+    public function setSoiree(Soiree $s):int
+    {
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO soiree (nomSoiree, dateSoiree, idLieu, tarif, thematique, horaire) 
+            VALUES (:nomSoiree, :dateSoiree, :idLieu, :tarif, :thematique, :horaire)"
+        );
+
+        $nomSoiree = $s->nomSoiree;
+        $dateSoiree = $s->dateSoiree;
+        $tarif = $s->tarif;
+        $thematique = $s->thematique;
+        $horaireSoiree = $s->horaire;
+        $lieu = $s-> lieu;
+
+        $stmt->bindParam(':nomSoiree', $nomSoiree);
+        $stmt->bindParam(':horaire', $horaireSoiree);
+        $stmt->bindParam(':dateSoiree', $dateSoiree);
+        $stmt->bindParam(':idLieu', $lieu);
+        $stmt->bindParam(':tarif', $tarif);
+        $stmt->bindParam(':thematique', $thematique);
+        $stmt->execute();
+
+        return (int) $this->pdo->lastInsertId();
+    }
+
+
+    public function getAllLieuxDeSoiree(): array
+    {
+        $stmt = $this->pdo->prepare(
+            'SELECT s.idSoiree, s.nomSoiree, s.dateSoiree, s.horaire, s.thematique, s.tarif, 
+                    l.idLieu, l.adresse
+            FROM soiree s
+            INNER JOIN lieu l ON s.idLieu = l.idLieu'
+        );
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    private function getIdLieuByName(string $lieu): int
+    {
+        $stmt = $this->pdo->prepare("SELECT idLieu FROM lieu WHERE nomLieu = :lieu");
+        $stmt->bindParam(':lieu', $lieu);
+        $stmt->execute();
+        $id = $stmt->fetchColumn();
+
+        return (int) $id;
     }
 }
 

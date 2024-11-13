@@ -11,6 +11,7 @@ use iutnc\nrv\action\DisplaySpectaclesAction;
 use iutnc\nrv\action\LoginAction;
 use iutnc\nrv\action\LogoutAction;
 use iutnc\nrv\action\DisplayStaffMenu;
+use iutnc\nrv\action\AddSoireeAction;
 
 class Dispatcher {
 
@@ -67,6 +68,11 @@ class Dispatcher {
 
             case 'add-spectacle':
                 $actionInstance = new AddSpectacleAction();
+                $html = $actionInstance->execute();
+                break;
+
+            case 'add-soiree':
+                $actionInstance = new AddSoireeAction();
                 $html = $actionInstance->execute();
                 break;
 
