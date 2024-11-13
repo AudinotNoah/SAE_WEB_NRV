@@ -116,7 +116,8 @@ class ChangeSoireeAction extends Action {
 
 
     protected function post(): string
-    {
+    {   
+        $id = $_GET['id'];
         $nom = $_POST['nom'];
         $date = $_POST['date'];
         $horaire = $_POST['horaire'];
@@ -127,14 +128,16 @@ class ChangeSoireeAction extends Action {
 
 
         $repo = NrvRepository::getInstance();
-        $soiree = $repo->getSoireeById($_GET['id']);
+        $soiree = $repo->getSoireeById($id);
         if (!$soiree) {
             return "<p>La soirée spécifiée n'existe pas.</p>";
         }
 
-        $result = $repo->updateSoiree($_GET['id'], $nom, $date, $horaire, $lieu, $tarif, $thematique, $spectacles);
+        $result = $repo->updateSoiree($id, $nom, $date, $horaire, $lieu, $tarif, $thematique, $spectacles);
         if ($result) {
-            return "<p>La soirée a été modifiée avec succès.</p>";
+            $url = "Location: ?action=list-soirees&id=" . $id;
+            header($url);
+            // return "<p>La soirée a été modifiée avec succès.</p>";
         } else {
             return "<p>Une erreur s'est produite lors de la modification de la soirée.</p>";
         }
