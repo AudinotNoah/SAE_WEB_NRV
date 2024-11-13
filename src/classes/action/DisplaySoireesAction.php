@@ -6,7 +6,6 @@ use iutnc\nrv\auth\Authz;
 use iutnc\nrv\repository\NrvRepository;
 use iutnc\nrv\festival\Soiree;
 use iutnc\nrv\render\SoireeRenderer;
-use iutnc\nrv\action\DisplaySpectaclesAction;
 
 
 class DisplaySoireesAction extends Action {
@@ -45,7 +44,7 @@ class DisplaySoireesAction extends Action {
 
             $user = Authz::checkRole(50);
             if (!is_string($user)) {
-                $html .= "<button><a href='?action=modify-soiree&id={$id}'\">Modifier ce spectacle</a></button>";
+                $html .= "<button><a href='?action=modify-soiree&id={$id}'\">Modifier cette soirée</a></button>";
             }
 
 
@@ -53,7 +52,7 @@ class DisplaySoireesAction extends Action {
             $soiree = new Soiree($sr['nomSoiree'], $sr['dateSoiree'], $lieuNom, $sr['thematique'], $sr['horaire'], $sr['tarif']);
 
             $renderer = new SoireeRenderer($soiree);
-            $soiree_html = $renderer->render(1); 
+            $soiree_html = $renderer->render(1);
             $html .= $soiree_html;
 
             $spectacles = $repo->getAllSpectacles();

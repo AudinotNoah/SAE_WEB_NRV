@@ -37,7 +37,7 @@ class ChangeSoireeAction extends Action {
         }
 
         // Liste des noms des lieux
-        $lieux = $repo->gettAllNomLieu();
+        $lieux = $repo->getAllLieux();
 
         // Liste des spectacles disponibles
         $spectacles = $repo->getAllSpectacles();
@@ -62,7 +62,7 @@ class ChangeSoireeAction extends Action {
         $html .= "<select id='lieu' name='lieu' required>";
         foreach ($lieux as $lieu) {
             $selected = ($soiree['idLieu'] === $lieu['idLieu']) ? 'selected' : '';
-            $html .= "<option value='" . $lieu['idLieu'] . "' $selected>" . htmlspecialchars_decode($lieu['nomLieu'], ENT_QUOTES) . "</option>";
+            $html .= "<option value='" . $lieu['idLieu'] . "' $selected>" . htmlspecialchars_decode($lieu['lieuAdresse'], ENT_QUOTES) . "</option>";
         }
         $html .= "</select><br><br>";
 
