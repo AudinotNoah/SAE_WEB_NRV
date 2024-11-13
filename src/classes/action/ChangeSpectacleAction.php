@@ -112,13 +112,14 @@ class ChangeSpectacleAction extends Action {
             return "<p>Aucun spectacle spécifié.</p>";
         }
 
-        $nom = $_POST['nom'] ?? null;
-        $description = $_POST['description'] ?? null;
-        $idstyle = $_POST['style'] ?? null;
-        $horaireDebut = $_POST['horaireDebut'] ?? null;
-        $horaireFin = $_POST['horaireFin'] ?? null;
-        $statut = $_POST['statut'] ?? null;
-        $soirees = $_POST['soirees'] ?? [];
+        $nom = filter_var($_POST['nom'] ?? null, FILTER_SANITIZE_STRING);
+        $description = filter_var($_POST['description'] ?? null, FILTER_SANITIZE_STRING);
+        $idstyle = filter_var($_POST['style'] ?? null, FILTER_SANITIZE_STRING);
+        $horaireDebut = filter_var($_POST['horaireDebut'] ?? null, FILTER_SANITIZE_STRING);
+        $horaireFin = filter_var($_POST['horaireFin'] ?? null, FILTER_SANITIZE_STRING);
+        $statut = filter_var($_POST['statut'] ?? null, FILTER_SANITIZE_STRING);
+        $soirees = isset($_POST['soirees']) ? array_map('intval', $_POST['soirees']) : [];
+
 
         if (!$nom || !$description || !$idstyle || !$horaireDebut || !$horaireFin || !$statut) {
             return "<p>Merci de remplir tous les champs.</p>";
