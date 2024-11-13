@@ -14,7 +14,7 @@ class Authz {
             if ((int) $user['droit'] >= $role) {
                 return $user;
             }
-    
+
             return "Droit insuffisant";
         } catch (AuthnException $e) {
             return $e->getMessage();

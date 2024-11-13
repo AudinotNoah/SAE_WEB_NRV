@@ -209,7 +209,7 @@ class NrvRepository {
 
 
     public function getAllLieux() : array {
-        $stmt = $this->pdo->prepare('SELECT idLieu, CONCAT(nomLieu, ", ", adresse) AS lieuAdresse FROM lieu');
+        $stmt = $this->pdo->prepare('SELECT idLieu, nomLieu FROM lieu');
         $stmt->execute();
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
@@ -396,5 +396,52 @@ class NrvRepository {
         $stmt->execute();
         return $stmt->fetchColumn();
     }
+
+    public function getSoireeById($id)
+    {
+        $stmt = $this->pdo->prepare("SELECT soiree.*, GROUP_CONCAT(spectacle.idSpectacle) AS spectacles_id
+        FROM soiree
+        LEFT JOIN spectaclesoiree ss ON soiree.idSoiree = ss.idSoiree
+        LEFT JOIN spectacle spectacle ON ss.idSpectacle = spectacle.idSpectacle
+        WHERE soiree.idSoiree = :id
+        GROUP BY soiree.idSoiree");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+        return $stmt->fetch(PDO::FETCH_ASSOC);
+    }
+
+    public function updateSoiree($id, $nom, $date, $horaire, $lieu, $tarif, $thematique, array $spectacles)
+    {
+        $stmt = $this->pdo->prepare("UPDATE soiree SET 
+                                            nomSoiree = :nom,
+                                            dateSoiree = :date,
+                                            horaire = :horaire,
+                                            idLieu = :lieu,
+                                            tarif = :tarif,
+                                            thematique = :thematique
+                                        WHERE idSoiree = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':nom', $nom);
+        $stmt->bindParam(':date', $date);
+        $stmt->bindParam(':horaire', $horaire);
+        $stmt->bindParam(':lieu', $lieu);
+        $stmt->bindParam(':tarif', $tarif);
+        $stmt->bindParam(':thematique', $thematique);
+        $stmt->execute();
+
+        $stmt = $this->pdo->prepare("DELETE FROM spectaclesoiree WHERE idSoiree = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+
+        $stmt = $this->pdo->prepare("INSERT INTO spectaclesoiree (idSoiree, idSpectacle) VALUES (:idSoiree, :idSpectacle)");
+        $stmt->bindParam(':idSoiree', $id);
+        foreach ($spectacles as $spectacle) {
+            $stmt->bindParam(':idSpectacle', $spectacle);
+            $stmt->execute();
+        }
+
+        return true;
+    }
+
 }
 
