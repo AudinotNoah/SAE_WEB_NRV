@@ -32,7 +32,7 @@ class LoginAction extends Action {
 
         // Vérifier si l'utilisateur est temporairement bloqué
         if ($this->isLockedOut($email)) {
-            return "Votre compte est temporairement bloqué en raison de trop nombreuses tentatives de connexion. Veuillez réessayer dans " . self::LOCKOUT_TIME / 60 . " minutes.";
+            return "Votre compte est temporairement bloqué en raison de trop nombreuses tentatives de connexion. Veuillez réessayer plus tard.";
         }
 
         try {
