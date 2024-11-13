@@ -164,7 +164,7 @@ class DisplaySpectaclesAction extends Action {
                     break;
                 }
             }
-            $user = Authz::checkRole(100); 
+            $user = Authz::checkRole(50); 
             if (!is_string($user)) {
                 $html .= "<button><a href='?action=modify-spectacle&id={$sp['idSpectacle']}'\">Modifier ce spectacle</a></button>";
             }
