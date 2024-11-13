@@ -49,10 +49,10 @@ class AddSpectacleAction extends Action
                 $stylesListe
             </fieldset>
 
-            <label for="spectacle-horaireDebut">Heure de début (HH:MM) :</label>
+            <label for="spectacle-horaireDebut">Heure de début :</label>
             <input type="time" id="spectacle-horaireDebut" name="spectacle_horaireDebut" required>
 
-            <label for="spectacle-horaireFin">Heure de fin (HH:MM) :</label>
+            <label for="spectacle-horaireFin">Heure de fin :</label>
             <input type="time" id="spectacle-horaireFin" name="spectacle_horaireFin" required>
 
             <label for="spectacle-description">Description du spectacle :</label>
@@ -109,10 +109,10 @@ class AddSpectacleAction extends Action
         if (isset($_FILES['new_images']) && !empty($_FILES['new_images']['tmp_name'][0])) {
             foreach ($_FILES['new_images']['tmp_name'] as $index => $tmpName) {
                 if ($_FILES['new_images']['error'][$index] === UPLOAD_ERR_OK) {
-                    // Génération d'un nom de fichier unique avec uniquement des chiffres
+                    // Génération d'un nom de fichier unique avec un identifiant unique
                     $extension = pathinfo($_FILES['new_images']['name'][$index], PATHINFO_EXTENSION);
-                    $randomNumber = random_int(100000, 999999); // Génère un nombre aléatoire de 6 chiffres
-                    $nomfichier = 'img_' . $randomNumber . '.' . $extension;
+                    $uniqueId = uniqid('img_', true);
+                    $nomfichier = $uniqueId . '.' . $extension;
 
                     $dossierImage = "src/assets/images/spectacle-img/";
                     if (!is_dir($dossierImage)) {
@@ -121,7 +121,7 @@ class AddSpectacleAction extends Action
 
                     $destination = "$dossierImage/$nomfichier";
                     if (move_uploaded_file($tmpName, $destination)) {
-                        $nouvelleIdImage = $repository->uploadImage($nomfichier);
+                        $nouvelleIdImage = $repository->uploadImage($nomfichier); // ID de l'image
                         $images[] = $nouvelleIdImage;
                     } else {
                         return "<p>Erreur : Impossible d'importer l'image {$index}</p>" . $this->get();
@@ -133,6 +133,7 @@ class AddSpectacleAction extends Action
         } else {
             return "<p>Erreur : Vous devez importer au moins une image</p>" . $this->get();
         }
+
 
         // Traitement de l'upload du fichier audio .mp3
         $audioFile = null;
