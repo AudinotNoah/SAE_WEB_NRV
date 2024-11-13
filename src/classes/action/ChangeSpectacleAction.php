@@ -126,16 +126,43 @@ class ChangeSpectacleAction extends Action {
         }
 
         // Traitement du fichier audio
+        $allowedAudioExtension = 'mp3'; // Extension autorisée pour les fichiers audio
+        $maxAudioFileSize = 10 * 1024 * 1024; // Taille maximale autorisée pour le fichier audio (10 Mo)
+
         if (isset($_FILES['audio']) && $_FILES['audio']['error'] === UPLOAD_ERR_OK) {
             $audioFile = $_FILES['audio'];
-            $audioPath = "src/assets/media/" . basename($audioFile['name']);
-            move_uploaded_file($audioFile['tmp_name'], $audioPath);
-            $nomFichier = basename($audioFile['name']);
+            $audioExtension = strtolower(pathinfo($audioFile['name'], PATHINFO_EXTENSION));
 
+            // Vérification de l'extension du fichier audio
+            if ($audioExtension !== $allowedAudioExtension) {
+                return "<p>Erreur : Le fichier audio doit être au format .mp3</p>" . $this->get();
+            }
+
+            // Vérification de la taille du fichier audio
+            if ($audioFile['size'] > $maxAudioFileSize) {
+                return "<p>Erreur : Le fichier audio est trop volumineux. La taille maximale autorisée est de 10 Mo.</p>" . $this->get();
+            }
+
+            // Génération d'un nom de fichier unique pour l'audio
+            $uniqueAudioId = uniqid('audio_', true); // Génère un ID unique
+            $audioFilename = $uniqueAudioId . '.' . $audioExtension;
+
+            $audioDir = "src/assets/media";
+            if (!is_dir($audioDir)) {
+                mkdir($audioDir, 0777, true); // Crée le répertoire si il n'existe pas
+            }
+
+            $audioDestination = "$audioDir/$audioFilename";
+            if (move_uploaded_file($audioFile['tmp_name'], $audioDestination)) {
+                $nomFichier = $audioFilename; // Stocke le nom du fichier audio pour une utilisation ultérieure
+            } else {
+                return "<p>Erreur : Impossible de télécharger le fichier audio.</p>" . $this->get();
+            }
         } else {
-            $nomFichier =  $repo->getAudio($id);; // Garder l'ancien fichier audio si aucun nouveau n'est téléchargé
-            
+            // Garder l'ancien fichier audio si aucun nouveau n'est téléchargé
+            $nomFichier = $repo->getAudio($id);
         }
+
         // Mise à jour du spectacle
         $success = $repo->updateSpectacle($id, [
             'nomSpectacle' => $nom,
