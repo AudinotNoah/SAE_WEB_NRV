@@ -389,5 +389,12 @@ class NrvRepository {
         return $result ?: [];
 
     }
+
+    public function getAudio(string $id){
+        $stmt = $this->pdo->prepare("SELECT lienAudio FROM spectacle WHERE idSpectacle = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchColumn();
+    }
 }
 

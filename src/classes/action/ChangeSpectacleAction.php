@@ -136,9 +136,9 @@ class ChangeSpectacleAction extends Action {
             $nomFichier = basename($audioFile['name']);
 
         } else {
-            $audioPath = $spectacle['lienAudio']; // Garder l'ancien fichier audio si aucun nouveau n'est téléchargé
+            $nomFichier =  $this->repo->getAudio($id);; // Garder l'ancien fichier audio si aucun nouveau n'est téléchargé
+            
         }
-
         // Mise à jour du spectacle
         $success = $this->repo->updateSpectacle($id, [
             'nomSpectacle' => $nom,
