@@ -25,7 +25,7 @@ class DisplaySoireesAction extends Action {
     protected function get(): string {
         $repo = NrvRepository::getInstance();
 
-        $id = $_GET['id'] ?? null;
+        $id = filter_var($_GET['id'] ?? null, FILTER_SANITIZE_NUMBER_INT);
         $soirees = $repo->getAllSoirees();
 
         if (!$id) {

@@ -155,7 +155,6 @@ class AddSpectacleAction extends Action
 
 
         // Traitement de l'upload du fichier audio .mp3
-        $audioFile = null;
         $allowedAudioExtension = 'mp3'; // Extension autorisée pour les fichiers audio
         $maxAudioFileSize = 10 * 1024 * 1024; // Taille maximale autorisée pour le fichier audio (10 Mo)
 

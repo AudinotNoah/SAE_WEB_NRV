@@ -114,9 +114,9 @@ class DisplaySpectaclesAction extends Action {
 
     protected function get(): string {
         $repo = NrvRepository::getInstance();
-        $id = $_GET['id'] ?? null;
-        $trie = $_GET['trie'] ?? '';
-        $choix = $_GET[$trie] ?? null;
+        $id = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
+        $trie = filter_var($_GET['trie'] ?? null, FILTER_SANITIZE_SPECIAL_CHARS);
+        $choix = filter_var($_GET[$trie] ?? null, FILTER_SANITIZE_SPECIAL_CHARS);
         $spectacles = $repo->getAllSpectacles();
 
 
