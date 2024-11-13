@@ -21,6 +21,14 @@ class Authz {
         }
     }
     
+    public static function estCo() {
+        try {
+            $user = AuthnProvider::getSignedInUser();
+            return true;
+        } catch (AuthnException $e) {
+            return false;
+        }
+    }
     
 
 }

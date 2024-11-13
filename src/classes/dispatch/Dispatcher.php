@@ -27,71 +27,55 @@ class Dispatcher {
         $html = '';
 
         switch ($this->action) {
-
             case 'modify-soiree':
                 $actionInstance = new ChangeSoireeAction();
-                $html = $actionInstance->execute();
                 break;
 
             case 'modify-spectacle':
-                $actionInstance = new ChangeSpectacleAction();
-                $html = $actionInstance->execute();
+                $actionInstance = new ChangeSpectacleAction();  
                 break;
 
             case 'menu-staff':
                 $actionInstance = new DisplayStaffMenu();
-                $html = $actionInstance->execute();
                 break;
 
             case 'list-soirees':
                 $actionInstance = new DisplaySoireesAction();
-                $html = $actionInstance->execute();
                 break;
 
             case 'createStaff':
-                $actionInstance = new CreateStaffAction();
-                $html = $actionInstance->execute();
+                $actionInstance = new CreateStaffAction();   
                 break;
 
             case 'programme':
                 $actionInstance = new DisplaySpectaclesAction();
-                $html = $actionInstance->execute();
                 break;
 
             case 'login':
                 $actionInstance = new LoginAction();
-                $html = $actionInstance->execute();
                 break;
 
             case 'logout':
                 $actionInstance = new LogoutAction();
-                $html = $actionInstance->execute();
                 break;
 
             case 'add-spectacle':
-                $actionInstance = new AddSpectacleAction();
-                $html = $actionInstance->execute();
+                $actionInstance = new AddSpectacleAction();  
                 break;
 
             case 'add-soiree':
                 $actionInstance = new AddSoireeAction();
-                $html = $actionInstance->execute();
                 break;
 
             default:
                 $actionInstance = new DefaultAction();
-                $html = $actionInstance->execute();
                 break;
         }
-
+        $html = $actionInstance->execute();
         $this->renderPage($html);
     }
 
     private function renderPage(string $html): void {
-        // Vérifie si l'utilisateur est connecté
-        $isConnected = isset($_SESSION['user']);
-        $userRole = $_SESSION['user']['role'] ?? null;
-
         // Menu de base
         $menu = <<<HTML
         <nav>
@@ -107,8 +91,7 @@ class Dispatcher {
                 HTML;
         }
 
-        $user = Authz::checkRole(0); 
-        if (!is_string($user)) {
+        if (Authz::estCo()) {
             $menu .= <<<HTML
             <span>Connecté en tant que : {$_SESSION['user']['email']}</span>
             <a href="?action=logout">Se Déconnecter</a>
@@ -123,23 +106,23 @@ class Dispatcher {
         $menu .= "</nav>";
 
         echo <<<HTML
-    <!DOCTYPE html>
-    <html lang='fr'>
-    <head>
-        <meta charset='UTF-8'>
-        <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-        <link rel='stylesheet' href='src/assets/css/style.css'>
-        <title>projet web</title>
-    </head>
-    <body>
-        <script src="src/assets/js/index.js"></script>
-        $menu
-        <main>
-            <p></p> <!-- espace -->
-            $html
-        </main>
-    </body>
-    </html>
-    HTML;
+        <!DOCTYPE html>
+        <html lang='fr'>
+        <head>
+            <meta charset='UTF-8'>
+            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <link rel='stylesheet' href='src/assets/css/style.css'>
+            <title>projet web</title>
+        </head>
+        <body>
+            <script src="src/assets/js/index.js"></script>
+            $menu
+            <main>
+                <p></p> <!-- espace -->
+                $html
+            </main>
+        </body>
+        </html>
+        HTML;
     }
 }

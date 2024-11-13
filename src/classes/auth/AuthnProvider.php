@@ -62,9 +62,6 @@ class AuthnProvider
             throw new AuthnException("Pas connecté.");
         }
     
-        if (!isset($_SESSION['user']['droit'])) {
-            throw new AuthnException("Droit insuffisant pour cette action.");
-        }
     
         return $_SESSION['user'];
     }
