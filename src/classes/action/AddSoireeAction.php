@@ -77,13 +77,13 @@ class AddSoireeAction extends Action
 
     protected function post(): string
     {
-        $nom = filter_var($_POST['soiree_name'], FILTER_SANITIZE_STRING);
-        $dateSoiree = filter_var($_POST['date_soiree'], FILTER_SANITIZE_STRING);
-        $horaireDebut = filter_var($_POST['soiree_horaireDebut'], FILTER_SANITIZE_STRING);
-        $lieu = filter_var($_POST['soiree_lieu'], FILTER_SANITIZE_STRING);
+        $nom = filter_var($_POST['soiree_name'], FILTER_SANITIZE_SPECIAL_CHARS);
+        $dateSoiree = filter_var($_POST['date_soiree'], FILTER_SANITIZE_SPECIAL_CHARS);
+        $horaireDebut = filter_var($_POST['soiree_horaireDebut'], FILTER_SANITIZE_SPECIAL_CHARS);
+        $lieu = filter_var($_POST['soiree_lieu'], FILTER_SANITIZE_SPECIAL_CHARS);
         $tarif = filter_var($_POST['tarif_soiree'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-        $theme = filter_var($_POST['theme_soiree'] ?? 'Aucun thème', FILTER_SANITIZE_STRING);
-        $spectacles = $_POST['soiree_spectacle'];
+        $theme = filter_var($_POST['theme_soiree'] ?? 'Aucun thème', FILTER_SANITIZE_SPECIAL_CHARS);
+        $spectacles = filter_var($_POST['soiree_spectacle'], FILTER_SANITIZE_SPECIAL_CHARS);
 
         $repository = NrvRepository::getInstance();
 
