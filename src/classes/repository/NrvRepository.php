@@ -120,18 +120,6 @@ class NrvRepository {
         return $stmt->fetchColumn();
     }
 
-
-
-    public function createStaff(string $email, string $mdp)
-    {
-        $stmt = $this->pdo->prepare("INSERT INTO utilisateur (email, mdp, role, droit) VALUES (:email, :mdp, 'staff', 50)");
-        $stmt->bindParam(':email', $email);
-        $password_hash = password_hash($mdp, PASSWORD_BCRYPT);
-        $stmt->bindParam(':mdp', $password_hash);
-        return $stmt->execute();
-    }
-
-
     public function getAllStyles(){
         $stmt = $this->pdo->prepare('SELECT idStyle, nomStyle FROM style');
             $stmt->execute();
@@ -260,44 +248,6 @@ class NrvRepository {
             return $result ?: [];
     }
 
-    public function uploadImage(string $nomfichier): int
-    {
-        $stmt = $this->pdo->prepare("INSERT INTO image (nomfichier) VALUES (:nomfichier)");
-        $stmt->bindParam(':nomfichier', $nomfichier);
-        $stmt->execute();
-        return (int) $this->pdo->lastInsertId();
-    }
-
-
-    public function setSpectacle(Spectacle $s,string $idStyle): int
-    {
-        $stmt = $this->pdo->prepare(
-            "INSERT INTO spectacle (nomSpectacle, horaireDebut, horaireFin, idStyle, statut, lienAudio, description) 
-            VALUES (:nomSpectacle, :horaireDebut, :horaireFin, :idStyle, :statut, :lienAudio, :description)"
-        );
-
-        $nomSpectacle = $s->nom;
-        $horaireDebut = $s->horaireDebut;
-        $horaireFin = $s->horaireFin;
-        echo $this->getIdStyleByName($s->style);
-        // $idStyle = $this->getIdStyleByName($s->style);
-        $statut = "à venir"; // Par défaut
-        $lienAudio = $s->lienAudio;
-        $description = $s->description;
-
-        $stmt->bindParam(':nomSpectacle', $nomSpectacle);
-        $stmt->bindParam(':horaireDebut', $horaireDebut);
-        $stmt->bindParam(':horaireFin', $horaireFin);
-        $stmt->bindParam(':idStyle', $idStyle);
-        $stmt->bindParam(':statut', $statut);
-        $stmt->bindParam(':lienAudio', $lienAudio);
-        $stmt->bindParam(':description', $description);
-
-        $stmt->execute();
-
-        return (int) $this->pdo->lastInsertId();
-    }
-
     private function getIdStyleByName(string $style): int
     {
         $stmt = $this->pdo->prepare("SELECT idStyle FROM style WHERE nomStyle = :style");
@@ -308,78 +258,17 @@ class NrvRepository {
         return (int) $id;
     }
 
-
-    public function associerImageAuSpectacle(int $idImage, int $idSpectacle): void
-    {
-        $stmt = $this->pdo->prepare("INSERT INTO spectacleimage (idSpectacle, idImage) VALUES (:idSpectacle, :idImage)");
-        $stmt->bindParam(':idSpectacle', $idSpectacle);
-        $stmt->bindParam(':idImage', $idImage);
-        $stmt->execute();
-    }
-
-    public function associerArtisteAuSpectacle(int $idArtiste, int $idSpectacle): void
-    {
-        $stmt = $this->pdo->prepare("INSERT INTO performer (idArtiste, idSpectacle) VALUES (:idArtiste, :idSpectacle)");
-        $stmt->bindParam(':idArtiste', $idArtiste, PDO::PARAM_INT);
-        $stmt->bindParam(':idSpectacle', $idSpectacle, PDO::PARAM_INT);
-        $stmt->execute();
-    }
-
-
     public function getSpectacleById(mixed $id)
     {
-        $stmt = $this->pdo->prepare("SELECT * FROM spectacle WHERE idSpectacle = :id");
-        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
+        $stmt = $this->pdo->prepare("SELECT s.*, GROUP_CONCAT(soiree.idSoiree) AS soirees_id
+        FROM spectacle s
+        LEFT JOIN spectaclesoiree ss ON s.idSpectacle = ss.idSpectacle
+        LEFT JOIN soiree soiree ON ss.idSoiree = soiree.idSoiree
+        WHERE s.idSpectacle = :id
+        GROUP BY s.idSpectacle");
+        $stmt->bindParam(':id', $id);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
-    }
-
-
-    public function updateSpectacle(mixed $id, array $array): bool
-    {
-        $stmt = $this->pdo->prepare("UPDATE spectacle SET 
-                                            nomSpectacle = :nom,
-                                            description = :description,
-                                            idStyle = :style,
-                                            horaireDebut = :debut,
-                                            horaireFin = :fin,
-                                            statut = :statut,
-                                            lienAudio = :audio
-                                        WHERE idSpectacle = :id");
-        $stmt->bindParam(':id', $id);
-        $stmt->bindParam(':nom', $array['nomSpectacle']);
-        $stmt->bindParam(':description', $array['description']);
-        $stmt->bindParam(':style', $array['idStyle']);
-        $stmt->bindParam(':debut', $array['horaireDebut']);
-        $stmt->bindParam(':fin', $array['horaireFin']);
-        $stmt->bindParam(':statut', $array['statut']);
-        $stmt->bindParam(':audio', $array['lienAudio']);
-        return $stmt->execute();
-    }
-
-    public function updateSoireesForSpectacle($id, $soirees)
-    {
-        $stmt = $this->pdo->prepare("DELETE FROM spectaclesoiree WHERE idSpectacle = :id");
-        $stmt->bindParam(':id', $id);
-        $stmt->execute();
-
-        $stmt = $this->pdo->prepare("INSERT INTO spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
-        $stmt->bindParam(':idSpectacle', $id);
-        foreach ($soirees as $soiree) {
-            $stmt->bindParam(':idSoiree', $soiree);
-            $stmt->execute();
-        }
-    }
-
-    public function associeSpectacleSoiree(int $spectacleId, array $soireeIds)
-    {
-        $stmt = $this->pdo->prepare("INSERT INTO spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
-        $stmt->bindParam(':idSpectacle', $spectacleId);
-
-        foreach ($soireeIds as $soireeId) {
-            $stmt->bindParam(':idSoiree', $soireeId);
-            $stmt->execute();
-        }
     }
 
     public function getSpecAtSoiree(int $idSoiree){
@@ -393,33 +282,6 @@ class NrvRepository {
         return $result ?: [];
 
     }
-
-
-    public function setSoiree(Soiree $s):int
-    {
-        $stmt = $this->pdo->prepare(
-            "INSERT INTO soiree (nomSoiree, dateSoiree, idLieu, tarif, thematique, horaire) 
-            VALUES (:nomSoiree, :dateSoiree, :idLieu, :tarif, :thematique, :horaire)"
-        );
-
-        $nomSoiree = $s->nomSoiree;
-        $dateSoiree = $s->dateSoiree;
-        $tarif = $s->tarif;
-        $thematique = $s->thematique;
-        $horaireSoiree = $s->horaire;
-        $lieu = $s-> lieu;
-
-        $stmt->bindParam(':nomSoiree', $nomSoiree);
-        $stmt->bindParam(':horaire', $horaireSoiree);
-        $stmt->bindParam(':dateSoiree', $dateSoiree);
-        $stmt->bindParam(':idLieu', $lieu);
-        $stmt->bindParam(':tarif', $tarif);
-        $stmt->bindParam(':thematique', $thematique);
-        $stmt->execute();
-
-        return (int) $this->pdo->lastInsertId();
-    }
-
 
     public function getAllLieuxDeSoiree(): array
     {
@@ -464,6 +326,83 @@ class NrvRepository {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+
+    public function associerImageAuSpectacle(int $idImage, int $idSpectacle): void
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO spectacleimage (idSpectacle, idImage) VALUES (:idSpectacle, :idImage)");
+        $stmt->bindParam(':idSpectacle', $idSpectacle);
+        $stmt->bindParam(':idImage', $idImage);
+        $stmt->execute();
+    }
+
+    public function associerArtisteAuSpectacle(int $idArtiste, int $idSpectacle): void
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO performer (idArtiste, idSpectacle) VALUES (:idArtiste, :idSpectacle)");
+        $stmt->bindParam(':idArtiste', $idArtiste, PDO::PARAM_INT);
+        $stmt->bindParam(':idSpectacle', $idSpectacle, PDO::PARAM_INT);
+        $stmt->execute();
+    }
+
+    public function associeSpectacleSoiree(int $spectacleId, array $soireeIds)
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
+        $stmt->bindParam(':idSpectacle', $spectacleId);
+
+        foreach ($soireeIds as $soireeId) {
+            $stmt->bindParam(':idSoiree', $soireeId);
+            $stmt->execute();
+        }
+    }
+
+
+    public function associeSoireeSpectacle(int $soireeId, array $spectacleIds)
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
+        $stmt->bindParam(':idSpectacle', $spectacleId);
+
+        foreach ($spectacleIds as $spectacleId) {
+            $stmt->bindParam(':idSoiree', $soireeId);
+            $stmt->execute();
+        }
+    }
+
+
+    public function updateSpectacle(mixed $id, array $array): bool
+    {
+        $stmt = $this->pdo->prepare("UPDATE spectacle SET 
+                                            nomSpectacle = :nom,
+                                            description = :description,
+                                            idStyle = :style,
+                                            horaireDebut = :debut,
+                                            horaireFin = :fin,
+                                            statut = :statut,
+                                            lienAudio = :audio
+                                        WHERE idSpectacle = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->bindParam(':nom', $array['nomSpectacle']);
+        $stmt->bindParam(':description', $array['description']);
+        $stmt->bindParam(':style', $array['idStyle']);
+        $stmt->bindParam(':debut', $array['horaireDebut']);
+        $stmt->bindParam(':fin', $array['horaireFin']);
+        $stmt->bindParam(':statut', $array['statut']);
+        $stmt->bindParam(':audio', $array['lienAudio']);
+        return $stmt->execute();
+    }
+
+    public function updateSoireesForSpectacle($id, $soirees)
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM spectaclesoiree WHERE idSpectacle = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+
+        $stmt = $this->pdo->prepare("INSERT INTO spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
+        $stmt->bindParam(':idSpectacle', $id);
+        foreach ($soirees as $soiree) {
+            $stmt->bindParam(':idSoiree', $soiree);
+            $stmt->execute();
+        }
+    }
+
     public function updateSoiree($id, $nom, $date, $horaire, $lieu, $tarif, $thematique, array $spectacles)
     {
         $stmt = $this->pdo->prepare("UPDATE soiree SET 
@@ -497,15 +436,76 @@ class NrvRepository {
         return true;
     }
 
-    public function associeSoireeSpectacle(int $soireeId, array $spectacleIds)
-    {
-        $stmt = $this->pdo->prepare("INSERT INTO spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
-        $stmt->bindParam(':idSpectacle', $spectacleId);
 
-        foreach ($spectacleIds as $spectacleId) {
-            $stmt->bindParam(':idSoiree', $soireeId);
-            $stmt->execute();
-        }
+    public function setSoiree(Soiree $s):int
+    {
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO soiree (nomSoiree, dateSoiree, idLieu, tarif, thematique, horaire) 
+            VALUES (:nomSoiree, :dateSoiree, :idLieu, :tarif, :thematique, :horaire)"
+        );
+
+        $nomSoiree = $s->nomSoiree;
+        $dateSoiree = $s->dateSoiree;
+        $tarif = $s->tarif;
+        $thematique = $s->thematique;
+        $horaireSoiree = $s->horaire;
+        $lieu = $s-> lieu;
+
+        $stmt->bindParam(':nomSoiree', $nomSoiree);
+        $stmt->bindParam(':horaire', $horaireSoiree);
+        $stmt->bindParam(':dateSoiree', $dateSoiree);
+        $stmt->bindParam(':idLieu', $lieu);
+        $stmt->bindParam(':tarif', $tarif);
+        $stmt->bindParam(':thematique', $thematique);
+        $stmt->execute();
+
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    public function setSpectacle(Spectacle $s,string $idStyle): int
+    {
+        $stmt = $this->pdo->prepare(
+            "INSERT INTO spectacle (nomSpectacle, horaireDebut, horaireFin, idStyle, statut, lienAudio, description) 
+            VALUES (:nomSpectacle, :horaireDebut, :horaireFin, :idStyle, :statut, :lienAudio, :description)"
+        );
+
+        $nomSpectacle = $s->nom;
+        $horaireDebut = $s->horaireDebut;
+        $horaireFin = $s->horaireFin;
+        echo $this->getIdStyleByName($s->style);
+        // $idStyle = $this->getIdStyleByName($s->style);
+        $statut = "à venir"; // Par défaut
+        $lienAudio = $s->lienAudio;
+        $description = $s->description;
+
+        $stmt->bindParam(':nomSpectacle', $nomSpectacle);
+        $stmt->bindParam(':horaireDebut', $horaireDebut);
+        $stmt->bindParam(':horaireFin', $horaireFin);
+        $stmt->bindParam(':idStyle', $idStyle);
+        $stmt->bindParam(':statut', $statut);
+        $stmt->bindParam(':lienAudio', $lienAudio);
+        $stmt->bindParam(':description', $description);
+
+        $stmt->execute();
+
+        return (int) $this->pdo->lastInsertId();
+    }
+
+    public function createStaff(string $email, string $mdp)
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO utilisateur (email, mdp, role, droit) VALUES (:email, :mdp, 'staff', 50)");
+        $stmt->bindParam(':email', $email);
+        $password_hash = password_hash($mdp, PASSWORD_BCRYPT);
+        $stmt->bindParam(':mdp', $password_hash);
+        return $stmt->execute();
+    }
+
+    public function uploadImage(string $nomfichier): int
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO image (nomfichier) VALUES (:nomfichier)");
+        $stmt->bindParam(':nomfichier', $nomfichier);
+        $stmt->execute();
+        return (int) $this->pdo->lastInsertId();
     }
 
 }
