@@ -501,5 +501,16 @@ class NrvRepository {
         return true;
     }
 
+    public function associeSoireeSpectacle(int $soireeId, array $spectacleIds)
+    {
+        $stmt = $this->pdo->prepare("INSERT INTO spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
+        $stmt->bindParam(':idSpectacle', $spectacleId);
+
+        foreach ($spectacleIds as $spectacleId) {
+            $stmt->bindParam(':idSoiree', $soireeId);
+            $stmt->execute();
+        }
+    }
+
 }
 
