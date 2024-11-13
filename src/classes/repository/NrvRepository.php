@@ -209,7 +209,7 @@ class NrvRepository {
 
 
     public function getAllLieux() : array {
-        $stmt = $this->pdo->prepare('SELECT idLieu, nomLieu FROM lieu');
+        $stmt = $this->pdo->prepare('SELECT idLieu, CONCAT(nomLieu, ", ", adresse) AS lieuAdresse FROM lieu');
         $stmt->execute();
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
