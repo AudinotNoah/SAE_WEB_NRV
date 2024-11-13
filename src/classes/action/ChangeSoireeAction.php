@@ -118,12 +118,12 @@ class ChangeSoireeAction extends Action {
     protected function post(): string
     {
         $id = filter_var($_GET['id'], FILTER_SANITIZE_NUMBER_INT);
-        $nom = filter_var($_POST['nom'], FILTER_SANITIZE_STRING);
-        $date = filter_var($_POST['date'], FILTER_SANITIZE_STRING);
-        $horaire = filter_var($_POST['horaire'], FILTER_SANITIZE_STRING);
-        $lieu = filter_var($_POST['lieu'], FILTER_SANITIZE_STRING);
+        $nom = filter_var($_POST['nom'], FILTER_SANITIZE_SPECIAL_CHARS);
+        $date = filter_var($_POST['date'], FILTER_SANITIZE_SPECIAL_CHARS);
+        $horaire = filter_var($_POST['horaire'], FILTER_SANITIZE_SPECIAL_CHARS);
+        $lieu = filter_var($_POST['lieu'], FILTER_SANITIZE_SPECIAL_CHARS);
         $tarif = filter_var($_POST['tarif'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
-        $thematique = filter_var($_POST['thematique'], FILTER_SANITIZE_STRING);
+        $thematique = filter_var($_POST['thematique'], FILTER_SANITIZE_SPECIAL_CHARS);
         $spectacles = isset($_POST['spectacles']) ? array_map('intval', $_POST['spectacles']) : [];
 
 
