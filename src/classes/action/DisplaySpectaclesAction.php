@@ -6,6 +6,8 @@ use iutnc\nrv\festival\Spectacle;
 use iutnc\nrv\festival\Soiree;
 use iutnc\nrv\render\SpectacleRenderer;
 use iutnc\nrv\render\SoireeRenderer;
+use iutnc\nrv\auth\Authz;
+
 
 class DisplaySpectaclesAction extends Action {
 
@@ -117,7 +119,6 @@ class DisplaySpectaclesAction extends Action {
         $choix = $_GET[$trie] ?? null;
         $spectacles = $repo->getAllSpectacles();
 
-        $isStaffOrAdmin = $_SESSION['user'] && $_SESSION['user']['role'] === 'staff' || $_SESSION['user']['role'] === 'admin';
 
         if (!$id) {
             $html = "<h2>Spectacles Disponibles</h2>";
@@ -153,7 +154,10 @@ class DisplaySpectaclesAction extends Action {
                 }
             }
             $html .= "<button id='pref' data-id='{$id}' onclick='switchPrefs({$id})'>{$messagebut}</button>";
-
+            $user = Authz::checkRole(50); 
+            if (!is_string($user)) {
+                $html .= "<button><a href='?action=modify-spectacle&id={$id}'\">Modifier ce spectacle</a></button>";
+            }
 
             $html .= "<h2>Infos : </h2><ul>";
             // $sp = $spectacles[$id - 1]; // GROSSE ERREUR L'ELEMENT 1 N' A PAS FORCEMENT L'ID 1 ERREUR LOGIQUEE FAAUT FIX
@@ -163,18 +167,15 @@ class DisplaySpectaclesAction extends Action {
                     break;
                 }
             }
+            
             $html .= self::createSpec($sp, $repo,1);
 
-
-            // Ajoute un bouton "Modifier" pour les utilisateurs staff ou admin
-            if ($isStaffOrAdmin) {
-                $html .= "<button><a href='?action=modify-spectacle&id={$sp['idSpectacle']}'\">Modifier ce spectacle</button>";
-            }
 
             $soirees = $repo->getAllSoireeForSpec($sp['idSpectacle']);
             $html .= "<h1>Dispo dans les soirées suivantes : </h1>";
             foreach ($soirees as $soiree) {
-                $s = new Soiree($soiree['nomSoiree'], $soiree['dateSoiree'], $soiree['idLieu'], $soiree['thematique'], $soiree['horaire'], floatval($soiree['tarif']));
+                $lieuNom = $repo->getLieuNom($soiree['idLieu']);
+                $s = new Soiree($soiree['nomSoiree'], $soiree['dateSoiree'], $lieuNom, $soiree['thematique'], $soiree['horaire'], floatval($soiree['tarif']));
                 $renderer = new SoireeRenderer($s);
                 $html .= $renderer->render(1);
                 $html .= $this->getNavigationLinks($repo->getStyleNom($sp['idSpectacle']), $soiree['idLieu'], $soiree['dateSoiree'],$soiree['idSoiree']);

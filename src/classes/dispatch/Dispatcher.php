@@ -3,6 +3,7 @@
 namespace iutnc\nrv\dispatch;
 
 use iutnc\nrv\action\AddSpectacleAction;
+use iutnc\nrv\action\ChangeSoireeAction;
 use iutnc\nrv\action\ChangeSpectacleAction;
 use iutnc\nrv\action\CreateStaffAction;
 use iutnc\nrv\action\DefaultAction;
@@ -12,6 +13,7 @@ use iutnc\nrv\action\LoginAction;
 use iutnc\nrv\action\LogoutAction;
 use iutnc\nrv\action\DisplayStaffMenu;
 use iutnc\nrv\action\AddSoireeAction;
+use iutnc\nrv\auth\Authz;
 
 class Dispatcher {
 
@@ -25,6 +27,11 @@ class Dispatcher {
         $html = '';
 
         switch ($this->action) {
+
+            case 'modify-soiree':
+                $actionInstance = new ChangeSoireeAction();
+                $html = $actionInstance->execute();
+                break;
 
             case 'modify-spectacle':
                 $actionInstance = new ChangeSpectacleAction();
@@ -42,13 +49,8 @@ class Dispatcher {
                 break;
 
             case 'createStaff':
-                // Vérifie si l'utilisateur a le rôle admin (100)
-                if ($_SESSION['user']['role'] ?? null === 'admin') {
-                    $actionInstance = new CreateStaffAction();
-                    $html = $actionInstance->execute();
-                } else {
-                    $html = "<p>Accès refusé : cette section est réservée aux administrateurs.</p>";
-                }
+                $actionInstance = new CreateStaffAction();
+                $html = $actionInstance->execute();
                 break;
 
             case 'programme':
@@ -97,40 +99,29 @@ class Dispatcher {
             <a href="?action=programme">Programme</a>
             <a href="?action=list-soirees">Liste des Soirées</a>
             <a href="?action=programme&trie=preferences">Votre liste de préférence</a>
-    HTML;
-
-        if ($isConnected) {
-            // Si l'utilisateur est connecté, afficher les options suivantes
-            $menu .= <<<HTML
-            <a href="?action=logout">Se Déconnecter</a>
-            <!-- Afficher l'utilisateur connecté -->
-            <span>Connecté en tant que : {$_SESSION['user']['email']}</span>
-            HTML;
-
-            // Si l'utilisateur est staff, afficher le menu staff
-            if ($userRole === 'staff') {
-                $menu .= <<<HTML
-                <a href="?action=menu-staff">Menu Staff</a>
-                HTML;
-            }
-
-            // Si l'utilisateur est admin, afficher "Créer un Staff"
-            if ($userRole === 'admin') {
-                $menu .= <<<HTML
-            <a href="?action=createStaff">Créer un Staff</a>
-            HTML;
-            }
-        } else {
-            // Si l'utilisateur n'est pas connecté, afficher les options suivantes
-            $menu .= <<<HTML
-            <a href="?action=login">Se Connecter</a>
         HTML;
+        $user = Authz::checkRole(50); 
+        if (!is_string($user)) {
+            $menu .= <<<HTML
+                <a href="?action=menu-staff">Menu Gestion</a>
+                HTML;
         }
 
-        // Fermeture du menu
+        $user = Authz::checkRole(0); 
+        if (!is_string($user)) {
+            $menu .= <<<HTML
+            <span>Connecté en tant que : {$_SESSION['user']['email']}</span>
+            <a href="?action=logout">Se Déconnecter</a>
+            HTML;
+        }
+        else{
+            $menu .= <<<HTML
+            <a href="?action=login">Se Connecter</a>
+            HTML;
+        }
+
         $menu .= "</nav>";
 
-        // Génération du HTML final
         echo <<<HTML
     <!DOCTYPE html>
     <html lang='fr'>

@@ -5,13 +5,20 @@ namespace iutnc\nrv\action;
 use iutnc\nrv\festival\Spectacle;
 use iutnc\nrv\render\SpectacleRenderer;
 use iutnc\nrv\repository\NrvRepository;
-use PDO;
+use iutnc\nrv\auth\Authz;
+
 
 class AddSpectacleAction extends Action
 {
 
     protected function get(): string
     {
+        $user = Authz::checkRole(50);
+        if (is_string($user)) {
+            $errorMessage = $user;
+            return $errorMessage;
+        }
+
         $repository = NrvRepository::getInstance();
         $artistes = $repository->getAllNomArtiste();
         $soirees = $repository->getAllSoirees();
@@ -77,6 +84,12 @@ class AddSpectacleAction extends Action
 
     protected function post(): string
     {
+        $user = Authz::checkRole(50); 
+        if (is_string($user)) {
+            $errorMessage = $user;
+            return $errorMessage;
+        }
+
         $nom = $_POST['spectacle_name'];
         $horaireDebut = $_POST['spectacle_horaireDebut'];
         $horaireFin = $_POST['spectacle_horaireFin'];

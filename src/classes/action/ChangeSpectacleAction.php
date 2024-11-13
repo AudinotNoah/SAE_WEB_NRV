@@ -3,29 +3,27 @@
 namespace iutnc\nrv\action;
 
 use iutnc\nrv\repository\NrvRepository;
+use iutnc\nrv\auth\Authz;
+
 
 class ChangeSpectacleAction extends Action {
 
-    protected $repo;
-
-    public function __construct() {
-        parent::__construct();
-        $this->repo = NrvRepository::getInstance();
-    }
-
-
     protected function get(): string {
+        $repo = NrvRepository::getInstance();
+
         $id = $_GET['id'] ?? null;
 
-        if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] != 'staff' && $_SESSION['user']['role'] != 'admin')) {
-            return "<p>Vous n'avez pas l'autorisation de modifier ce spectacle.</p>";
+        $user = Authz::checkRole(50);
+        if (is_string($user)) {
+            $errorMessage = $user;
+            return $errorMessage;
         }
 
         if (!$id) {
             return "<p>Aucun spectacle spécifié.</p>";
         }
 
-        $spectacle = $this->repo->getSpectacleById($id);
+        $spectacle = $repo->getSpectacleById($id);
         if (!$spectacle) {
             return "<p>Le spectacle spécifié n'existe pas.</p>";
         }
@@ -38,10 +36,10 @@ class ChangeSpectacleAction extends Action {
         }
 
         // Liste des noms des styles
-        $styles = $this->repo->getAllStyles();
+        $styles = $repo->getAllStyles();
 
         // Liste des soirées disponibles
-        $soirées = $this->repo->getAllSoirees();
+        $soirées = $repo->getAllSoirees();
 
         $html = "<h2>Modifier le Spectacle</h2>";
         $html .= "<form method='POST' action='' enctype='multipart/form-data'>";
@@ -99,7 +97,15 @@ class ChangeSpectacleAction extends Action {
 
     protected function post(): string {
         $id = $_GET['id'] ?? null;
-        $spectacle = $this->repo->getSpectacleById($id);
+        $repo = NrvRepository::getInstance();
+
+        $spectacle = $repo->getSpectacleById($id);
+
+        $user = Authz::checkRole(50);
+        if (is_string($user)) {
+            $errorMessage = $user;
+            return $errorMessage;
+        }
 
 
         if (!$id) {
@@ -121,29 +127,32 @@ class ChangeSpectacleAction extends Action {
         // Traitement du fichier audio
         if (isset($_FILES['audio']) && $_FILES['audio']['error'] === UPLOAD_ERR_OK) {
             $audioFile = $_FILES['audio'];
-            $audioPath = basename($audioFile['name']);
+            $audioPath = "src/assets/media/" . basename($audioFile['name']);
             move_uploaded_file($audioFile['tmp_name'], $audioPath);
+            $nomFichier = basename($audioFile['name']);
 
         } else {
-            $audioPath = $spectacle['lienAudio']; // Garder l'ancien fichier audio si aucun nouveau n'est téléchargé
+            $nomFichier =  $repo->getAudio($id);; // Garder l'ancien fichier audio si aucun nouveau n'est téléchargé
+            
         }
-
         // Mise à jour du spectacle
-        $success = $this->repo->updateSpectacle($id, [
+        $success = $repo->updateSpectacle($id, [
             'nomSpectacle' => $nom,
             'description' => $description,
             'idStyle' => $idstyle,
             'horaireDebut' => $horaireDebut,
             'horaireFin' => $horaireFin,
             'statut' => $statut,
-            'lienAudio' => $audioPath,
+            'lienAudio' => $nomFichier
         ]);
 
         if ($success) {
             // Mise à jour des soirées sélectionnées
-            $this->repo->updateSoireesForSpectacle($id, $soirees);
+            $repo->updateSoireesForSpectacle($id, $soirees);
+            $url = "Location: index.php?action=programme&id=" . $id;
+            header($url);
 
-            return "<p>Le spectacle a été mis à jour avec succès.</p>";
+            // return "<p>Le spectacle a été mis à jour avec succès.</p>";
         } else {
             return "<p>Erreur lors de la mise à jour du spectacle. Veuillez réessayer.</p>";
         }
