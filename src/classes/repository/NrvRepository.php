@@ -328,16 +328,12 @@ class NrvRepository {
 
     public function getSpectacleById(mixed $id)
     {
-        $stmt = $this->pdo->prepare("SELECT s.*, GROUP_CONCAT(soiree.idSoiree) AS soirees_id
-        FROM spectacle s
-        LEFT JOIN spectaclesoiree ss ON s.idSpectacle = ss.idSpectacle
-        LEFT JOIN soiree soiree ON ss.idSoiree = soiree.idSoiree
-        WHERE s.idSpectacle = :id
-        GROUP BY s.idSpectacle");
-        $stmt->bindParam(':id', $id);
+        $stmt = $this->pdo->prepare("SELECT * FROM spectacle WHERE idSpectacle = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
 
     public function updateSpectacle(mixed $id, array $array): bool
     {

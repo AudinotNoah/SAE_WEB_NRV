@@ -44,10 +44,10 @@ class ChangeSpectacleAction extends Action {
         $html = "<h2>Modifier le Spectacle</h2>";
         $html .= "<form method='POST' action='' enctype='multipart/form-data'>";
         $html .= "<label for='nom'>Nom du spectacle:</label>";
-        $html .= "<input type='text' id='nom' name='nom' value='" . htmlspecialchars($spectacle['nomSpectacle']) . "' required><br><br>";
+        $html .= "<input type='text' id='nom' name='nom' value='" . htmlspecialchars_decode($spectacle['nomSpectacle'], ENT_QUOTES) . "' required><br><br>";
 
         $html .= "<label for='description'>Description:</label>";
-        $html .= "<textarea id='description' name='description' required>" . htmlspecialchars($spectacle['description']) . "</textarea><br><br>";
+        $html .= "<textarea id='description' name='description' required>" . htmlspecialchars_decode($spectacle['description'], ENT_QUOTES) . "</textarea><br><br>";
 
         $html .= "<label for='style'>Style:</label>";
         $html .= "<select id='style' name='style' required>";
@@ -83,7 +83,7 @@ class ChangeSpectacleAction extends Action {
         $html .= "<label>Choisir les soirées où ce spectacle sera joué:</label><br>";
         foreach ($soirées as $soiree) {
             $checked = in_array($soiree['idSoiree'], $spectacle['soirees_id']) ? 'checked' : '';
-            $html .= "<input type='checkbox' name='soirees[]' value='" . $soiree['idSoiree'] . "' $checked> " . htmlspecialchars($soiree['nomSoiree']) . "<br>";
+            $html .= "<input type='checkbox' name='soirees[]' value='" . $soiree['idSoiree'] . "' $checked> " . htmlspecialchars_decode($soiree['nomSoiree'], ENT_QUOTES) . "<br>";
         }
         $html .= "<br>";
 

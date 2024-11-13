@@ -47,7 +47,7 @@ class ChangeSoireeAction extends Action {
 
         // Nom de la soirée
         $html .= "<label for='nom'>Nom de la soirée:</label>";
-        $html .= "<input type='text' id='nom' name='nom' value='" . htmlspecialchars($soiree['nomSoiree']) . "' required><br><br>";
+        $html .= "<input type='text' id='nom' name='nom' value='" . htmlspecialchars_decode($soiree['nomSoiree'], ENT_QUOTES) . "' required><br><br>";
 
         // Date de la soirée
         $html .= "<label for='date'>Date:</label>";
@@ -62,24 +62,24 @@ class ChangeSoireeAction extends Action {
         $html .= "<select id='lieu' name='lieu' required>";
         foreach ($lieux as $lieu) {
             $selected = ($soiree['idLieu'] === $lieu['idLieu']) ? 'selected' : '';
-            $html .= "<option value='" . $lieu['idLieu'] . "' $selected>" . htmlspecialchars($lieu['nomLieu']) . "</option>";
+            $html .= "<option value='" . $lieu['idLieu'] . "' $selected>" . htmlspecialchars_decode($lieu['nomLieu'], ENT_QUOTES) . "</option>";
         }
         $html .= "</select><br><br>";
 
         // Tarif de la soirée
         $html .= "<label for='tarif'>Tarif:</label>";
-        $html .= "<input type='number' id='tarif' name='tarif' value='" . htmlspecialchars($soiree['tarif']) . "' step='0.01' required><br><br>";
+        $html .= "<input type='number' id='tarif' name='tarif' value='" . htmlspecialchars_decode($soiree['tarif'], ENT_QUOTES) . "' step='0.01' required><br><br>";
 
         // Thématique de la soirée
         $html .= "<label for='thematique'>Thématique:</label>";
-        $html .= "<input type='text' id='thematique' name='thematique' value='" . htmlspecialchars($soiree['thematique']) . "' required><br><br>";
+        $html .= "<input type='text' id='thematique' name='thematique' value='" . htmlspecialchars_decode($soiree['thematique'], ENT_QUOTES) . "' required><br><br>";
 
 
         $html .= "<fieldset id='spectacle-selection'>";
         $html .= "<legend>Choisir les spectacles qui seront joués lors de cette soirée (maximum 3):</legend>";
         foreach ($spectacles as $spectacle) {
             $checked = in_array($spectacle['idSpectacle'], $soiree['spectacles_id']) ? 'checked' : '';
-            $html .= "<label><input type='checkbox' name='spectacles[]' value='{$spectacle['idSpectacle']}' $checked> " . htmlspecialchars($spectacle['nomSpectacle']) . "</label><br>";
+            $html .= "<label><input type='checkbox' name='spectacles[]' value='{$spectacle['idSpectacle']}' $checked> " . htmlspecialchars_decode($spectacle['nomSpectacle'], ENT_QUOTES) . "</label><br>";
         }
         $html .= "</fieldset>";
 
