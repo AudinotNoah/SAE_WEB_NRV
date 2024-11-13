@@ -37,7 +37,7 @@ class ChangeSoireeAction extends Action {
         }
 
         // Liste des noms des lieux
-        $lieux = $repo->getAllLieux();
+        $lieux = $repo->gettAllNomLieu();
 
         // Liste des spectacles disponibles
         $spectacles = $repo->getAllSpectacles();

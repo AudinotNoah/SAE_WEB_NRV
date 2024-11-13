@@ -214,6 +214,13 @@ class NrvRepository {
         
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
     }
+
+    public function gettAllNomLieu() : array {
+        $stmt = $this->pdo->prepare('SELECT idLieu, nomLieu FROM lieu');
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
     
     public function getAllSpecAtLieu(string $idLieu) : array{
         $stmt = $this->pdo->prepare('SELECT idspectacle FROM soiree
