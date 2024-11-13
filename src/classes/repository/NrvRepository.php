@@ -315,16 +315,12 @@ class NrvRepository {
 
     public function getSoireeById($id)
     {
-        $stmt = $this->pdo->prepare("SELECT soiree.*, GROUP_CONCAT(spectacle.idSpectacle) AS spectacles_id
-        FROM soiree
-        LEFT JOIN spectaclesoiree ss ON soiree.idSoiree = ss.idSoiree
-        LEFT JOIN spectacle spectacle ON ss.idSpectacle = spectacle.idSpectacle
-        WHERE soiree.idSoiree = :id
-        GROUP BY soiree.idSoiree");
-        $stmt->bindParam(':id', $id);
+        $stmt = $this->pdo->prepare("SELECT * FROM spectacle WHERE idSpectacle = :id");
+        $stmt->bindParam(':id', $id, PDO::PARAM_INT);
         $stmt->execute();
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
+
 
 
     public function associerImageAuSpectacle(int $idImage, int $idSpectacle): void
