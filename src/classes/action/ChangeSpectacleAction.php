@@ -8,15 +8,9 @@ use iutnc\nrv\auth\Authz;
 
 class ChangeSpectacleAction extends Action {
 
-    protected $repo;
-
-    public function __construct() {
-        parent::__construct();
-        $this->repo = NrvRepository::getInstance();
-    }
-
-
     protected function get(): string {
+        $repo = NrvRepository::getInstance();
+
         $id = $_GET['id'] ?? null;
 
         $user = Authz::checkRole(50);
@@ -29,7 +23,7 @@ class ChangeSpectacleAction extends Action {
             return "<p>Aucun spectacle spécifié.</p>";
         }
 
-        $spectacle = $this->repo->getSpectacleById($id);
+        $spectacle = $repo->getSpectacleById($id);
         if (!$spectacle) {
             return "<p>Le spectacle spécifié n'existe pas.</p>";
         }
@@ -42,10 +36,10 @@ class ChangeSpectacleAction extends Action {
         }
 
         // Liste des noms des styles
-        $styles = $this->repo->getAllStyles();
+        $styles = $repo->getAllStyles();
 
         // Liste des soirées disponibles
-        $soirées = $this->repo->getAllSoirees();
+        $soirées = $repo->getAllSoirees();
 
         $html = "<h2>Modifier le Spectacle</h2>";
         $html .= "<form method='POST' action='' enctype='multipart/form-data'>";
@@ -103,7 +97,9 @@ class ChangeSpectacleAction extends Action {
 
     protected function post(): string {
         $id = $_GET['id'] ?? null;
-        $spectacle = $this->repo->getSpectacleById($id);
+        $repo = NrvRepository::getInstance();
+
+        $spectacle = $repo->getSpectacleById($id);
 
         $user = Authz::checkRole(50);
         if (is_string($user)) {
@@ -136,11 +132,11 @@ class ChangeSpectacleAction extends Action {
             $nomFichier = basename($audioFile['name']);
 
         } else {
-            $nomFichier =  $this->repo->getAudio($id);; // Garder l'ancien fichier audio si aucun nouveau n'est téléchargé
+            $nomFichier =  $repo->getAudio($id);; // Garder l'ancien fichier audio si aucun nouveau n'est téléchargé
             
         }
         // Mise à jour du spectacle
-        $success = $this->repo->updateSpectacle($id, [
+        $success = $repo->updateSpectacle($id, [
             'nomSpectacle' => $nom,
             'description' => $description,
             'idStyle' => $idstyle,
@@ -152,9 +148,11 @@ class ChangeSpectacleAction extends Action {
 
         if ($success) {
             // Mise à jour des soirées sélectionnées
-            $this->repo->updateSoireesForSpectacle($id, $soirees);
+            $repo->updateSoireesForSpectacle($id, $soirees);
+            $url = "Location: index.php?action=programme&id=" . $id;
+            header($url);
 
-            return "<p>Le spectacle a été mis à jour avec succès.</p>";
+            // return "<p>Le spectacle a été mis à jour avec succès.</p>";
         } else {
             return "<p>Erreur lors de la mise à jour du spectacle. Veuillez réessayer.</p>";
         }

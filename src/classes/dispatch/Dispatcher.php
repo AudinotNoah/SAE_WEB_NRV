@@ -42,13 +42,8 @@ class Dispatcher {
                 break;
 
             case 'createStaff':
-                // Vérifie si l'utilisateur a le rôle admin (100)
-                if ($_SESSION['user']['role'] ?? null === 'admin') {
-                    $actionInstance = new CreateStaffAction();
-                    $html = $actionInstance->execute();
-                } else {
-                    $html = "<p>Accès refusé : cette section est réservée aux administrateurs.</p>";
-                }
+                $actionInstance = new CreateStaffAction();
+                $html = $actionInstance->execute();
                 break;
 
             case 'programme':
