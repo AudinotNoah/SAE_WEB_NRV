@@ -106,11 +106,30 @@ class AddSpectacleAction extends Action
         $repository = NrvRepository::getInstance();
 
         $images = [];
+        $allowedExtensions = ['jpg', 'jpeg', 'png']; // Extensions autorisées
+        $maxFileSize = 10 * 1024 * 1024; // Taille maximale autorisée pour les fichiers (10 Mo)
+
         if (isset($_FILES['new_images']) && !empty($_FILES['new_images']['tmp_name'][0])) {
             foreach ($_FILES['new_images']['tmp_name'] as $index => $tmpName) {
                 if ($_FILES['new_images']['error'][$index] === UPLOAD_ERR_OK) {
+                    // Vérification de l'extension du fichier
+                    $extension = strtolower(pathinfo($_FILES['new_images']['name'][$index], PATHINFO_EXTENSION));
+                    if (!in_array($extension, $allowedExtensions)) {
+                        return "<p>Erreur : L'extension du fichier n'est pas autorisée. Extensions autorisées : jpg, jpeg, png, gif.</p>" . $this->get();
+                    }
+
+                    // Vérification de la taille du fichier
+                    if ($_FILES['new_images']['size'][$index] > $maxFileSize) {
+                        return "<p>Erreur : Le fichier est trop volumineux. La taille maximale autorisée est de 5 Mo.</p>" . $this->get();
+                    }
+
+                    // Vérification si le fichier est une image valide
+                    $imageSize = getimagesize($tmpName);
+                    if (!$imageSize) {
+                        return "<p>Erreur : Le fichier téléchargé n'est pas une image valide.</p>" . $this->get();
+                    }
+
                     // Génération d'un nom de fichier unique avec un identifiant unique
-                    $extension = pathinfo($_FILES['new_images']['name'][$index], PATHINFO_EXTENSION);
                     $uniqueId = uniqid('img_', true);
                     $nomfichier = $uniqueId . '.' . $extension;
 
