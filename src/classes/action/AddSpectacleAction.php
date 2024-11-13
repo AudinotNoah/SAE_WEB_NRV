@@ -115,12 +115,12 @@ class AddSpectacleAction extends Action
                     // Vérification de l'extension du fichier
                     $extension = strtolower(pathinfo($_FILES['new_images']['name'][$index], PATHINFO_EXTENSION));
                     if (!in_array($extension, $allowedExtensions)) {
-                        return "<p>Erreur : L'extension du fichier n'est pas autorisée. Extensions autorisées : jpg, jpeg, png, gif.</p>" . $this->get();
+                        return "<p>Erreur : L'extension du fichier n'est pas autorisée. Extensions autorisées : jpg, jpeg, png.</p>" . $this->get();
                     }
 
                     // Vérification de la taille du fichier
                     if ($_FILES['new_images']['size'][$index] > $maxFileSize) {
-                        return "<p>Erreur : Le fichier est trop volumineux. La taille maximale autorisée est de 5 Mo.</p>" . $this->get();
+                        return "<p>Erreur : Le fichier est trop volumineux. La taille maximale autorisée est de 10 Mo.</p>" . $this->get();
                     }
 
                     // Vérification si le fichier est une image valide
@@ -156,29 +156,41 @@ class AddSpectacleAction extends Action
 
         // Traitement de l'upload du fichier audio .mp3
         $audioFile = null;
+        $allowedAudioExtension = 'mp3'; // Extension autorisée pour les fichiers audio
+        $maxAudioFileSize = 10 * 1024 * 1024; // Taille maximale autorisée pour le fichier audio (10 Mo)
+
         if (isset($_FILES['audio_file']) && $_FILES['audio_file']['error'] === UPLOAD_ERR_OK) {
-            $audioExtension = pathinfo($_FILES['audio_file']['name'], PATHINFO_EXTENSION);
-            if ($audioExtension === 'mp3') {
-                $randomNumberAudio = random_int(100000, 999999); // Génère un nombre aléatoire de 6 chiffres
-                $audioFilename = 'audio_' . $randomNumberAudio . '.mp3';
+            $audioExtension = strtolower(pathinfo($_FILES['audio_file']['name'], PATHINFO_EXTENSION));
 
-                $audioDir = "src/assets/media";
-                if (!is_dir($audioDir)) {
-                    mkdir($audioDir, 0777, true);
-                }
-
-                $audioDestination = "$audioDir/$audioFilename";
-                if (move_uploaded_file($_FILES['audio_file']['tmp_name'], $audioDestination)) {
-                    $audioFile = $audioFilename; // Stocke le nom de l'audio
-                } else {
-                    return "<p>Erreur : Impossible de télécharger le fichier audio.</p>" . $this->get();
-                }
-            } else {
+            // Vérification de l'extension du fichier audio
+            if ($audioExtension !== $allowedAudioExtension) {
                 return "<p>Erreur : Le fichier audio doit être au format .mp3</p>" . $this->get();
+            }
+
+            // Vérification de la taille du fichier audio
+            if ($_FILES['audio_file']['size'] > $maxAudioFileSize) {
+                return "<p>Erreur : Le fichier audio est trop volumineux. La taille maximale autorisée est de 10 Mo.</p>" . $this->get();
+            }
+
+            // Génération d'un nom de fichier unique pour l'audio
+            $uniqueAudioId = uniqid('audio_', true); // Génère un ID unique
+            $audioFilename = $uniqueAudioId . '.' . $audioExtension;
+
+            $audioDir = "src/assets/media";
+            if (!is_dir($audioDir)) {
+                mkdir($audioDir, 0777, true); // Crée le répertoire si il n'existe pas
+            }
+
+            $audioDestination = "$audioDir/$audioFilename";
+            if (move_uploaded_file($_FILES['audio_file']['tmp_name'], $audioDestination)) {
+                $audioFile = $audioFilename; // Stocke le nom du fichier audio pour une utilisation ultérieure
+            } else {
+                return "<p>Erreur : Impossible de télécharger le fichier audio.</p>" . $this->get();
             }
         } else {
             return "<p>Erreur : Vous devez importer un fichier audio .mp3</p>" . $this->get();
         }
+
 
         $spectacle = new Spectacle(
             $nom,
