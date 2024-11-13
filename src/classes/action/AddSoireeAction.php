@@ -16,11 +16,18 @@ class AddSoireeAction extends Action
     {
         $repository = NrvRepository::getInstance();
         $lieux = $repository->getAllLieuxDeSoiree();
+        $spectacles = $repository->getAllSpectacles();
 
         $lieuxListe = '';
         foreach ($lieux as $lieu) {
             $lieuxListe .= "<label><input type='radio' name='soiree_lieu' value='{$lieu['idLieu']}' required> {$lieu['adresse']}</label><br>";
         }
+
+        $specListe = '';
+        foreach ($spectacles as $spec) {
+            $specListe .= "<label><input type='checkbox' class='spectacle-selection' name='soiree_spectacle[]' value='{$spec['idSpectacle']}'> {$spec['nomSpectacle']}</label><br>";
+        }
+        
 
         return <<<HTML
         <form method="post" action="?action=add-soiree" enctype="multipart/form-data">
@@ -43,9 +50,28 @@ class AddSoireeAction extends Action
 
             <label for="tarif-soiree">Tarif d'un billet :</label>
             <input type="number" step="0.01" min="0" id="tarif-soiree" name="tarif_soiree" required>
-            
-            <button type="submit">Créer la soiree</button>
+
+            <fieldset>
+            <legend>Choisir les spectacles associé à la soirée :</legend>
+            $specListe
+            </fieldset>
+        
+            <button type="submit">Créer la soirée</button>
         </form>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                const checkboxes = document.querySelectorAll('.spectacle-selection');
+                checkboxes.forEach(checkbox => {
+                    checkbox.addEventListener('change', () => {
+                        const checkedCount = document.querySelectorAll('.spectacle-selection:checked').length;
+                        if (checkedCount > 3) {
+                            checkbox.checked = false; // Annule la sélection
+                            alert("Vous pouvez sélectionner un maximum de 3 spectacles.");
+                        }
+                    });
+                });
+            });
+        </script>
         HTML;
     }
 
@@ -57,6 +83,7 @@ class AddSoireeAction extends Action
         $lieu = $_POST['soiree_lieu'];
         $tarif = $_POST['tarif_soiree'];
         $theme = $_POST['theme_soiree'] ?? 'Aucun thème';
+        $spectacles = $_POST['soiree_spectacle'];
 
         $repository = NrvRepository::getInstance();
 
@@ -70,6 +97,8 @@ class AddSoireeAction extends Action
         );
 
         $idSoiree = $repository->setSoiree($soiree);
+
+        $repository->associeSoireeSpectacle($idSoiree, $spectacles);
 
     
         $url = "Location: index.php?action=list-soirees&id=" . $idSoiree;
