@@ -31,12 +31,12 @@ class SoireeRenderer implements Renderer
     {
         $soiree = $this->soiree;
 
-        $html = "<h2>" . htmlspecialchars($soiree->__get('nomSoiree')) . "</h2>";
-        $html .= "<p><strong>Date :</strong> " . htmlspecialchars($soiree->__get('dateSoiree')) . "</p>";
-        $html .= "<p><strong>Lieu :</strong> " . htmlspecialchars($soiree->__get('lieu')) . "</p>";
-        $html .= "<p><strong>Tarif :</strong> " . htmlspecialchars(number_format($soiree->__get('tarif'), 2)) . " €</p>";
-        $html .= "<p><strong>Thématique :</strong> " . htmlspecialchars($soiree->__get('thematique')) . "</p>";
-        $html .= "<p><strong>Horaire :</strong> " . htmlspecialchars($soiree->__get('horaire')) . "</p>";
+        $html = "<h2>" . htmlspecialchars_decode($soiree->__get('nomSoiree'), ENT_QUOTES) . "</h2>";
+        $html .= "<p><strong>Date :</strong> " . htmlspecialchars_decode($soiree->__get('dateSoiree'), ENT_QUOTES) . "</p>";
+        $html .= "<p><strong>Lieu :</strong> " . htmlspecialchars_decode($soiree->__get('lieu'), ENT_QUOTES) . "</p>";
+        $html .= "<p><strong>Tarif :</strong> " . htmlspecialchars_decode(number_format($soiree->__get('tarif'), 2), ENT_QUOTES) . " €</p>";
+        $html .= "<p><strong>Thématique :</strong> " . htmlspecialchars_decode($soiree->__get('thematique'), ENT_QUOTES) . "</p>";
+        $html .= "<p><strong>Horaire :</strong> " . htmlspecialchars_decode($soiree->__get('horaire'), ENT_QUOTES) . "</p>";
 
 
         return $html;
@@ -46,10 +46,10 @@ class SoireeRenderer implements Renderer
     {
         $soiree = $this->soiree;
 
-        $html = "<h2>" . htmlspecialchars($soiree->__get('nomSoiree')) . "</h2>";
-        $html .= "<p><strong>Date :</strong> " . htmlspecialchars($soiree->__get('dateSoiree')) . "</p>";
-        $html .= "<p><strong>Lieu :</strong> " . htmlspecialchars($soiree->__get('lieu')) . "</p>";
-        $html .= "<p><strong>Thématique :</strong> " . htmlspecialchars($soiree->__get('thematique')) . "</p>";
+        $html = "<h2>" . htmlspecialchars_decode($soiree->__get('nomSoiree'), ENT_QUOTES) . "</h2>";
+        $html .= "<p><strong>Date :</strong> " . htmlspecialchars_decode($soiree->__get('dateSoiree'), ENT_QUOTES) . "</p>";
+        $html .= "<p><strong>Lieu :</strong> " . htmlspecialchars_decode($soiree->__get('lieu'), ENT_QUOTES) . "</p>";
+        $html .= "<p><strong>Thématique :</strong> " . htmlspecialchars_decode($soiree->__get('thematique'), ENT_QUOTES) . "</p>";
 
         return $html;
     }

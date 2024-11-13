@@ -40,7 +40,7 @@ class DisplaySpectaclesAction extends Action {
     
 
     private static function getOptions($repo): string {
-        $trichoix = $_GET['trie'] ?? '';
+        $trichoix = filter_var($_GET['trie'] ?? null, FILTER_SANITIZE_SPECIAL_CHARS);
         $html = "<label for='trie'>Trier par :</label>";
         $html .= "<form method='GET' action='' id='filterForm'>";
         $html .= "<select name='trie' id='trie' onchange='this.form.submit()'>";

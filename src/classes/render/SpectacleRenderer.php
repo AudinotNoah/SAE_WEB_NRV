@@ -33,22 +33,22 @@ class SpectacleRenderer implements Renderer
     {
         $spectacle = $this->spectacle;
 
-        $html = "<h2>" . htmlspecialchars($spectacle->nom) . " - " . htmlspecialchars($spectacle->statut) . "</h2>";
+        $html = "<h2>" . htmlspecialchars_decode($spectacle->nom, ENT_QUOTES) . " - " . htmlspecialchars_decode($spectacle->statut, ENT_QUOTES) . "</h2>";
         $html .= "<p><strong>Artistes :</strong></p><ul>";
         foreach ($spectacle->__get('artistes') as $artiste) {
-            $html .= "<li>" . htmlspecialchars($artiste) . "</li>";
+            $html .= "<li>" . htmlspecialchars_decode($artiste, ENT_QUOTES) . "</li>";
         }
         $html .= "</ul>";
 
-        $html .= "<p><strong>Description :</strong> " . htmlspecialchars($spectacle->__get('description')) . "</p>";
-        $html .= "<p><strong>Style :</strong> " . htmlspecialchars($spectacle->__get('style')) . "</p>";
+        $html .= "<p><strong>Description :</strong> " . htmlspecialchars_decode($spectacle->__get('description'), ENT_QUOTES) . "</p>";
+        $html .= "<p><strong>Style :</strong> " . htmlspecialchars_decode($spectacle->__get('style'), ENT_QUOTES) . "</p>";
         //mettre ici images et video
 
         $images = $spectacle->__get('images');
         if (!empty($images)) {
             $html .= "<h3>Images :</h3>";
             foreach ($images as $image) {
-                $html .= "<img src='src/assets/images/spectacle-img/" . htmlspecialchars($image) . "' alt='Image de {$spectacle->__get('nom')}'>";
+                $html .= "<img src='src/assets/images/spectacle-img/" . htmlspecialchars_decode($image, ENT_QUOTES) . "' alt='Image de {$spectacle->__get('nom')}'>";
             }
         }   
 
@@ -63,8 +63,8 @@ class SpectacleRenderer implements Renderer
     private function renderCompact(): string
     {
         $spectacle = $this->spectacle;
-        $html = "<h2>" . htmlspecialchars($spectacle->nom) . " - " . htmlspecialchars($spectacle->statut) . "</h2>";
-        $html .= "<p><strong>Style :</strong> " . htmlspecialchars($spectacle->__get('style')) . "</p>";
+        $html = "<h2>" . htmlspecialchars_decode($spectacle->nom, ENT_QUOTES) . " - " . htmlspecialchars_decode($spectacle->statut, ENT_QUOTES) . "</h2>";
+        $html .= "<p><strong>Style :</strong> " . htmlspecialchars_decode($spectacle->__get('style'), ENT_QUOTES) . "</p>";
         return $html;
     }
 }
