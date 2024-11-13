@@ -36,7 +36,7 @@ class CreateStaffAction extends Action
             return $errorMessage;
         }
         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
-        $password = $_POST['password'];
+        $password = filter_input(INPUT_POST, 'password', FILTER_SANITIZE_STRING);
         try{
             AuthnProvider::createStaff($email, $password);
             return "Le compte staff $email a bien été créé avec le mot de passe $password";

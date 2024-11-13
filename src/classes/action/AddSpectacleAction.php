@@ -90,12 +90,13 @@ class AddSpectacleAction extends Action
             return $errorMessage;
         }
 
-        $nom = $_POST['spectacle_name'];
-        $horaireDebut = $_POST['spectacle_horaireDebut'];
-        $horaireFin = $_POST['spectacle_horaireFin'];
-        $style = $_POST['spectacle_style'] ?? 'Inconnu';
-        $soirees = isset($_POST['spectacle_soirees']) ? (array)$_POST['spectacle_soirees'] : [];
-        $description = $_POST['spectacle_description'] ?? 'Aucune description';
+        $nom = filter_var($_POST['spectacle_name'], FILTER_SANITIZE_STRING);
+        $horaireDebut = filter_var($_POST['spectacle_horaireDebut'], FILTER_SANITIZE_STRING);
+        $horaireFin = filter_var($_POST['spectacle_horaireFin'], FILTER_SANITIZE_STRING);
+        $style = filter_var($_POST['spectacle_style'] ?? 'Inconnu', FILTER_SANITIZE_STRING);
+        $soirees = isset($_POST['spectacle_soirees']) ? array_map('intval', $_POST['spectacle_soirees']) : [];
+        $description = filter_var($_POST['spectacle_description'] ?? 'Aucune description', FILTER_SANITIZE_STRING);
+
 
         if (!$this->validateTimeFormat($horaireDebut) || !$this->validateTimeFormat($horaireFin)) {
             return "<p>Erreur : L'heure de début ou de fin est invalide. Veuillez utiliser le format HH:MM.</p>" . $this->get();

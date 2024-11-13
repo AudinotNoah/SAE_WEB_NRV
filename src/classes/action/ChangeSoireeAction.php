@@ -117,13 +117,14 @@ class ChangeSoireeAction extends Action {
 
     protected function post(): string
     {
-        $nom = $_POST['nom'];
-        $date = $_POST['date'];
-        $horaire = $_POST['horaire'];
-        $lieu = $_POST['lieu'];
-        $tarif = $_POST['tarif'];
-        $thematique = $_POST['thematique'];
-        $spectacles = isset($_POST['spectacles']) ? (array)$_POST['spectacles'] : [];
+        $nom = filter_var($_POST['nom'], FILTER_SANITIZE_STRING);
+        $date = filter_var($_POST['date'], FILTER_SANITIZE_STRING);
+        $horaire = filter_var($_POST['horaire'], FILTER_SANITIZE_STRING);
+        $lieu = filter_var($_POST['lieu'], FILTER_SANITIZE_STRING);
+        $tarif = filter_var($_POST['tarif'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION);
+        $thematique = filter_var($_POST['thematique'], FILTER_SANITIZE_STRING);
+        $spectacles = isset($_POST['spectacles']) ? array_map('intval', $_POST['spectacles']) : [];
+
 
 
         $repo = NrvRepository::getInstance();
