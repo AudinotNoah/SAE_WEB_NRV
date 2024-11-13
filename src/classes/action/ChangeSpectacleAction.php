@@ -17,8 +17,10 @@ class ChangeSpectacleAction extends Action {
     protected function get(): string {
         $id = $_GET['id'] ?? null;
 
-        if (!isset($_SESSION['user']) || ($_SESSION['user']['role'] != 'staff' && $_SESSION['user']['role'] != 'admin')) {
-            return "<p>Vous n'avez pas l'autorisation de modifier ce spectacle.</p>";
+        $user = Authz::checkRole(50);
+        if (is_string($user)) {
+            $errorMessage = $user;
+            return $errorMessage;
         }
 
         if (!$id) {
@@ -100,6 +102,12 @@ class ChangeSpectacleAction extends Action {
     protected function post(): string {
         $id = $_GET['id'] ?? null;
         $spectacle = $this->repo->getSpectacleById($id);
+
+        $user = Authz::checkRole(50);
+        if (is_string($user)) {
+            $errorMessage = $user;
+            return $errorMessage;
+        }
 
 
         if (!$id) {

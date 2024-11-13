@@ -12,8 +12,10 @@ class CreateStaffAction extends Action
     protected function get(): string
     {
         //verifie si l'utilisateur est un admin
-        if (!Authz::checkRole()) {
-            return "Vous n'êtes pas autorisé à accéder à cette page";
+        $user = Authz::checkRole(100);
+        if (is_string($user)) {
+            $errorMessage = $user;
+            return $errorMessage;
         }
         return <<<HTML
         <form method="POST" action="?action=createStaff">
@@ -27,7 +29,12 @@ class CreateStaffAction extends Action
     }
 
     protected function post(): string
-    {
+    {   
+        $user = Authz::checkRole(100);
+        if (is_string($user)) {
+            $errorMessage = $user;
+            return $errorMessage;
+        }
         $email = filter_input(INPUT_POST, 'email', FILTER_SANITIZE_EMAIL);
         $password = $_POST['password'];
         try{

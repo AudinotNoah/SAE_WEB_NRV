@@ -96,15 +96,15 @@ class Dispatcher {
         $user = Authz::checkRole(50); 
         if (!is_string($user)) {
             $menu .= <<<HTML
-                <a href="?action=menu-staff">Menu Staff</a>
+                <a href="?action=menu-staff">Menu Gestion</a>
                 HTML;
         }
 
         $user = Authz::checkRole(0); 
         if (!is_string($user)) {
             $menu .= <<<HTML
-            <a href="?action=logout">Se Déconnecter</a>
             <span>Connecté en tant que : {$_SESSION['user']['email']}</span>
+            <a href="?action=logout">Se Déconnecter</a>
             HTML;
         }
         else{

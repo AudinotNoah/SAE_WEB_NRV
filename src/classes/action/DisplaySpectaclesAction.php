@@ -6,6 +6,8 @@ use iutnc\nrv\festival\Spectacle;
 use iutnc\nrv\festival\Soiree;
 use iutnc\nrv\render\SpectacleRenderer;
 use iutnc\nrv\render\SoireeRenderer;
+use iutnc\nrv\auth\Authz;
+
 
 class DisplaySpectaclesAction extends Action {
 
@@ -117,7 +119,6 @@ class DisplaySpectaclesAction extends Action {
         $choix = $_GET[$trie] ?? null;
         $spectacles = $repo->getAllSpectacles();
 
-        $isStaffOrAdmin = $_SESSION['user'] && $_SESSION['user']['role'] === 'staff' || $_SESSION['user']['role'] === 'admin';
 
         if (!$id) {
             $html = "<h2>Spectacles Disponibles</h2>";
@@ -163,13 +164,12 @@ class DisplaySpectaclesAction extends Action {
                     break;
                 }
             }
-            $html .= self::createSpec($sp, $repo,1);
-
-
-            // Ajoute un bouton "Modifier" pour les utilisateurs staff ou admin
-            if ($isStaffOrAdmin) {
+            $user = Authz::checkRole(100); 
+            if (!is_string($user)) {
                 $html .= "<button><a href='?action=modify-spectacle&id={$sp['idSpectacle']}'\">Modifier ce spectacle</a></button>";
             }
+            $html .= self::createSpec($sp, $repo,1);
+
 
             $soirees = $repo->getAllSoireeForSpec($sp['idSpectacle']);
             $html .= "<h1>Dispo dans les soirées suivantes : </h1>";

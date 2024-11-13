@@ -11,11 +11,11 @@ class Authz {
         try {
             $user = AuthnProvider::getSignedInUser();
             
-            if ($user['role'] < $role) {
-                return "Role inssufisant";
+            if ((int) $user['droit'] >= $role) {
+                return $user;
             }
     
-            return $user;
+            return "Droit insuffisant";
         } catch (AuthnException $e) {
             return $e->getMessage();
         }
