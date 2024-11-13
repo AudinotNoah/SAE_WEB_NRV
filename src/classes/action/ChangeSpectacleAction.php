@@ -11,7 +11,7 @@ class ChangeSpectacleAction extends Action {
     protected function get(): string {
         $repo = NrvRepository::getInstance();
 
-        $id = $_GET['id'] ?? null;
+        $id = filter_var($_GET['id'] ?? null, FILTER_SANITIZE_NUMBER_INT);
 
         $user = Authz::checkRole(50);
         if (is_string($user)) {
@@ -99,8 +99,8 @@ class ChangeSpectacleAction extends Action {
         $id = $_GET['id'] ?? null;
         $repo = NrvRepository::getInstance();
 
-        $spectacle = $repo->getSpectacleById($id);
 
+        // Vérifier si l'utilisateur est connecté et a le rôle nécessaire
         $user = Authz::checkRole(50);
         if (is_string($user)) {
             $errorMessage = $user;
