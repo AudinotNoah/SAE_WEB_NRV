@@ -97,6 +97,9 @@ class DisplaySpectaclesAction extends Action {
                         $preferences = explode(',', $_COOKIE['preferences']);
                         $valide = in_array($sp['idSpectacle'], $preferences);
                     }
+                    else{
+                        $valide = false;
+                    }
                     break;
 
                 default:
