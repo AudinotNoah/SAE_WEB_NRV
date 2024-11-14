@@ -32,7 +32,7 @@ class Dispatcher {
                 break;
 
             case 'modify-spectacle':
-                $actionInstance = new ChangeSpectacleAction();  
+                $actionInstance = new ChangeSpectacleAction();
                 break;
 
             case 'menu-staff':
@@ -44,7 +44,7 @@ class Dispatcher {
                 break;
 
             case 'createStaff':
-                $actionInstance = new CreateStaffAction();   
+                $actionInstance = new CreateStaffAction();
                 break;
 
             case 'programme':
@@ -60,7 +60,7 @@ class Dispatcher {
                 break;
 
             case 'add-spectacle':
-                $actionInstance = new AddSpectacleAction();  
+                $actionInstance = new AddSpectacleAction();
                 break;
 
             case 'add-soiree':
@@ -76,34 +76,39 @@ class Dispatcher {
     }
 
     private function renderPage(string $html): void {
-        // Menu de base
+        // Menu de base avec Bulma, plus stylisé
         $menu = <<<HTML
-        <nav>
-            <a href="?action=default">Accueil</a>
-            <a href="?action=programme">Programme</a>
-            <a href="?action=list-soirees">Liste des Soirées</a>
-            <a href="?action=programme&trie=preferences">Votre liste de préférence</a>
+        <nav class="navbar is-spaced is-primary is-size-5 py-3">
+            <div class="navbar-brand">
+                <a class="navbar-item has-text-weight-bold is-size-4" href="?action=default">Accueil</a>
+                <a class="navbar-item has-text-weight-semibold" href="?action=programme">Programme</a>
+                <a class="navbar-item has-text-weight-semibold" href="?action=list-soirees">Liste des Soirées</a>
+                <a class="navbar-item has-text-weight-semibold" href="?action=programme&trie=preferences">Votre liste de préférence</a>
+            </div>
+            <div class="navbar-menu">
+                <div class="navbar-end">
         HTML;
-        $user = Authz::checkRole(50); 
+
+        $user = Authz::checkRole(50);
         if (!is_string($user)) {
             $menu .= <<<HTML
-                <a href="?action=menu-staff">Menu Gestion</a>
+                <a class="navbar-item has-text-weight-semibold" href="?action=menu-staff">Menu Gestion</a>
                 HTML;
         }
 
         if (Authz::estCo()) {
             $menu .= <<<HTML
-            <span>Connecté en tant que : {$_SESSION['user']['email']}</span>
-            <a href="?action=logout">Se Déconnecter</a>
+            <span class="navbar-item has-text-white is-size-5">Connecté en tant que : {$_SESSION['user']['email']}</span>
+            <a class="navbar-item button is-danger is-danger" href="?action=logout">Se Déconnecter</a>
             HTML;
         }
         else{
             $menu .= <<<HTML
-            <a href="?action=login">Se Connecter</a>
+            <a class="navbar-item button is-primary is-succes" href="?action=login">Se Connecter</a>
             HTML;
         }
 
-        $menu .= "</nav>";
+        $menu .= "</div></div></nav>";
 
         echo <<<HTML
         <!DOCTYPE html>
@@ -111,15 +116,17 @@ class Dispatcher {
         <head>
             <meta charset='UTF-8'>
             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-            <link rel='stylesheet' href='src/assets/css/style.css'>
-            <title>projet web</title>
+            <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css'>
+            <title>Festival de Musique - Administration</title>
         </head>
         <body>
             <script src="src/assets/js/index.js"></script>
             $menu
-            <main>
-                <p></p> <!-- espace -->
-                $html
+            <main class="section">
+                <div class="container">
+                    <p></p> <!-- espace -->
+                    $html
+                </div>
             </main>
         </body>
         </html>

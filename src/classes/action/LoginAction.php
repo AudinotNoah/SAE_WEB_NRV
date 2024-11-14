@@ -15,14 +15,30 @@ class LoginAction extends Action {
 
     public function get(): string {
         return <<<HTML
-        <p></p>
-        <form method="POST" action="?action=login">
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" required>
-            <label for="password">Mot de passe:</label>
-            <input type="password" id="password" name="password" required>
-            <button type="submit">Login</button>
-        </form>
+        <div class="container">
+            <h2 class="title is-4">Connexion</h2>
+            <form method="POST" action="?action=login" class="box">
+                <div class="field">
+                    <label class="label" for="email">Email:</label>
+                    <div class="control">
+                        <input class="input" type="email" id="email" name="email" required>
+                    </div>
+                </div>
+                
+                <div class="field">
+                    <label class="label" for="password">Mot de passe:</label>
+                    <div class="control">
+                        <input class="input" type="password" id="password" name="password" required>
+                    </div>
+                </div>
+
+                <div class="field">
+                    <div class="control">
+                        <button class="button is-primary" type="submit">Se connecter</button>
+                    </div>
+                </div>
+            </form>
+        </div>
         HTML;
     }
 
@@ -32,7 +48,7 @@ class LoginAction extends Action {
 
         // Vérifier si l'utilisateur est temporairement bloqué
         if ($this->isLockedOut($email)) {
-            return "Votre compte est temporairement bloqué en raison de trop nombreuses tentatives de connexion. Veuillez réessayer plus tard.";
+            return "<div class='notification is-danger'>Votre compte est temporairement bloqué en raison de trop nombreuses tentatives de connexion. Veuillez réessayer plus tard.</div>";
         }
 
         try {
@@ -42,13 +58,13 @@ class LoginAction extends Action {
             // Réinitialiser les tentatives après une connexion réussie
             $this->resetLoginAttempts($email);
 
-            return "Vous êtes connecté"; // Après avoir mis à jour la session
+            return "<div class='notification is-success'>Vous êtes connecté</div>"; // Après avoir mis à jour la session
         }
         catch (AuthnException $e) {
             // Enregistrer la tentative échouée
             $this->recordFailedAttempt($email);
 
-            return "Erreur: " . $e->getMessage();
+            return "<div class='notification is-danger'>Erreur: " . $e->getMessage() . "</div>";
         }
     }
 

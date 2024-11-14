@@ -5,7 +5,6 @@ namespace iutnc\nrv\action;
 use iutnc\nrv\repository\NrvRepository;
 use iutnc\nrv\auth\Authz;
 
-
 class ChangeSpectacleAction extends Action {
 
     protected function get(): string {
@@ -16,100 +15,124 @@ class ChangeSpectacleAction extends Action {
         $user = Authz::checkRole(50);
         if (is_string($user)) {
             $errorMessage = $user;
-            return $errorMessage;
+            return "<div class='notification is-danger'>$errorMessage</div>";
         }
 
         if (!$id) {
-            return "<p>Aucun spectacle spécifié.</p>";
+            return "<div class='notification is-warning'>Aucun spectacle spécifié.</div>";
         }
 
         $spectacle = $repo->getSpectacleById($id);
         if (!$spectacle) {
-            return "<p>Le spectacle spécifié n'existe pas.</p>";
+            return "<div class='notification is-danger'>Le spectacle spécifié n'existe pas.</div>";
         }
 
-        // Convertir la chaîne des IDs des soirées en tableau
         if (isset($spectacle['soirees_id']) && $spectacle['soirees_id']) {
             $spectacle['soirees_id'] = explode(',', $spectacle['soirees_id']);
         } else {
-            $spectacle['soirees_id'] = []; // Si aucune soirée n'est associée, initialiser comme tableau vide
+            $spectacle['soirees_id'] = [];
         }
 
-        // Liste des noms des styles
         $styles = $repo->getAllStyles();
-
-        // Liste des soirées disponibles
         $soirées = $repo->getAllSoirees();
 
-        $html = "<h2>Modifier le Spectacle</h2>";
-        $html .= "<form method='POST' action='' enctype='multipart/form-data'>";
-        $html .= "<label for='nom'>Nom du spectacle:</label>";
-        $html .= "<input type='text' id='nom' name='nom' value='" . htmlspecialchars_decode($spectacle['nomSpectacle'], ENT_QUOTES) . "' required><br><br>";
+        $html = "<div class='container'>";
+        $html .= "<h2 class='title is-4'>Modifier le Spectacle</h2>";
+        $html .= "<form method='POST' action='' enctype='multipart/form-data' class='box'>";
 
-        $html .= "<label for='description'>Description:</label>";
-        $html .= "<textarea id='description' name='description' required>" . htmlspecialchars_decode($spectacle['description'], ENT_QUOTES) . "</textarea><br><br>";
+        $html .= "<div class='field'>
+                    <label class='label' for='nom'>Nom du spectacle:</label>
+                    <div class='control'>
+                        <input class='input' type='text' id='nom' name='nom' value='" . htmlspecialchars_decode($spectacle['nomSpectacle'], ENT_QUOTES) . "' required>
+                    </div>
+                  </div>";
 
-        $html .= "<label for='style'>Style:</label>";
-        $html .= "<select id='style' name='style' required>";
+        $html .= "<div class='field'>
+                    <label class='label' for='description'>Description:</label>
+                    <div class='control'>
+                        <textarea class='textarea' id='description' name='description' required>" . htmlspecialchars_decode($spectacle['description'], ENT_QUOTES) . "</textarea>
+                    </div>
+                  </div>";
 
+        $html .= "<div class='field'>
+                    <label class='label' for='style'>Style:</label>
+                    <div class='control'>
+                        <div class='select'>
+                            <select id='style' name='style' required>";
         foreach ($styles as $style) {
             $selected = ($spectacle['idStyle'] === $style['idStyle']) ? 'selected' : '';
-            $html .= "<option value='" . $style['idStyle'] . "' $selected>" . $style['nomStyle'] . "</option>";
+            $html .= "<option value='" . $style['idStyle'] . "' $selected>" . htmlspecialchars_decode($style['nomStyle'], ENT_QUOTES) . "</option>";
         }
+        $html .= "</select></div></div></div>";
 
+        $html .= "<div class='field'>
+                    <label class='label' for='horaireDebut'>Horaire de début:</label>
+                    <div class='control'>
+                        <input class='input' type='time' id='horaireDebut' name='horaireDebut' value='" . htmlspecialchars($spectacle['horaireDebut']) . "' required>
+                    </div>
+                  </div>";
 
-        $html .= "</select><br><br>";
+        $html .= "<div class='field'>
+                    <label class='label' for='horaireFin'>Horaire de fin:</label>
+                    <div class='control'>
+                        <input class='input' type='time' id='horaireFin' name='horaireFin' value='" . htmlspecialchars($spectacle['horaireFin']) . "' required>
+                    </div>
+                  </div>";
 
-        $html .= "<label for='horaireDebut'>Horaire de début:</label>";
-        $html .= "<input type='time' id='horaireDebut' name='horaireDebut' value='" . htmlspecialchars($spectacle['horaireDebut']) . "' required><br><br>";
-
-        $html .= "<label for='horaireFin'>Horaire de fin:</label>";
-        $html .= "<input type='time' id='horaireFin' name='horaireFin' value='" . htmlspecialchars($spectacle['horaireFin']) . "' required><br><br>";
-
-        $html .= "<label for='statut'>Statut:</label>";
-        $html .= "<select id='statut' name='statut' required>";
+        $html .= "<div class='field'>
+                    <label class='label' for='statut'>Statut:</label>
+                    <div class='control'>
+                        <div class='select'>
+                            <select id='statut' name='statut' required>";
         $statuts = ['A venir', 'Annulé'];
         foreach ($statuts as $statut) {
             $selected = ($spectacle['statut'] === $statut) ? 'selected' : '';
             $html .= "<option value='$statut' $selected>$statut</option>";
         }
-        $html .= "</select><br><br>";
+        $html .= "</select></div></div></div>";
 
-        // Champ pour l'audio
-        $html .= "<label for='audio'>Modifier l'audio (fichier MP3):</label>";
-        $html .= "<input type='file' id='audio' name='audio' accept='audio/mp3'><br><br>";
+        $html .= "<div class='field'>
+                    <label class='label' for='audio'>Modifier l'audio (fichier MP3):</label>
+                    <div class='control'>
+                        <input class='input' type='file' id='audio' name='audio' accept='audio/mp3'>
+                    </div>
+                  </div>";
 
-        // Liste des soirées
-        $html .= "<label>Choisir les soirées où ce spectacle sera joué:</label><br>";
+        $html .= "<div class='field'>
+                    <label class='label'>Choisir les soirées où ce spectacle sera joué:</label>
+                    <div class='control'>";
         foreach ($soirées as $soiree) {
             $checked = in_array($soiree['idSoiree'], $spectacle['soirees_id']) ? 'checked' : '';
-            $html .= "<input type='checkbox' name='soirees[]' value='" . $soiree['idSoiree'] . "' $checked> " . htmlspecialchars_decode($soiree['nomSoiree'], ENT_QUOTES) . "<br>";
+            $html .= "<label class='checkbox'>
+                        <input type='checkbox' name='soirees[]' value='" . $soiree['idSoiree'] . "' $checked> 
+                        " . htmlspecialchars_decode($soiree['nomSoiree'], ENT_QUOTES) . "
+                      </label><br>";
         }
-        $html .= "<br>";
+        $html .= "</div></div>";
 
-        $html .= "<button type='submit'>Enregistrer les modifications</button>";
-        $html .= "</form>";
+        $html .= "<div class='field'>
+                    <div class='control'>
+                        <button class='button is-primary' type='submit'>Enregistrer les modifications</button>
+                    </div>
+                  </div>";
+
+        $html .= "</form></div>";
 
         return $html;
     }
-
-
 
     protected function post(): string {
         $id = $_GET['id'] ?? null;
         $repo = NrvRepository::getInstance();
 
-
-        // Vérifier si l'utilisateur est connecté et a le rôle nécessaire
         $user = Authz::checkRole(50);
         if (is_string($user)) {
             $errorMessage = $user;
-            return $errorMessage;
+            return "<div class='notification is-danger'>$errorMessage</div>";
         }
 
-
         if (!$id) {
-            return "<p>Aucun spectacle spécifié.</p>";
+            return "<div class='notification is-warning'>Aucun spectacle spécifié.</div>";
         }
 
         $nom = filter_var($_POST['nom'] ?? null, FILTER_SANITIZE_SPECIAL_CHARS);
@@ -120,50 +143,43 @@ class ChangeSpectacleAction extends Action {
         $statut = filter_var($_POST['statut'] ?? null, FILTER_SANITIZE_SPECIAL_CHARS);
         $soirees = isset($_POST['soirees']) ? array_map('intval', $_POST['soirees']) : [];
 
-
         if (!$nom || !$description || !$idstyle || !$horaireDebut || !$horaireFin || !$statut) {
-            return "<p>Merci de remplir tous les champs.</p>";
+            return "<div class='notification is-warning'>Merci de remplir tous les champs.</div>";
         }
 
-        // Traitement du fichier audio
-        $allowedAudioExtension = 'mp3'; // Extension autorisée pour les fichiers audio
-        $maxAudioFileSize = 10 * 1024 * 1024; // Taille maximale autorisée pour le fichier audio (10 Mo)
+        $allowedAudioExtension = 'mp3';
+        $maxAudioFileSize = 10 * 1024 * 1024;
 
         if (isset($_FILES['audio']) && $_FILES['audio']['error'] === UPLOAD_ERR_OK) {
             $audioFile = $_FILES['audio'];
             $audioExtension = strtolower(pathinfo($audioFile['name'], PATHINFO_EXTENSION));
 
-            // Vérification de l'extension du fichier audio
             if ($audioExtension !== $allowedAudioExtension) {
-                return "<p>Erreur : Le fichier audio doit être au format .mp3</p>" . $this->get();
+                return "<div class='notification is-danger'>Erreur : Le fichier audio doit être au format .mp3</div>" . $this->get();
             }
 
-            // Vérification de la taille du fichier audio
             if ($audioFile['size'] > $maxAudioFileSize) {
-                return "<p>Erreur : Le fichier audio est trop volumineux. La taille maximale autorisée est de 10 Mo.</p>" . $this->get();
+                return "<div class='notification is-danger'>Erreur : Le fichier audio est trop volumineux. La taille maximale autorisée est de 10 Mo.</div>" . $this->get();
             }
 
-            // Génération d'un nom de fichier unique pour l'audio
-            $uniqueAudioId = uniqid('audio_', true); // Génère un ID unique
+            $uniqueAudioId = uniqid('audio_', true);
             $audioFilename = $uniqueAudioId . '.' . $audioExtension;
 
             $audioDir = "src/assets/media";
             if (!is_dir($audioDir)) {
-                mkdir($audioDir, 0777, true); // Crée le répertoire si il n'existe pas
+                mkdir($audioDir, 0777, true);
             }
 
             $audioDestination = "$audioDir/$audioFilename";
             if (move_uploaded_file($audioFile['tmp_name'], $audioDestination)) {
-                $nomFichier = $audioFilename; // Stocke le nom du fichier audio pour une utilisation ultérieure
+                $nomFichier = $audioFilename;
             } else {
-                return "<p>Erreur : Impossible de télécharger le fichier audio.</p>" . $this->get();
+                return "<div class='notification is-danger'>Erreur : Impossible de télécharger le fichier audio.</div>" . $this->get();
             }
         } else {
-            // Garder l'ancien fichier audio si aucun nouveau n'est téléchargé
             $nomFichier = $repo->getAudio($id);
         }
 
-        // Mise à jour du spectacle
         $success = $repo->updateSpectacle($id, [
             'nomSpectacle' => $nom,
             'description' => $description,
@@ -175,17 +191,10 @@ class ChangeSpectacleAction extends Action {
         ]);
 
         if ($success) {
-            // Mise à jour des soirées sélectionnées
-            $repo->updateSoireesForSpectacle($id, $soirees);
-            $url = "Location: index.php?action=programme&id=" . $id;
-            header($url);
-
-            // return "<p>Le spectacle a été mis à jour avec succès.</p>";
+            $repo->updateSoireeSpectacle($id, $soirees);
+            return "<div class='notification is-success'>Le spectacle a été modifié avec succès.</div>";
         } else {
-            return "<p>Erreur lors de la mise à jour du spectacle. Veuillez réessayer.</p>";
+            return "<div class='notification is-danger'>Une erreur s'est produite lors de la modification du spectacle.</div>";
         }
     }
-
 }
-
-

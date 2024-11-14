@@ -8,30 +8,41 @@ class DisplayStaffMenu extends Action
 {
     public function execute(): string {
         $html = <<<HTML
-        <div class='content'>
-            <h2>Menu du Staff</h2>
-            <ul>
-                <li><a href='index.php?action=add-soiree'>Ajouter une soirée</a></li>
-                <li><a href='index.php?action=modif-soiree'>Modifier une soirée</a></li>
-                <li><a href='index.php?action=add-spectacle'>Ajouter un spectacle</a></li>
-                <li><a href='index.php?action=modif-spectacle'>Modifier un spectacle</a></li>
+        <div class="container">
+            <h2 class="title is-3">Menu du Staff</h2>
+            <div class="box">
+                <ul class="menu-list">
+                    <li><a href='index.php?action=add-soiree' class="button is-link is-fullwidth">Ajouter une soirée</a></li>
+                    <li><a href='index.php?action=list-soirees' class="button is-link is-fullwidth">Modifier une soirée</a></li>
+                    <li><a href='index.php?action=add-spectacle' class="button is-link is-fullwidth">Ajouter un spectacle</a></li>
+                    <li><a href='index.php?action=programme' class="button is-link is-fullwidth">Modifier un spectacle</a></li>
+                </ul>
+            </div>
+        </div>
         HTML;
 
-        
-        $user = Authz::checkRole(50); 
+        // Vérification du rôle de l'utilisateur avec Authz
+        $user = Authz::checkRole(50);
         if (is_string($user)) {
             $errorMessage = $user;
             return $errorMessage;
         }
 
-        $user = Authz::checkRole(100); 
+        // Vérification du rôle administrateur (100)
+        $user = Authz::checkRole(100);
         if (!is_string($user)) {
-            $html .= "<h2>Menu Administrateur</h2>";
-            $html .= "<li><a href='index.php?action=createStaff'>Créer un user</a></li>";
+            $html .= <<<HTML
+            <div class="box">
+                <h2 class="title is-4">Menu Administrateur</h2>
+                <ul class="menu-list">
+                    <li><a href='index.php?action=createStaff' class="button is-warning is-fullwidth">Créer un compte staff</a></li>
+                </ul>
+            </div>
+            HTML;
         }
-        $html .= "</ul></div>";
-    
+
+        $html .= "</div>";  // Fermeture de la div container
+
         return $html;
     }
-    
 }

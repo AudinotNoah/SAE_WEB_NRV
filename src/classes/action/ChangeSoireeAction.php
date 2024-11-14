@@ -17,16 +17,16 @@ class ChangeSoireeAction extends Action {
         $user = Authz::checkRole(50);
         if (is_string($user)) {
             $errorMessage = $user;
-            return $errorMessage;
+            return "<div class='notification is-danger'>$errorMessage</div>";
         }
 
         if (!$id) {
-            return "<p>Aucune soirée spécifiée.</p>";
+            return "<p class='notification is-warning'>Aucune soirée spécifiée.</p>";
         }
 
         $soiree = $repo->getSoireeById($id);
         if (!$soiree) {
-            return "<p>La soirée spécifiée n'existe pas.</p>";
+            return "<p class='notification is-danger'>La soirée spécifiée n'existe pas.</p>";
         }
 
         // Convertir la chaîne des IDs des spectacles en tableau
@@ -42,49 +42,77 @@ class ChangeSoireeAction extends Action {
         // Liste des spectacles disponibles
         $spectacles = $repo->getAllSpectacles();
 
-        $html = "<h2>Modifier la Soirée</h2>";
-        $html .= "<form method='POST' action='' enctype='multipart/form-data'>";
+        $html = "<div class='container'>";
+        $html .= "<h2 class='title is-4'>Modifier la Soirée</h2>";
+        $html .= "<form method='POST' action='' enctype='multipart/form-data' class='box'>";
 
         // Nom de la soirée
-        $html .= "<label for='nom'>Nom de la soirée:</label>";
-        $html .= "<input type='text' id='nom' name='nom' value='" . htmlspecialchars_decode($soiree['nomSoiree'], ENT_QUOTES) . "' required><br><br>";
+        $html .= "<div class='field'>
+                    <label class='label' for='nom'>Nom de la soirée:</label>
+                    <div class='control'>
+                        <input class='input' type='text' id='nom' name='nom' value='" . htmlspecialchars_decode($soiree['nomSoiree'], ENT_QUOTES) . "' required>
+                    </div>
+                  </div>";
 
         // Date de la soirée
-        $html .= "<label for='date'>Date:</label>";
-        $html .= "<input type='date' id='date' name='date' value='" . htmlspecialchars($soiree['dateSoiree']) . "' required><br><br>";
+        $html .= "<div class='field'>
+                    <label class='label' for='date'>Date:</label>
+                    <div class='control'>
+                        <input class='input' type='date' id='date' name='date' value='" . htmlspecialchars($soiree['dateSoiree']) . "' required>
+                    </div>
+                  </div>";
 
         // Heure de début
-        $html .= "<label for='horaire'>Heure de début:</label>";
-        $html .= "<input type='time' id='horaire' name='horaire' value='" . htmlspecialchars($soiree['horaire']) . "' required><br><br>";
+        $html .= "<div class='field'>
+                    <label class='label' for='horaire'>Heure de début:</label>
+                    <div class='control'>
+                        <input class='input' type='time' id='horaire' name='horaire' value='" . htmlspecialchars($soiree['horaire']) . "' required>
+                    </div>
+                  </div>";
 
         // Lieu
-        $html .= "<label for='lieu'>Lieu:</label>";
-        $html .= "<select id='lieu' name='lieu' required>";
+        $html .= "<div class='field'>
+                    <label class='label' for='lieu'>Lieu:</label>
+                    <div class='control'>
+                        <div class='select'>
+                            <select id='lieu' name='lieu' required>";
         foreach ($lieux as $lieu) {
             $selected = ($soiree['idLieu'] === $lieu['idLieu']) ? 'selected' : '';
             $html .= "<option value='" . $lieu['idLieu'] . "' $selected>" . htmlspecialchars_decode($lieu['lieuAdresse'], ENT_QUOTES) . "</option>";
         }
-        $html .= "</select><br><br>";
+        $html .= "</select></div></div></div>";
 
         // Tarif de la soirée
-        $html .= "<label for='tarif'>Tarif:</label>";
-        $html .= "<input type='number' id='tarif' name='tarif' value='" . htmlspecialchars_decode($soiree['tarif'], ENT_QUOTES) . "' step='0.01' required><br><br>";
+        $html .= "<div class='field'>
+                    <label class='label' for='tarif'>Tarif:</label>
+                    <div class='control'>
+                        <input class='input' type='number' id='tarif' name='tarif' value='" . htmlspecialchars_decode($soiree['tarif'], ENT_QUOTES) . "' step='0.01' required>
+                    </div>
+                  </div>";
 
         // Thématique de la soirée
-        $html .= "<label for='thematique'>Thématique:</label>";
-        $html .= "<input type='text' id='thematique' name='thematique' value='" . htmlspecialchars_decode($soiree['thematique'], ENT_QUOTES) . "' required><br><br>";
+        $html .= "<div class='field'>
+                    <label class='label' for='thematique'>Thématique:</label>
+                    <div class='control'>
+                        <input class='input' type='text' id='thematique' name='thematique' value='" . htmlspecialchars_decode($soiree['thematique'], ENT_QUOTES) . "' required>
+                    </div>
+                  </div>";
 
-
-        $html .= "<fieldset id='spectacle-selection'>";
-        $html .= "<legend>Choisir les spectacles qui seront joués lors de cette soirée (maximum 3):</legend>";
+        // Spectacles
+        $html .= "<div class='field'>
+                    <label class='label'>Choisir les spectacles qui seront joués lors de cette soirée (maximum 3):</label>
+                    <div class='control'>";
         foreach ($spectacles as $spectacle) {
             $checked = in_array($spectacle['idSpectacle'], $soiree['spectacles_id']) ? 'checked' : '';
-            $html .= "<label><input type='checkbox' name='spectacles[]' value='{$spectacle['idSpectacle']}' $checked> " . htmlspecialchars_decode($spectacle['nomSpectacle'], ENT_QUOTES) . "</label><br>";
+            $html .= "<label class='checkbox'>
+                        <input type='checkbox' name='spectacles[]' value='{$spectacle['idSpectacle']}' $checked>
+                        " . htmlspecialchars_decode($spectacle['nomSpectacle'], ENT_QUOTES) . "
+                      </label><br>";
         }
-        $html .= "</fieldset>";
+        $html .= "</div></div>";
 
-        // Ajoutez le script JavaScript
-                $html .= <<<HTML
+        // Script JavaScript pour limiter à 3 spectacles
+        $html .= <<<HTML
         <script>
         document.addEventListener('DOMContentLoaded', () => {
             const checkboxes = document.querySelectorAll('#spectacle-selection input[type="checkbox"]');
@@ -92,7 +120,7 @@ class ChangeSoireeAction extends Action {
                 checkbox.addEventListener('change', () => {
                     const checkedCount = document.querySelectorAll('#spectacle-selection input[type="checkbox"]:checked').length;
                     if (checkedCount > 3) {
-                        checkbox.checked = false; // Annule la sélection
+                        checkbox.checked = false;
                         alert("Vous pouvez sélectionner un maximum de 3 spectacles.");
                     }
                 });
@@ -101,19 +129,18 @@ class ChangeSoireeAction extends Action {
         </script>
         HTML;
 
-
-
         // Bouton de soumission
-        $html .= "<button type='submit'>Modifier la soirée</button>";
+        $html .= "<div class='field'>
+                    <div class='control'>
+                        <button class='button is-primary' type='submit'>Modifier la soirée</button>
+                    </div>
+                  </div>";
+
         $html .= "</form>";
-
-
-
+        $html .= "</div>";
 
         return $html;
     }
-
-
 
     protected function post(): string
     {
@@ -126,25 +153,21 @@ class ChangeSoireeAction extends Action {
         $thematique = filter_var($_POST['thematique'], FILTER_SANITIZE_SPECIAL_CHARS);
         $spectacles = isset($_POST['spectacles']) ? array_map('intval', $_POST['spectacles']) : [];
 
-
-
         $repo = NrvRepository::getInstance();
         $soiree = $repo->getSoireeById($id);
         if (!$soiree) {
-            return "<p>La soirée spécifiée n'existe pas.</p>";
+            return "<p class='notification is-danger'>La soirée spécifiée n'existe pas.</p>";
         }
 
         $result = $repo->updateSoiree($id, $nom, $date, $horaire, $lieu, $tarif, $thematique, $spectacles);
         if ($result) {
             $url = "Location: ?action=list-soirees&id=" . $id;
             header($url);
-            // return "<p>La soirée a été modifiée avec succès.</p>";
         } else {
-            return "<p>Une erreur s'est produite lors de la modification de la soirée.</p>";
+            return "<p class='notification is-danger'>Une erreur s'est produite lors de la modification de la soirée.</p>";
         }
 
         return '';
-
     }
 
 }
