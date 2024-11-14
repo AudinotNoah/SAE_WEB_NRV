@@ -3,13 +3,16 @@ namespace iutnc\nrv\action;
 
 use iutnc\nrv\repository\NrvRepository;
 use iutnc\nrv\festival\Spectacle;
+use iutnc\nrv\festival\Soiree;
 use iutnc\nrv\render\SpectacleRenderer;
+use iutnc\nrv\render\SoireeRenderer;
 use iutnc\nrv\auth\Authz;
+
 
 class DisplaySpectaclesAction extends Action {
 
-    // Crée l'affichage d'un spectacle
-    public static function createSpec($sp, $repo, $choixRendu): string {
+    // public pour display action
+    public static function createSpec($sp, $repo,$choixRendu): string {
         $stylenom = $repo->getStyleNom($sp['idStyle']);
         $images = $repo->getImagesBySpectacleId($sp['idSpectacle']);
         $artistes = $repo->getArtisteBySpectacleId($sp['idSpectacle']);
@@ -18,148 +21,190 @@ class DisplaySpectaclesAction extends Action {
         return $renderer->render($choixRendu);
     }
 
-    // Crée les options pour les filtres (Style, Date, Lieu)
     private static function getSelectOptions(array $options, string $nom, string $val, string $valchoisis): string {
-        $html = "<div class='field'>";
-        $html .= "<label for='$nom' class='label'>Choisir un $nom :</label>";
-        $html .= "<div class='control'>";
-        $html .= "<div class='select is-fullwidth'>";
+        $html = "<label for='$nom'>Choisir un $nom :</label>";
         $html .= "<select name='$nom' id='$nom' onchange='this.form.submit()'>";
         $html .= "<option value=''>Sélectionner</option>";
-
         foreach ($options as $option) {
             $valeur = $option[$val];
-            $valeuroption = ($nom === 'lieu') ? $option['idLieu'] : $valeur;
+            $valeuroption = $valeur;
+            
+            if ($nom === 'lieu') { // pour lieu on utilise l'id au lieu du nom 
+                $valeuroption = $option['idLieu'];
+            }
             $html .= "<option value='{$valeuroption}'" . ($valchoisis == $valeuroption ? ' selected' : '') . ">{$valeur}</option>";
         }
-
         $html .= "</select>";
-        $html .= "</div>";
-        $html .= "</div>";
-        $html .= "</div>";
         return $html;
     }
+    
 
-
-    // Crée le formulaire des filtres de tri
     private static function getOptions($repo): string {
         $trichoix = filter_var($_GET['trie'] ?? null, FILTER_SANITIZE_SPECIAL_CHARS);
-
-        $html = "<form method='GET' action='' id='filterForm' class='field is-grouped is-grouped-multiline mb-4'>";
-        $html .= "<input type='hidden' name='action' value='programme'>";
-
-        // Label principal
-        $html .= "<div class='control'>";
-        $html .= "<label for='trie' class='label mr-2'>Trier par :</label>";
-        $html .= "</div>";
-
-        // Sélecteur de tri principal
-        $html .= "<div class='control'>";
-        $html .= "<div class='select is-fullwidth'>";
+        $html = "<label for='trie'>Trier par :</label>";
+        $html .= "<form method='GET' action='' id='filterForm'>";
         $html .= "<select name='trie' id='trie' onchange='this.form.submit()'>";
         $html .= "<option value=''>Pas de filtre</option>";
         $html .= "<option value='style'" . ($trichoix === 'style' ? ' selected' : '') . ">Style</option>";
         $html .= "<option value='date'" . ($trichoix === 'date' ? ' selected' : '') . ">Date</option>";
         $html .= "<option value='lieu'" . ($trichoix === 'lieu' ? ' selected' : '') . ">Lieu</option>";
         $html .= "<option value='preferences'" . ($trichoix === 'preferences' ? ' selected' : '') . ">Préférences</option>";
+
         $html .= "</select>";
-        $html .= "</div>";
-        $html .= "</div>";
 
-        // Sous-sélecteur dynamique basé sur la sélection de tri
         if ($trichoix === 'style') {
-            $html .= "<div class='control'>";
-            $html .= self::getSelectOptions($repo->getAllStyles(), 'style', 'nomStyle', $_GET['style'] ?? '');
-            $html .= "</div>";
+            $styles = $repo->getAllStyles();
+            $stylechoix = filter_var($_GET['style'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+            $html .= self::getSelectOptions($styles, 'style', 'nomStyle', $stylechoix);
         } elseif ($trichoix === 'date') {
-            $html .= "<div class='control'>";
-            $html .= self::getSelectOptions($repo->getAllDates(), 'date', 'dateSoiree', $_GET['date'] ?? '');
-            $html .= "</div>";
+            $dates = $repo->getAllDates();
+            $datechoix = filter_var($_GET['date'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+            $html .= self::getSelectOptions($dates, 'date', 'dateSoiree', $datechoix);
         } elseif ($trichoix === 'lieu') {
-            $html .= "<div class='control'>";
-            $html .= self::getSelectOptions($repo->getAllLieux(), 'lieu', 'lieuAdresse', $_GET['lieu'] ?? '');
-            $html .= "</div>";
+            $lieux = $repo->getAllLieux();
+            $lieuchoix = filter_var($_GET['lieu'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
+            $html .= self::getSelectOptions($lieux, 'lieu', 'lieuAdresse', $lieuchoix);
         }
-
+        
         $html .= "</form>";
         return $html;
     }
 
-
-
-    // Affiche les spectacles filtrés sous forme de cartes
     private function renderFilteredSpectacles($repo, array $spectacles, string $trie, ?string $choix): string {
-        $html = "<div class='columns is-multiline'>";
+        $html = '';
         foreach ($spectacles as $sp) {
             $valide = true;
             switch ($trie) {
                 case 'style':
-                    $valide = $choix !== null && strtolower($choix) === strtolower($repo->getStyleNom($sp['idSpectacle']));
+                    if ($choix !== null) {
+                        $valide = strtolower($choix) === strtolower($repo->getStyleNom($sp['idSpectacle']));
+                    }
                     break;
                 case 'date':
-                    $valide = $choix !== null && in_array($sp['idSpectacle'], $repo->getAllSpecAtDate($choix));
+                    if ($choix !== null) {
+                        $liste_spec_date = $repo->getAllSpecAtDate($choix);
+                        $valide = in_array($sp['idSpectacle'], $liste_spec_date);
+                    }
                     break;
                 case 'lieu':
-                    $valide = $choix !== null && in_array($sp['idSpectacle'], $repo->getAllSpecAtLieu($choix));
+                    if ($choix !== null) {
+                        $liste_spec_lieu = $repo->getAllSpecAtLieu($choix);
+                        $valide = in_array($sp['idSpectacle'], $liste_spec_lieu);
+                    }
                     break;
                 case 'preferences':
-                    $valide = !empty($_COOKIE['preferences']) && in_array($sp['idSpectacle'], explode(',', $_COOKIE['preferences']));
+                    if (!empty($_COOKIE['preferences'])) {
+                        $preferences = explode(',', $_COOKIE['preferences']);
+                        $valide = in_array($sp['idSpectacle'], $preferences);
+                    }
+                    else{
+                        $valide = false;
+                    }
                     break;
+
                 default:
                     $valide = true;
                     break;
             }
+            
             if ($valide) {
-                $html .= "<div class='column is-one-third'>
-                            <div class='card'>
-                                <div class='card-content'>" .
-                    self::createSpec($sp, $repo, 2) .
-                    "</div>
-                                <div class='card-footer'>
-                                    <a href='?action=programme&id={$sp['idSpectacle']}' class='card-footer-item button is-info is-fullwidth'>Plus d'info</a>
-                                </div>
-                            </div>
-                          </div>";
+                $html .= self::createSpec($sp, $repo,2) . "<li><a href='?action=programme&id={$sp['idSpectacle']}'>Plus d'info</a></li>";
             }
+            
         }
-        $html .= "</div>"; // Fin des colonnes
         return $html;
     }
 
-
-    // Méthode principale qui gère l'affichage des spectacles
     protected function get(): string {
         $repo = NrvRepository::getInstance();
         $id = filter_var($_GET['id'] ?? null, FILTER_VALIDATE_INT);
+        $id = ($id === false) ? null : $id;
         $trie = filter_var($_GET['trie'] ?? null, FILTER_SANITIZE_SPECIAL_CHARS);
-        $choix = filter_var($_GET[$trie] ?? null, FILTER_SANITIZE_SPECIAL_CHARS);
+        $choix = null;
+        if ($trie && isset($_GET[$trie])) {
+            $choix = filter_var($_GET[$trie], FILTER_SANITIZE_SPECIAL_CHARS);
+            $choix = ($choix === '') ? null : $choix;
+        }
         $spectacles = $repo->getAllSpectacles();
 
+
         if (!$id) {
-            $html = "<h2 class='title is-3'>Spectacles Disponibles</h2>";
-            $html .= "<form method='GET' action='' class='mb-4'>";
+            $html = "<h2>Spectacles Disponibles</h2>";
+            $html .= "<form method='GET' action=''>";
             $html .= "<input type='hidden' name='action' value='programme'>";
             $html .= self::getOptions($repo);
-            $html .= "</form>";
+            $html .= "</form><ul>";
+
             $html .= $this->renderFilteredSpectacles($repo, $spectacles, $trie, $choix);
+            return $html;
+
         } else {
-            $html = "<h2 class='title is-3'>Infos Spectacle :</h2>";
-            if (Authz::checkRole(50)) {
-                $html .= "<div class='buttons is-centered'>
-                                <a href='?action=modify-spectacle&id={$id}' class='button is-warning'>Modifier ce spectacle</a>
-                              </div>";
-            }
-            $spectacle = $repo->getSpectacleById($id);
-            if ($spectacle) {
-                $html .= "<div class='card'>
-                            <div class='card-content'>" .
-                    self::createSpec($spectacle, $repo, 1) .
-                    "</div>";
 
-                $html .= "</div>";
+            $html = <<<HTML
+            <script>
+            document.addEventListener("DOMContentLoaded", () => {
+                const preferences = getPreferences();
+                const spectacleId = document.getElementById('pref').dataset.id;
+                if (preferences.includes(spectacleId)) {
+                    document.getElementById('pref').textContent = "Retirer des préférences";
+                } else {
+                    document.getElementById('pref').textContent = "Ajouter aux préférences";
+                }
+            });
+            </script>
+            HTML;
+            
+            $messagebut = "Ajouter aux préférences";
+            if (isset($_COOKIE['preferences']) && $_COOKIE['preferences'] !== "") {
+                $liste_pref = explode(",", $_COOKIE['preferences']);
+                if (in_array($id, $liste_pref)){
+                    $messagebut = "Retirer des préférences";
+                }
             }
+            $html .= "<button id='pref' data-id='{$id}' onclick='switchPrefs({$id})'>{$messagebut}</button>";
+            $user = Authz::checkRole(50); 
+            if (!is_string($user)) {
+                $html .= "<button><a href='?action=modify-spectacle&id={$id}'\">Modifier ce spectacle</a></button>";
+            }
+
+            $html .= "<h2>Infos : </h2><ul>";
+            // $sp = $spectacles[$id - 1]; // GROSSE ERREUR L'ELEMENT 1 N' A PAS FORCEMENT L'ID 1 ERREUR LOGIQUEE FAAUT FIX
+            foreach ($spectacles as $spectacle) {
+                if ($spectacle['idSpectacle'] == $id) {
+                    $sp = $spectacle;
+                    break;
+                }
+            }
+            
+            $html .= self::createSpec($sp, $repo,1);
+
+
+            $soirees = $repo->getAllSoireeForSpec($sp['idSpectacle']);
+            $html .= "<h1>Dispo dans les soirées suivantes : </h1>";
+            foreach ($soirees as $soiree) {
+                $lieuNom = $repo->getLieuNom($soiree['idLieu']);
+                $s = new Soiree($soiree['nomSoiree'], $soiree['dateSoiree'], $lieuNom, $soiree['thematique'], $soiree['horaire'], floatval($soiree['tarif']));
+                $renderer = new SoireeRenderer($s);
+                $html .= $renderer->render(1);
+                $html .= $this->getNavigationLinks($repo->getStyleNom($sp['idSpectacle']), $soiree['idLieu'], $soiree['dateSoiree'],$soiree['idSoiree']);
+            }
+
+            // $html .= $this->getNavigationLinks($stylenom, "dd", "dd");
+            return $html;
         }
+    }
 
-        return $html;
+    private function getNavigationLinks(string $style, string $lieu, string $date,string $idSoiree): string {
+        $styleLink = "?action=programme&trie=style&style=" . urlencode($style);
+        $lieuLink = "?action=programme&trie=lieu&lieu=" . urlencode($lieu);
+        $dateLink = "?action=programme&trie=date&date=" . urlencode($date);
+        $soireeLink = "?action=list-soirees&id=" . urlencode($idSoiree);
+
+        return "<div class='navigation-links'>
+                    <a href='$lieuLink'>Voir les spectacles au même lieu</a> |
+                    <a href='$styleLink'>Voir les spectacles du même style</a> |
+                    <a href='$dateLink'>Voir les spectacles à la même date</a> |
+                    <a href='$soireeLink'>Plus d'infos sur cette soirée</a>
+                </div>";
     }
 }
