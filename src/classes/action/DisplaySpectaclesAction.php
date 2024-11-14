@@ -1,4 +1,5 @@
 <?php
+
 namespace iutnc\nrv\action;
 
 use iutnc\nrv\repository\NrvRepository;
@@ -22,35 +23,40 @@ class DisplaySpectaclesAction extends Action {
     }
 
     private static function getSelectOptions(array $options, string $nom, string $val, string $valchoisis): string {
-        $html = "<label for='$nom'>Choisir un $nom :</label>";
+        $html = "<label for='$nom' class='label'>Choisir un $nom :</label>";
+        $html .= "<div class='select is-fullwidth'>";
         $html .= "<select name='$nom' id='$nom' onchange='this.form.submit()'>";
         $html .= "<option value=''>Sélectionner</option>";
         foreach ($options as $option) {
             $valeur = $option[$val];
             $valeuroption = $valeur;
-            
-            if ($nom === 'lieu') { // pour lieu on utilise l'id au lieu du nom 
+
+            if ($nom === 'lieu') {
                 $valeuroption = $option['idLieu'];
             }
             $html .= "<option value='{$valeuroption}'" . ($valchoisis == $valeuroption ? ' selected' : '') . ">{$valeur}</option>";
         }
         $html .= "</select>";
+        $html .= "</div>";
         return $html;
     }
-    
+
+
 
     private static function getOptions($repo): string {
         $trichoix = filter_var($_GET['trie'] ?? null, FILTER_SANITIZE_SPECIAL_CHARS);
-        $html = "<label for='trie'>Trier par :</label>";
+        $html = "<label for='trie' class='label'>Trier par :</label>";
         $html .= "<form method='GET' action='' id='filterForm'>";
+
+        $html .= "<div class='select is-fullwidth'>";
         $html .= "<select name='trie' id='trie' onchange='this.form.submit()'>";
         $html .= "<option value=''>Pas de filtre</option>";
         $html .= "<option value='style'" . ($trichoix === 'style' ? ' selected' : '') . ">Style</option>";
         $html .= "<option value='date'" . ($trichoix === 'date' ? ' selected' : '') . ">Date</option>";
         $html .= "<option value='lieu'" . ($trichoix === 'lieu' ? ' selected' : '') . ">Lieu</option>";
         $html .= "<option value='preferences'" . ($trichoix === 'preferences' ? ' selected' : '') . ">Préférences</option>";
-
         $html .= "</select>";
+        $html .= "</div>";
 
         if ($trichoix === 'style') {
             $styles = $repo->getAllStyles();
@@ -65,13 +71,14 @@ class DisplaySpectaclesAction extends Action {
             $lieuchoix = filter_var($_GET['lieu'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
             $html .= self::getSelectOptions($lieux, 'lieu', 'lieuAdresse', $lieuchoix);
         }
-        
+
         $html .= "</form>";
         return $html;
     }
 
+
     private function renderFilteredSpectacles($repo, array $spectacles, string $trie, ?string $choix): string {
-        $html = '';
+        $html = '<div class="columns is-multiline">';
         foreach ($spectacles as $sp) {
             $valide = true;
             switch ($trie) {
@@ -101,19 +108,29 @@ class DisplaySpectaclesAction extends Action {
                         $valide = false;
                     }
                     break;
-
                 default:
                     $valide = true;
                     break;
             }
-            
+
             if ($valide) {
-                $html .= self::createSpec($sp, $repo,2) . "<li><a href='?action=programme&id={$sp['idSpectacle']}'>Plus d'info</a></li>";
+                // Affichage d'une carte par spectacle, avec une mise en page sur une ligne
+                $html .= "<div class='column is-one-third'>";
+                $html .= "<div class='card'>";
+                $html .= "<div class='card-content'>";
+                $html .= self::createSpec($sp, $repo, 2); // Rendu du spectacle
+                $html .= "</div>"; // End card-content
+                $html .= "<footer class='card-footer'>";
+                $html .= "<a href='?action=programme&id={$sp['idSpectacle']}' class='card-footer-item'>Plus d'info</a>";
+                $html .= "</footer>";
+                $html .= "</div>"; // End card
+                $html .= "</div>"; // End column
             }
-            
         }
+        $html .= '</div>'; // End columns (is-multiline)
         return $html;
     }
+
 
     protected function get(): string {
         $repo = NrvRepository::getInstance();
@@ -127,10 +144,9 @@ class DisplaySpectaclesAction extends Action {
         }
         $spectacles = $repo->getAllSpectacles();
 
-
         if (!$id) {
-            $html = "<h2>Spectacles Disponibles</h2>";
-            $html .= "<form method='GET' action=''>";
+            $html = "<h2 class='title is-3'>Spectacles Disponibles</h2>";
+            $html .= "<form method='GET' action='' class='box'>";
             $html .= "<input type='hidden' name='action' value='programme'>";
             $html .= self::getOptions($repo);
             $html .= "</form><ul>";
@@ -141,19 +157,19 @@ class DisplaySpectaclesAction extends Action {
         } else {
 
             $html = <<<HTML
-            <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const preferences = getPreferences();
-                const spectacleId = document.getElementById('pref').dataset.id;
-                if (preferences.includes(spectacleId)) {
-                    document.getElementById('pref').textContent = "Retirer des préférences";
-                } else {
-                    document.getElementById('pref').textContent = "Ajouter aux préférences";
-                }
-            });
-            </script>
-            HTML;
-            
+        <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const preferences = getPreferences();
+            const spectacleId = document.getElementById('pref').dataset.id;
+            if (preferences.includes(spectacleId)) {
+                document.getElementById('pref').textContent = "Retirer des préférences";
+            } else {
+                document.getElementById('pref').textContent = "Ajouter aux préférences";
+            }
+        });
+        </script>
+        HTML;
+
             $messagebut = "Ajouter aux préférences";
             if (isset($_COOKIE['preferences']) && $_COOKIE['preferences'] !== "") {
                 $liste_pref = explode(",", $_COOKIE['preferences']);
@@ -161,26 +177,35 @@ class DisplaySpectaclesAction extends Action {
                     $messagebut = "Retirer des préférences";
                 }
             }
-            $html .= "<button id='pref' data-id='{$id}' onclick='switchPrefs({$id})'>{$messagebut}</button>";
-            $user = Authz::checkRole(50); 
+
+            $html .= "<div class='columns is-centered'>";
+            $html .= "<div class='column is-narrow'>";
+            $html .= "<button id='pref' data-id='{$id}' onclick='switchPrefs({$id})' class='button is-primary is-fullwidth'>{$messagebut}</button>";
+            $html .= "</div>";
+
+            $user = Authz::checkRole(50);
             if (!is_string($user)) {
-                $html .= "<button><a href='?action=modify-spectacle&id={$id}'\">Modifier ce spectacle</a></button>";
+                $html .= "<div class='column is-narrow'>";
+                $html .= "<button class='button is-warning is-fullwidth'><a href='?action=modify-spectacle&id={$id}' class='has-text-white'>Modifier ce spectacle</a></button>";
+                $html .= "</div>";
             }
 
-            $html .= "<h2>Infos : </h2><ul>";
-            // $sp = $spectacles[$id - 1]; // GROSSE ERREUR L'ELEMENT 1 N' A PAS FORCEMENT L'ID 1 ERREUR LOGIQUEE FAAUT FIX
+            $html .= "</div>";
+
+
+            $html .= "<h2 class='title is-4'>Infos :</h2><ul>";
             foreach ($spectacles as $spectacle) {
                 if ($spectacle['idSpectacle'] == $id) {
                     $sp = $spectacle;
                     break;
                 }
             }
-            
+
+            // Création du détail du spectacle avec une meilleure présentation
             $html .= self::createSpec($sp, $repo,1);
 
-
             $soirees = $repo->getAllSoireeForSpec($sp['idSpectacle']);
-            $html .= "<h1>Dispo dans les soirées suivantes : </h1>";
+            $html .= "<h1 class='title is-4'>Disponible dans les soirées suivantes :</h1>";
             foreach ($soirees as $soiree) {
                 $lieuNom = $repo->getLieuNom($soiree['idLieu']);
                 $s = new Soiree($soiree['nomSoiree'], $soiree['dateSoiree'], $lieuNom, $soiree['thematique'], $soiree['horaire'], floatval($soiree['tarif']));
@@ -189,22 +214,23 @@ class DisplaySpectaclesAction extends Action {
                 $html .= $this->getNavigationLinks($repo->getStyleNom($sp['idSpectacle']), $soiree['idLieu'], $soiree['dateSoiree'],$soiree['idSoiree']);
             }
 
-            // $html .= $this->getNavigationLinks($stylenom, "dd", "dd");
             return $html;
         }
     }
 
-    private function getNavigationLinks(string $style, string $lieu, string $date,string $idSoiree): string {
+
+    private function getNavigationLinks(string $style, string $lieu, string $date, string $idSoiree): string {
         $styleLink = "?action=programme&trie=style&style=" . urlencode($style);
         $lieuLink = "?action=programme&trie=lieu&lieu=" . urlencode($lieu);
         $dateLink = "?action=programme&trie=date&date=" . urlencode($date);
         $soireeLink = "?action=list-soirees&id=" . urlencode($idSoiree);
 
-        return "<div class='navigation-links'>
-                    <a href='$lieuLink'>Voir les spectacles au même lieu</a> |
-                    <a href='$styleLink'>Voir les spectacles du même style</a> |
-                    <a href='$dateLink'>Voir les spectacles à la même date</a> |
-                    <a href='$soireeLink'>Plus d'infos sur cette soirée</a>
-                </div>";
+        return "<div class='buttons is-centered'>
+                <a href='$lieuLink' class='button is-link is-outlined is-small'>Voir les spectacles au même lieu</a>
+                <a href='$styleLink' class='button is-info is-outlined is-small'>Voir les spectacles du même style</a>
+                <a href='$dateLink' class='button is-success is-outlined is-small'>Voir les spectacles à la même date</a>
+                <a href='$soireeLink' class='button is-warning is-outlined is-small'>Plus d'infos sur cette soirée</a>
+            </div>";
     }
+
 }

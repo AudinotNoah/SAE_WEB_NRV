@@ -89,6 +89,8 @@ class SpectacleRenderer implements Renderer
         return $html;
     }
 
+
+
     private function generateRandomColor(): string
     {
         $colors = ['#FFDDC1', '#C1FFD7', '#C1D7FF', '#FFD1C1', '#D1C1FF', '#C1FFD1'];
