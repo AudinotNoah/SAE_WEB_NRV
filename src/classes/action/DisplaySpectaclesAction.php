@@ -54,15 +54,15 @@ class DisplaySpectaclesAction extends Action {
 
         if ($trichoix === 'style') {
             $styles = $repo->getAllStyles();
-            $stylechoix = $_GET['style'] ?? '';
+            $stylechoix = filter_var($_GET['style'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
             $html .= self::getSelectOptions($styles, 'style', 'nomStyle', $stylechoix);
         } elseif ($trichoix === 'date') {
             $dates = $repo->getAllDates();
-            $datechoix = $_GET['date'] ?? '';
+            $datechoix = filter_var($_GET['date'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
             $html .= self::getSelectOptions($dates, 'date', 'dateSoiree', $datechoix);
         } elseif ($trichoix === 'lieu') {
             $lieux = $repo->getAllLieux();
-            $lieuchoix = $_GET['lieu'] ?? '';
+            $lieuchoix = filter_var($_GET['lieu'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
             $html .= self::getSelectOptions($lieux, 'lieu', 'lieuAdresse', $lieuchoix);
         }
         
