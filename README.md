@@ -8,7 +8,7 @@ Temirov Abdoul-Raouf, AudinotNoah, ThirietEsteban, BesançonMarcelin
 # Liste des fonctionnalités réalisées:
 
 ```
-Tâche Priorité État Colonne 1
+Tâche Priorité État Membres
 1 P 0 Terminé Noah,Esteban
 2 P 1 Terminé Noah
 3 P 1 Terminé Noah
