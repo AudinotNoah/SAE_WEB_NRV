@@ -39,6 +39,7 @@ class NrvRepository {
         return self::$instance;
     }
 
+    // Methode pour definir la configuration de la base de données
     public static function setConfig(string $file): void
     {
         $conf = parse_ini_file($file);
@@ -49,6 +50,7 @@ class NrvRepository {
     }
 
 
+    // Methode pour obtenir les infos d'un utilisateur
     public function findInfos(string $email) {
         $stmt = $this->pdo->prepare("SELECT * FROM utilisateur WHERE email = :email");
         $stmt->bindParam(':email', $email);
@@ -56,6 +58,8 @@ class NrvRepository {
         return $stmt->fetchObject();
     }
 
+
+    // Methode pour obtenir tous les spectacles
     public function getAllSpectacles(): array
     {
         try {
@@ -82,6 +86,7 @@ class NrvRepository {
         }
     }
 
+    // Methode pour obtenir toutes les soirees
     public function getAllSoirees(): array
     {
         try {
@@ -110,6 +115,7 @@ class NrvRepository {
 
 
 
+    // Methode pour obtenir le nom d'un style par son id
     public function getStyleNom(string $id){
         $stmt = $this->pdo->prepare("SELECT nomStyle FROM style WHERE idStyle = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -117,6 +123,8 @@ class NrvRepository {
         return $stmt->fetchColumn();
     }
 
+
+    // Methode pour obtenir tous les styles
     public function getAllStyles(){
         $stmt = $this->pdo->prepare('SELECT idStyle, nomStyle FROM style');
             $stmt->execute();
@@ -125,6 +133,9 @@ class NrvRepository {
 
             return $result ?: []; 
     }
+
+
+    // Methode pour obtenir les images d'un spectacle
     public function getImagesBySpectacleId(int $idSpectacle)
     {
         $query = "SELECT i.nomfichier 
@@ -140,6 +151,7 @@ class NrvRepository {
     }
 
 
+    // Methode pour obtenir les artistes d'un spectacle
     public function getArtisteBySpectacleId(int $idSpectacle)
     {
     $artistes = [];
@@ -159,6 +171,8 @@ class NrvRepository {
     return $artistes;
     }
 
+
+    // Methode pour obtenir tous les noms d'artistes
     public function getAllNomArtiste(): array
     {
         $stmt = $this->pdo->prepare("SELECT idArtiste, nomArtiste FROM artiste");
@@ -167,6 +181,8 @@ class NrvRepository {
 
     }
 
+
+    // Methode pour le nom d'un lieu par son id
     public function getLieuNom(mixed $idLieu)
     {
         $stmt = $this->pdo->prepare("SELECT CONCAT(nomLieu, ', ', adresse) AS lieuAdresse FROM lieu WHERE idLieu = :idLieu");
@@ -176,6 +192,7 @@ class NrvRepository {
     }
 
 
+    // Methode pour obtenir toutes les dates
     public function getAllDates() : array{
         $stmt = $this->pdo->prepare("SELECT dateSoiree FROM soiree");
         $stmt->execute();
@@ -183,6 +200,7 @@ class NrvRepository {
 
     }
 
+    // Methode pour obtenir les spectacles d'une date
     public function getAllSpecAtDate(string $datesoir) : array{
         $stmt = $this->pdo->prepare('SELECT idspectacle FROM soiree
                                     inner join spectaclesoiree as ss on ss.idsoiree = soiree.idsoiree
@@ -194,6 +212,7 @@ class NrvRepository {
     }
 
 
+    // Methode pour obtenir le nom et l'adresse de tous les lieux
     public function getAllLieux() : array {
         $stmt = $this->pdo->prepare('SELECT idLieu, CONCAT(nomLieu, ", ", adresse) AS lieuAdresse FROM lieu');
         $stmt->execute();
@@ -202,7 +221,8 @@ class NrvRepository {
     }
 
 
-    
+
+    // Methode pour obtenir les spectacles d'un lieu
     public function getAllSpecAtLieu(string $idLieu) : array{
         $stmt = $this->pdo->prepare('SELECT idspectacle FROM soiree
                                     inner join spectaclesoiree as ss on ss.idsoiree = soiree.idsoiree
@@ -213,6 +233,8 @@ class NrvRepository {
         return $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
     }
 
+
+    // Methode pour toutes les soirées où un spectacle est joué
     public function getAllSoireeForSpec(int $idSpectacle) : array{
         $stmt = $this->pdo->prepare('
                 SELECT 
@@ -237,6 +259,7 @@ class NrvRepository {
             return $result ?: [];
     }
 
+    // Methode pour obtenir un style par nom
     private function getIdStyleByName(string $style): int
     {
         $stmt = $this->pdo->prepare("SELECT idStyle FROM style WHERE nomStyle = :style");
@@ -247,6 +270,8 @@ class NrvRepository {
         return (int) $id;
     }
 
+
+    // Methode pour obtenir un spectacle par id
     public function getSpectacleById(mixed $id)
     {
         $stmt = $this->pdo->prepare("SELECT s.*, GROUP_CONCAT(soiree.idSoiree) AS soirees_id
@@ -260,6 +285,8 @@ class NrvRepository {
         return $stmt->fetch(PDO::FETCH_ASSOC);
     }
 
+
+    // Methode pour obtenir les spectacles d'une soiree
     public function getSpecAtSoiree(int $idSoiree){
         $stmt = $this->pdo->prepare("SELECT idSpectacle
                                     FROM spectaclesoiree
@@ -272,6 +299,8 @@ class NrvRepository {
 
     }
 
+
+    // Methode pour obtenir tous les lieux de soiree
     public function getAllLieuxDeSoiree(): array
     {
         $stmt = $this->pdo->prepare(
@@ -285,6 +314,8 @@ class NrvRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+
+    // Methode pour obtenir un lieu par nom
     private function getIdLieuByName(string $lieu): int
     {
         $stmt = $this->pdo->prepare("SELECT idLieu FROM lieu WHERE nomLieu = :lieu");
@@ -295,6 +326,8 @@ class NrvRepository {
         return (int) $id;
     }
 
+
+    // Methode pour obtenir un audio par id
     public function getAudio(string $id){
         $stmt = $this->pdo->prepare("SELECT lienAudio FROM spectacle WHERE idSpectacle = :id");
         $stmt->bindParam(':id', $id, PDO::PARAM_INT);
@@ -302,6 +335,8 @@ class NrvRepository {
         return $stmt->fetchColumn();
     }
 
+
+    // Methode pour obtenir les soirees par id
     public function getSoireeById($id)
     {
         $stmt = $this->pdo->prepare("SELECT soiree.*, GROUP_CONCAT(spectacle.idSpectacle) AS spectacles_id
@@ -317,6 +352,7 @@ class NrvRepository {
 
 
 
+    // Methode pour associer une image a un spectacle
     public function associerImageAuSpectacle(int $idImage, int $idSpectacle): void
     {
         $stmt = $this->pdo->prepare("INSERT INTO spectacleimage (idSpectacle, idImage) VALUES (:idSpectacle, :idImage)");
@@ -325,6 +361,8 @@ class NrvRepository {
         $stmt->execute();
     }
 
+
+    // Methode pour associer un artiste a un spectacle
     public function associerArtisteAuSpectacle(int $idArtiste, int $idSpectacle): void
     {
         $stmt = $this->pdo->prepare("INSERT INTO performer (idArtiste, idSpectacle) VALUES (:idArtiste, :idSpectacle)");
@@ -333,6 +371,7 @@ class NrvRepository {
         $stmt->execute();
     }
 
+    // Methode pour associer un spectacle a une liste de soirees
     public function associeSpectacleSoiree(int $spectacleId, array $soireeIds)
     {
         $stmt = $this->pdo->prepare("INSERT INTO spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
@@ -345,6 +384,7 @@ class NrvRepository {
     }
 
 
+    // Methode pour associer une soiree a une liste de spectacles
     public function associeSoireeSpectacle(int $soireeId, array $spectacleIds)
     {
         $stmt = $this->pdo->prepare("INSERT INTO spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
@@ -357,6 +397,7 @@ class NrvRepository {
     }
 
 
+    // Methode pour mettre a jour un spectacle
     public function updateSpectacle(mixed $id, array $array): bool
     {
         $stmt = $this->pdo->prepare("UPDATE spectacle SET 
@@ -379,6 +420,8 @@ class NrvRepository {
         return $stmt->execute();
     }
 
+
+    // Methode pour mettre a jour les spectacles d'une soiree
     public function updateSoireeSpectacle($id, $soirees)
     {
         // Supprimer les associations existantes pour ce spectacle dans spectaclesoiree
@@ -395,6 +438,8 @@ class NrvRepository {
         }
     }
 
+
+    // Methode pour mettre a jour une soiree
     public function updateSoiree($id, $nom, $date, $horaire, $lieu, $tarif, $thematique, array $spectacles)
     {
         $stmt = $this->pdo->prepare("UPDATE soiree SET 
@@ -429,6 +474,7 @@ class NrvRepository {
     }
 
 
+    // Methode pour ajouter une soiree
     public function setSoiree(Soiree $s):int
     {
         $stmt = $this->pdo->prepare(
@@ -454,6 +500,8 @@ class NrvRepository {
         return (int) $this->pdo->lastInsertId();
     }
 
+
+    // Methode pour ajouter spectacle
     public function setSpectacle(Spectacle $s,string $idStyle): int
     {
         $stmt = $this->pdo->prepare(
@@ -483,6 +531,8 @@ class NrvRepository {
         return (int) $this->pdo->lastInsertId();
     }
 
+
+    // Methode pour ajouter un compte staff
     public function createStaff(string $email, string $mdp)
     {
         $stmt = $this->pdo->prepare("INSERT INTO utilisateur (email, mdp, role, droit) VALUES (:email, :mdp, 'staff', 50)");
@@ -492,6 +542,7 @@ class NrvRepository {
         return $stmt->execute();
     }
 
+    // Methode pour ajouter une image
     public function uploadImage(string $nomfichier): int
     {
         $stmt = $this->pdo->prepare("INSERT INTO image (nomfichier) VALUES (:nomfichier)");
@@ -500,6 +551,8 @@ class NrvRepository {
         return (int) $this->pdo->lastInsertId();
     }
 
+
+    // Methode pour dissocier les images d'un spectacle
     public function dissocierImagesDuSpectacle(mixed $id): void
     {
         $stmt = $this->pdo->prepare("DELETE FROM spectacleimage WHERE idSpectacle = :id");
