@@ -100,10 +100,6 @@ class NrvRepository {
 
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            if (empty($result)) {
-                echo "Aucune donnée n'a été trouvée dans la table `soiree`.";
-            }
-
             return $result ?: [];
 
         } catch (Exception $e) {
