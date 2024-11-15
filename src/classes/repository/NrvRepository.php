@@ -126,7 +126,7 @@ class NrvRepository {
 
     // Methode pour obtenir tous les styles
     public function getAllStyles(){
-        $stmt = $this->pdo->prepare('SELECT idStyle, nomStyle FROM style');
+        $stmt = $this->pdo->prepare('SELECT idStyle, nomStyle FROM Style');
             $stmt->execute();
 
             $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
