@@ -85,21 +85,54 @@ class Dispatcher {
 
     // Méthode pour générer la page avec Bulma
     private function renderPage(string $html): void {
-        // Menu de navigation
+
+        // Menu de navigation simplifié sans menu hamburger
         $menu = <<<HTML
-        <nav class="navbar is-spaced is-size-5 py-3" style="background-color: #1C1C5E; color: white;">
-            <div class="navbar-brand">
-                <a class="navbar-item has-text-weight-bold is-size-4" style="color: #F4F4F4" href="?action=default">Accueil</a>
-                <a class="navbar-item has-text-weight-semibold" style="color: #F4F4F4" href="?action=programme">Programme</a>
-                <a class="navbar-item has-text-weight-semibold" style="color: #F4F4F4" href="?action=list-soirees">Liste des Soirées</a>
-                <a class="navbar-item has-text-weight-semibold" style="color: #F4F4F4" href="?action=programme&trie=preferences">Votre liste de préférence</a>
-            </div>
-            <div class="navbar-menu">
-                <div class="navbar-end">
-        HTML;
+<nav class="navbar is-spaced is-size-5 py-3" style="background-color: #1C1C5E; color: white;">
+    <div class="navbar-brand">
+        <a class="navbar-item has-text-weight-bold is-size-4" style="color: #F4F4F4" href="?action=default">Accueil</a>
+        <a class="navbar-item has-text-weight-semibold" style="color: #F4F4F4" href="?action=programme">Programme</a>
+        <a class="navbar-item has-text-weight-semibold" style="color: #F4F4F4" href="?action=list-soirees">Liste des Soirées</a>
+        <a class="navbar-item has-text-weight-semibold" style="color: #F4F4F4" href="?action=programme&trie=preferences">Votre liste de préférence</a>
+    </div>
+
+    <!-- Menu classique sans burger (affichage en desktop) -->
+    <div class="navbar-end is-hidden-mobile">
+HTML;
 
         // Vérifie si l'utilisateur a un rôle spécifique
         $user = Authz::checkRole(50);
+        if (!is_string($user)) {
+            $menu .= <<<HTML
+                <a class="navbar-item has-text-weight-semibold has-text-white" href="?action=menu-staff">Menu Gestion</a>
+HTML;
+        }
+
+        // Ajoute les options en fonction de l'état de connexion
+        if (Authz::estCo()) {
+            $menu .= <<<HTML
+                <span class="navbar-item has-text-white is-size-5">Connecté en tant que : {$_SESSION['user']['email']}</span>
+                <a class="navbar-item button is-danger" href="?action=logout">Se Déconnecter</a>
+HTML;
+        } else {
+            $menu .= <<<HTML
+                <a class="navbar-item button is-primary" href="?action=login">Se Connecter</a>
+HTML;
+        }
+
+        $menu .= "</div>";
+
+// Menu responsive (affichage en mobile)
+        $menu .= <<<HTML
+    <div class="navbar-menu is-hidden-desktop">
+        <div class="navbar-start">
+            <a class="navbar-item has-text-weight-bold" href="?action=default">Accueil</a>
+            <a class="navbar-item has-text-weight-semibold" href="?action=programme">Programme</a>
+            <a class="navbar-item has-text-weight-semibold" href="?action=list-soirees">Liste des Soirées</a>
+            <a class="navbar-item has-text-weight-semibold" href="?action=programme&trie=preferences">Votre liste de préférence</a>
+HTML;
+
+        // Vérifie si l'utilisateur a un rôle spécifique pour le menu staff
         if (!is_string($user)) {
             $menu .= <<<HTML
                 <a class="navbar-item has-text-weight-semibold has-text-white" href="?action=menu-staff">Menu Gestion</a>
