@@ -112,17 +112,18 @@ class Dispatcher {
 
         echo <<<HTML
         <!DOCTYPE html>
-        <html lang='fr'>
+        <html lang='fr' class="has-background-grey-darker">
         <head>
             <meta charset='UTF-8'>
             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+            <link rel='stylesheet' href='/src/assets/css/style.css'>
             <link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bulma@0.9.4/css/bulma.min.css'>
             <title>Festival de Musique - Administration</title>
         </head>
         <body>
             <script src="src/assets/js/index.js"></script>
             $menu
-            <main class="section has-background-grey-darker">
+            <main class="section">
                 <div class="container">
                     <p></p> <!-- espace -->
                     $html
