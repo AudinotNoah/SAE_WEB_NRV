@@ -1,17 +1,11 @@
 # SAE_WEB_NRV
-## TemirovAbdoul-Raouf
 
-## AudinotNoah
+Temirov Abdoul-Raouf, AudinotNoah, ThirietEsteban, BesançonMarcelin
 
-## ThirietEsteban
 
-## BesançonMarcelin
+## Tableau de bord du projet
 
-## SAE«Développeruneapplicationwebsécurisée»
-
-## Tableaudebordduprojet
-
-# Listedesfonctionnalitésréalisées:
+# Liste des fonctionnalités réalisées:
 
 ```
 Tâche Priorité État Colonne 1
