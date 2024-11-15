@@ -108,7 +108,8 @@ class AddSoireeAction extends Action
         $lieu = htmlspecialchars_decode(filter_var($_POST['soiree_lieu'], FILTER_SANITIZE_SPECIAL_CHARS)); // Ajout
         $tarif = htmlspecialchars_decode(filter_var($_POST['tarif_soiree'], FILTER_SANITIZE_NUMBER_FLOAT, FILTER_FLAG_ALLOW_FRACTION)); // Ajout
         $theme = htmlspecialchars_decode(filter_var($_POST['theme_soiree'] ?? 'Aucun thème', FILTER_SANITIZE_SPECIAL_CHARS)); // Ajout
-        $spectacles = filter_var($_POST['soiree_spectacle'], FILTER_SANITIZE_SPECIAL_CHARS);
+
+        $spectacles = isset($_POST['soiree_spectacle']) && is_array($_POST['soiree_spectacle']) ? $_POST['soiree_spectacle'] : [];
 
         $repository = NrvRepository::getInstance();
 

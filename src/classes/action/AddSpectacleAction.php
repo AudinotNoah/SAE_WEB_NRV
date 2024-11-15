@@ -32,7 +32,7 @@ class AddSpectacleAction extends Action
 
         $soireesListe = '';
         foreach ($soirees as $soiree) {
-            $soireesListe .= "<label class='checkbox'><input type='checkbox' name='spectacle_soirees[]' value='{$soiree['idSoiree']}' required> " . htmlspecialchars_decode($soiree['nomSoiree']) . "</label><br>";
+            $soireesListe .= "<label class='checkbox'><input type='checkbox' name='spectacle_soirees[]' value='{$soiree['idSoiree']}'> " . htmlspecialchars_decode($soiree['nomSoiree']) . "</label><br>";
         }
 
         return <<<HTML
