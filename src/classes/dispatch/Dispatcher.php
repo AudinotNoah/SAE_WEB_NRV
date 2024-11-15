@@ -78,12 +78,12 @@ class Dispatcher {
     private function renderPage(string $html): void {
         // Menu de base avec Bulma, plus stylisé
         $menu = <<<HTML
-        <nav class="navbar is-spaced is-primary is-size-5 py-3">
+        <nav class="navbar is-spaced is-size-5 py-3" style="background-color: #1C1C5E; color: white;">
             <div class="navbar-brand">
-                <a class="navbar-item has-text-weight-bold is-size-4" href="?action=default">Accueil</a>
-                <a class="navbar-item has-text-weight-semibold" href="?action=programme">Programme</a>
-                <a class="navbar-item has-text-weight-semibold" href="?action=list-soirees">Liste des Soirées</a>
-                <a class="navbar-item has-text-weight-semibold" href="?action=programme&trie=preferences">Vos Préférences</a>
+                <a class="navbar-item has-text-weight-bold is-size-4" style="color: #F4F4F4" href="?action=default">Accueil</a>
+                <a class="navbar-item has-text-weight-semibold" style="color: #F4F4F4" href="?action=programme">Programme</a>
+                <a class="navbar-item has-text-weight-semibold" style="color: #F4F4F4" href="?action=list-soirees">Liste des Soirées</a>
+                <a class="navbar-item has-text-weight-semibold" style="color: #F4F4F4" href="?action=programme&trie=preferences">Votre liste de préférence</a>
             </div>
             <div class="navbar-menu">
                 <div class="navbar-end">

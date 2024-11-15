@@ -78,7 +78,7 @@ class AddSoireeAction extends Action
                 </fieldset>
 
                 <div class="control">
-                    <button class="button is-primary" type="submit">Créer la soirée</button>
+                    <button class="button is-link" type="submit">Créer la soirée</button>
                 </div>
             </form>
         </div>

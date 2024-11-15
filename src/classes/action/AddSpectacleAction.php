@@ -101,7 +101,7 @@ class AddSpectacleAction extends Action
             </div>
 
             <div class="control">
-                <button class="button is-primary" type="submit">Créer le spectacle</button>
+                <button class="button is-link" type="submit">Créer le spectacle</button>
             </div>
         </form>
         HTML;

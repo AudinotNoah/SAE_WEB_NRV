@@ -34,7 +34,7 @@ class ChangeSpectacleAction extends Action {
         }
 
         $styles = $repo->getAllStyles();
-        $soirées = $repo->getAllSoirees();
+        $soirees = $repo->getAllSoirees();
 
         $html = "<div class='container'>";
         $html .= "<h2 class='title is-4'>Modifier le Spectacle</h2>";
@@ -92,6 +92,15 @@ class ChangeSpectacleAction extends Action {
         $html .= "</select></div></div></div>";
 
         $html .= "<div class='field'>
+                    <label class='label' for='liste-image'>Importer des images pour le spectacle :</label>
+                    <div class='control'>
+                        <input class='input' type='file' id='liste-image' name='new_images[]' accept='image/*'>
+                    </div>
+                </div>
+                    ";
+
+
+        $html .= "<div class='field'>
                     <label class='label' for='audio'>Modifier l'audio (fichier MP3):</label>
                     <div class='control'>
                         <input class='input' type='file' id='audio' name='audio' accept='audio/mp3'>
@@ -101,7 +110,7 @@ class ChangeSpectacleAction extends Action {
         $html .= "<div class='field'>
                     <label class='label'>Choisir les soirées où ce spectacle sera joué:</label>
                     <div class='control'>";
-        foreach ($soirées as $soiree) {
+        foreach ($soirees as $soiree) {
             $checked = in_array($soiree['idSoiree'], $spectacle['soirees_id']) ? 'checked' : '';
             $html .= "<label class='checkbox'>
                         <input type='checkbox' name='soirees[]' value='" . $soiree['idSoiree'] . "' $checked> 
@@ -147,6 +156,7 @@ class ChangeSpectacleAction extends Action {
             return "<div class='notification is-warning'>Merci de remplir tous les champs.</div>";
         }
 
+        // Gestion du fichier audio
         $allowedAudioExtension = 'mp3';
         $maxAudioFileSize = 10 * 1024 * 1024;
 
@@ -180,6 +190,66 @@ class ChangeSpectacleAction extends Action {
             $nomFichier = $repo->getAudio($id);
         }
 
+        // Gestion du fichier image
+        $images = [];
+        $allowedExtensions = ['jpg', 'jpeg', 'png'];
+        $maxFileSize = 10 * 1024 * 1024;
+
+        if (isset($_FILES['new_images']) && !empty($_FILES['new_images']['tmp_name'][0])) {
+            // Si des images sont téléchargées
+            foreach ($_FILES['new_images']['tmp_name'] as $index => $tmpName) {
+
+
+                if ($_FILES['new_images']['error'][$index] === UPLOAD_ERR_OK) {
+                    $extension = strtolower(pathinfo($_FILES['new_images']['name'][$index], PATHINFO_EXTENSION));
+                    if (!in_array($extension, $allowedExtensions)) {
+                        return "<div class='notification is-danger'>Erreur : L'extension du fichier n'est pas autorisée. Extensions autorisées : jpg, jpeg, png.</div>" . $this->get();
+                    }
+
+                    if ($_FILES['new_images']['size'][$index] > $maxFileSize) {
+                        return "<div class='notification is-danger'>Erreur : Le fichier est trop volumineux. La taille maximale autorisée est de 10 Mo.</div>" . $this->get();
+                    }
+
+                    $imageSize = getimagesize($tmpName);
+                    if (!$imageSize) {
+                        return "<div class='notification is-danger'>Erreur : Le fichier téléchargé n'est pas une image valide.</div>" . $this->get();
+                    }
+
+                    $uniqueId = uniqid('img_', true);
+                    $nomfichier = $uniqueId . '.' . $extension;
+
+                    $dossierImage = "src/assets/images/spectacle-img/";
+                    if (!is_dir($dossierImage)) {
+                        mkdir($dossierImage, 0777, true);
+                    }
+
+                    $destination = "$dossierImage/$nomfichier";
+                    if (move_uploaded_file($tmpName, $destination)) {
+                        $nouvelleIdImage = $repo->uploadImage($nomfichier);
+                        $images[] = $nouvelleIdImage;
+                    } else {
+                        return "<div class='notification is-danger'>Erreur : Impossible d'importer l'image {$index}</div>" . $this->get();
+                    }
+                } else {
+                    return "<div class='notification is-danger'>Erreur : Un problème est survenu avec l'image {$index}</div>" . $this->get();
+                }
+
+                // Dissocier les anciennes images du spectacle
+                $repo->dissocierImagesDuSpectacle($id);
+
+                // Associer les images au spectacle
+                foreach ($images as $idImage) {
+                    $repo->associerImageAuSpectacle($idImage, $id);
+                }
+            }
+        } else {
+            // Si aucune nouvelle image n'est téléchargée, récupérer les images existantes du spectacle
+            $images = $repo->getImagesBySpectacleId($id);
+        }
+
+
+
+        // Mise à jour du spectacle
         $success = $repo->updateSpectacle($id, [
             'nomSpectacle' => $nom,
             'description' => $description,
@@ -190,13 +260,21 @@ class ChangeSpectacleAction extends Action {
             'lienAudio' => $nomFichier
         ]);
 
+
+
+
+
         if ($success) {
+            // Appel à la méthode updateSoireeSpectacle avec le nouvel idImage
             $repo->updateSoireeSpectacle($id, $soirees);
             $url = "Location: index.php?action=programme&id=" . $id;
             header($url);
-            // return "<div class='notification is-success'>Le spectacle a été modifié avec succès.</div>";
         } else {
             return "<div class='notification is-danger'>Une erreur s'est produite lors de la modification du spectacle.</div>";
         }
+
+        return "";
     }
+
+
 }
