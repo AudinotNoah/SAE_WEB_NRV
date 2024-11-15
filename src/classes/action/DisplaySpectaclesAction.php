@@ -79,14 +79,11 @@ class DisplaySpectaclesAction extends Action {
 
     private function renderFilteredSpectacles($repo, array $spectacles, string $trie, ?string $choix): string {
         $html = '<div class="columns is-multiline">';
-        var_dump($trie);
-        var_dump($choix);
         foreach ($spectacles as $sp) {
             $valide = true;
             switch ($trie) {
                 case 'style':
                     if ($choix !== null) {
-                        var_dump($sp);
                         $valide = strtolower($choix) === strtolower($repo->getStyleNom($sp['idStyle']));
                     }
                     break;
