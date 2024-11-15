@@ -1,58 +1,59 @@
 /* Style général pour la page */
 body {
-    background-color: white; /* Fond sombre pour l'application */
-    color: white; /* Texte en blanc */
-    font-family: Arial, sans-serif; /* Police générale */
+    background-color: white;
+    color: white;
+    font-family: Arial, sans-serif;
 }
 
 /* Style pour la navbar */
-.navbar {
-    background-color: #1C1C5E; /* Couleur de fond de la navbar */
-    color: white;
-    padding: 1rem 2rem;
+@media (min-width: 769px){
+    .navbar {
+        background-color: #1C1C5E;
+        color: white;
+        padding: 1rem 2rem;
+    }
+    
+    /* Navbar: style des éléments */
+    .navbar-item {
+        color: #F4F4F4;
+        font-weight: 600;
+        text-align: center;
+    }
+    
+    .navbar-item:hover {
+        color: #FFD700; /* Couleur au survol */
+    }
+    
+    /* Navbar responsive */
+    .navbar-menu {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        flex-wrap: nowrap;
+    }
+    
+    /* Menu burger pour mobile */
+    .navbar-burger.is-active {
+        color: white;
+    }
+    
+    .navbar-menu.is-active {
+        display: block;
+        background-color: #1C1C5E;
+        position: absolute;
+        top: 60px;
+        left: 0;
+        width: 100%;
+        z-index: 10;
+    }
+    
 }
-
-/* Navbar: gérer les éléments de la navbar */
-.navbar-item {
-    color: #F4F4F4; /* Couleur des items de la navbar */
-    font-weight: 600; /* Poids de la police pour les liens */
-    text-align: center; /* Centre les éléments de la navbar */
-}
-
-.navbar-item:hover {
-    color: #FFD700; /* Couleur au survol */
-}
-
-/* Navbar responsive */
-.navbar-menu {
-    display: flex;
-    justify-content: flex-start; /* Aligne les éléments à gauche */
-    align-items: center;
-    flex-wrap: nowrap; /* Evite que les éléments passent en dessous sur mobile */
-}
-
-/* Menu burger pour mobile */
-.navbar-burger.is-active {
-    color: white;
-}
-
-.navbar-menu.is-active {
-    display: block; /* Affiche le menu déroulant sur mobile */
-    background-color: #1C1C5E; /* Conserve le fond de la navbar sur mobile */
-    position: absolute;
-    top: 60px; /* Décale le menu sous la navbar */
-    left: 0;
-    width: 100%;
-    z-index: 10;
-}
-
 /* Responsivité pour les petits écrans (moins de 768px) */
 @media (max-width: 768px) {
     .navbar-item {
-        display: inline-block; /* Garde les items sur la même ligne */
+        display: inline-block;
         padding: 1rem;
         text-align: center;
-        margin-top: 0; /* Enlève la marge sur mobile */
     }
 
     .navbar-brand {
@@ -61,22 +62,21 @@ body {
     }
 
     .navbar-end {
-        flex-direction: row; /* Garde les items en ligne sur mobile */
-        gap: 10px; /* Espace entre les éléments */
+        flex-direction: row;
+        gap: 10px;
     }
 
-    /* Boutons prennent toute la largeur sur mobile */
     .navbar-item.button {
-        width: auto; /* Garder la taille des boutons sur mobile */
+        width: auto;
     }
 }
 
-/* Espacement et ajustement pour le contenu principal */
+/* Espacement pour le contenu principal */
 .main {
-    padding-top: 50px; /* Espacement en haut */
+    padding-top: 50px;
 }
 
-/* Animation pour le menu hamburger */
+/* Animation pour le menu burger */
 @keyframes slideIn {
     from {
         transform: translateX(-100%);
