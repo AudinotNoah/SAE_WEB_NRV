@@ -381,10 +381,12 @@ class NrvRepository {
 
     public function updateSoireeSpectacle($id, $soirees)
     {
+        // Supprimer les associations existantes pour ce spectacle dans spectaclesoiree
         $stmt = $this->pdo->prepare("DELETE FROM spectaclesoiree WHERE idSpectacle = :id");
         $stmt->bindParam(':id', $id);
         $stmt->execute();
 
+        // Réinsérer les nouvelles associations avec les soirées
         $stmt = $this->pdo->prepare("INSERT INTO spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
         $stmt->bindParam(':idSpectacle', $id);
         foreach ($soirees as $soiree) {
@@ -497,6 +499,14 @@ class NrvRepository {
         $stmt->execute();
         return (int) $this->pdo->lastInsertId();
     }
+
+    public function dissocierImagesDuSpectacle(mixed $id): void
+    {
+        $stmt = $this->pdo->prepare("DELETE FROM spectacleimage WHERE idSpectacle = :id");
+        $stmt->bindParam(':id', $id);
+        $stmt->execute();
+    }
+
 
 }
 

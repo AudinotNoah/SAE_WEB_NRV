@@ -60,7 +60,7 @@ class SoireeRenderer implements Renderer
 
     private function generateRandomColor(): string
     {
-        $colors = ['#FFDDC1', '#C1FFD7', '#C1D7FF', '#FFD1C1', '#D1C1FF', '#C1FFD1'];
+        $colors = ['#FFE699', '#FFB6A3', '#B3E5FC', '#C4F1BE', '#E3D7FF', '#FFDAB9'];
         return $colors[array_rand($colors)];
     }
 }

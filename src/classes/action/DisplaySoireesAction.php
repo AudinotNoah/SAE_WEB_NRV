@@ -28,7 +28,9 @@ class DisplaySoireesAction extends Action {
 
         if (!$id) {
             // Titre et début de liste
-            $html = "<h2 class='title is-3'>Soirées Disponibles</h2><div class='columns is-multiline'>";
+            $randomColor = $this->generateRandomColor();
+            $html = "<h2 class='title is-3 has-text-centered' style='color: {$randomColor};'>Soirées Disponibles</h2>";
+            $html .= "<div class='columns is-multiline'>";
             foreach ($soirees as $sr) {
                 // Chaque soirée est présentée sous forme de carte
                 $html .= "<div class='column is-one-third'>
@@ -94,5 +96,11 @@ class DisplaySoireesAction extends Action {
         }
 
         return $html;
+    }
+
+    private function generateRandomColor(): string
+    {
+        $colors = ['#FFDDC1', '#C1FFD7', '#C1D7FF', '#FFD1C1', '#D1C1FF', '#C1FFD1', '#FFC1D1', '#D1FFC1', '#D1C1FF', '#C1D1FF', '#FFD1C1', '#C1FFD1'];
+        return $colors[array_rand($colors)];
     }
 }

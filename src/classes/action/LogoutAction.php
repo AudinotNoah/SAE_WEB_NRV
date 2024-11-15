@@ -9,7 +9,7 @@ class LogoutAction extends Action {
         session_destroy();
 
         // Redirige vers la page d'accueil
-        header('Location: ?action=default');
+        header('Location: ?action=login');
         exit;
     }
 
