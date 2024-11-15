@@ -1,0 +1,14 @@
+DirectoryIndex index.php
+Options -Indexes
+
+<FilesMatch "\.ini$">
+    Require all denied
+</FilesMatch>
+
+<Files "index.php">
+    Require all granted
+</Files>
+
+<FilesMatch "\.(mp3|css|jpg|png)$">
+    Require all granted
+</FilesMatch>
