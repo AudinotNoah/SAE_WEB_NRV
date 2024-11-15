@@ -203,7 +203,7 @@ class NrvRepository {
     // Methode pour obtenir les spectacles d'une date
     public function getAllSpecAtDate(string $datesoir) : array{
         $stmt = $this->pdo->prepare('SELECT idspectacle FROM Soiree
-                                    inner join Spectaclesoiree as ss on ss.idsoiree = Soiree.idsoiree
+                                    inner join SpectacleSoiree as ss on ss.idsoiree = Soiree.idsoiree
                                     WHERE datesoiree = :datesoir');
         $stmt->bindParam(':datesoir', $datesoir, PDO::PARAM_STR);
         $stmt->execute();
@@ -225,7 +225,7 @@ class NrvRepository {
     // Methode pour obtenir les spectacles d'un lieu
     public function getAllSpecAtLieu(string $idLieu) : array{
         $stmt = $this->pdo->prepare('SELECT idspectacle FROM Soiree
-                                    inner join Spectaclesoiree as ss on ss.idsoiree = Soiree.idsoiree
+                                    inner join SpectacleSoiree as ss on ss.idsoiree = Soiree.idsoiree
                                     WHERE idLieu = :idLieu');
         $stmt->bindParam(':idLieu', $idLieu, PDO::PARAM_STR);
         $stmt->execute();
@@ -246,7 +246,7 @@ class NrvRepository {
                     thematique,
                     horaire
                 FROM Soiree
-                inner join Spectaclesoiree ss on ss.idsoiree = Soiree.idsoiree
+                inner join SpectacleSoiree ss on ss.idsoiree = Soiree.idsoiree
                 where :idSpectacle = ss.idSpectacle
 
             ');
@@ -276,8 +276,8 @@ class NrvRepository {
     {
         $stmt = $this->pdo->prepare("SELECT s.*, GROUP_CONCAT(Soiree.idSoiree) AS soirees_id
         FROM Spectacle s
-        LEFT JOIN spectaclesoiree ss ON s.idSpectacle = ss.idSpectacle
-        LEFT JOIN soiree soiree ON ss.idSoiree = Soiree.idSoiree
+        LEFT JOIN SpectacleSoiree ss ON s.idSpectacle = ss.idSpectacle
+        LEFT JOIN Soiree soiree ON ss.idSoiree = soiree.idSoiree
         WHERE s.idSpectacle = :id
         GROUP BY s.idSpectacle");
         $stmt->bindParam(':id', $id);
@@ -289,7 +289,7 @@ class NrvRepository {
     // Methode pour obtenir les spectacles d'une soiree
     public function getSpecAtSoiree(int $idSoiree){
         $stmt = $this->pdo->prepare("SELECT idSpectacle
-                                    FROM Spectaclesoiree
+                                    FROM SpectacleSoiree
                                     where idSoiree = :idSoiree");
         $stmt->bindParam(':idSoiree', $idSoiree, PDO::PARAM_INT);
         $stmt->execute();
@@ -341,7 +341,7 @@ class NrvRepository {
     {
         $stmt = $this->pdo->prepare("SELECT soiree.*, GROUP_CONCAT(spectacle.idSpectacle) AS spectacles_id
             FROM Soiree
-            LEFT JOIN Spectaclesoiree ss ON Soiree.idSoiree = ss.idSoiree
+            LEFT JOIN SpectacleSoiree ss ON Soiree.idSoiree = ss.idSoiree
             LEFT JOIN Spectacle ON ss.idSpectacle = Spectacle.idSpectacle
             WHERE Soiree.idSoiree = :id
             GROUP BY Soiree.idSoiree");
@@ -374,7 +374,7 @@ class NrvRepository {
     // Methode pour associer un spectacle a une liste de soirees
     public function associeSpectacleSoiree(int $spectacleId, array $soireeIds)
     {
-        $stmt = $this->pdo->prepare("INSERT INTO Spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
+        $stmt = $this->pdo->prepare("INSERT INTO SpectacleSoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
         $stmt->bindParam(':idSpectacle', $spectacleId);
 
         foreach ($soireeIds as $soireeId) {
@@ -387,7 +387,7 @@ class NrvRepository {
     // Methode pour associer une soiree a une liste de spectacles
     public function associeSoireeSpectacle(int $soireeId, array $spectacleIds)
     {
-        $stmt = $this->pdo->prepare("INSERT INTO Spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
+        $stmt = $this->pdo->prepare("INSERT INTO SpectacleSoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
         $stmt->bindParam(':idSpectacle', $spectacleId);
 
         foreach ($spectacleIds as $spectacleId) {
@@ -425,12 +425,12 @@ class NrvRepository {
     public function updateSoireeSpectacle($id, $soirees)
     {
         // Supprimer les associations existantes pour ce spectacle dans spectaclesoiree
-        $stmt = $this->pdo->prepare("DELETE FROM Spectaclesoiree WHERE idSpectacle = :id");
+        $stmt = $this->pdo->prepare("DELETE FROM SpectacleSoiree WHERE idSpectacle = :id");
         $stmt->bindParam(':id', $id);
         $stmt->execute();
 
         // Réinsérer les nouvelles associations avec les soirées
-        $stmt = $this->pdo->prepare("INSERT INTO Spectaclesoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
+        $stmt = $this->pdo->prepare("INSERT INTO SpectacleSoiree (idSpectacle, idSoiree) VALUES (:idSpectacle, :idSoiree)");
         $stmt->bindParam(':idSpectacle', $id);
         foreach ($soirees as $soiree) {
             $stmt->bindParam(':idSoiree', $soiree);
@@ -459,11 +459,11 @@ class NrvRepository {
         $stmt->bindParam(':thematique', $thematique);
         $stmt->execute();
 
-        $stmt = $this->pdo->prepare("DELETE FROM Spectaclesoiree WHERE idSoiree = :id");
+        $stmt = $this->pdo->prepare("DELETE FROM SpectacleSoiree WHERE idSoiree = :id");
         $stmt->bindParam(':id', $id);
         $stmt->execute();
 
-        $stmt = $this->pdo->prepare("INSERT INTO Spectaclesoiree (idSoiree, idSpectacle) VALUES (:idSoiree, :idSpectacle)");
+        $stmt = $this->pdo->prepare("INSERT INTO SpectacleSoiree (idSoiree, idSpectacle) VALUES (:idSoiree, :idSpectacle)");
         $stmt->bindParam(':idSoiree', $id);
         foreach ($spectacles as $spectacle) {
             $stmt->bindParam(':idSpectacle', $spectacle);
