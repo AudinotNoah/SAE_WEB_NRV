@@ -238,7 +238,7 @@ class NrvRepository {
     public function getAllSoireeForSpec(int $idSpectacle) : array{
         $stmt = $this->pdo->prepare('
                 SELECT 
-                    soiree.idSoiree, 
+                    Soiree.idSoiree, 
                     nomSoiree, 
                     dateSoiree, 
                     idLieu,
