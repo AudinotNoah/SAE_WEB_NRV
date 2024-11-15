@@ -127,48 +127,34 @@ class AddSpectacleAction extends Action
     // Méthode POST qui gère le traitement du formulaire et l'ajout du spectacle
     protected function post(): string
     {
-        // Vérification du rôle utilisateur
-        $user = Authz::checkRole(50);
+        $user = Authz::checkRole(50); 
         if (is_string($user)) {
-            return "<div class='notification is-danger'>$user</div>";
+            $errorMessage = $user;
+            return $errorMessage;
         }
 
-        // Récupère les données soumises via le formulaire
-        $nom = filter_var($_POST['spectacle_name'], FILTER_SANITIZE_SPECIAL_CHARS);
-        $horaireDebut = filter_var($_POST['spectacle_horaireDebut'], FILTER_SANITIZE_SPECIAL_CHARS);
-        $horaireFin = filter_var($_POST['spectacle_horaireFin'], FILTER_SANITIZE_SPECIAL_CHARS);
-        $style = filter_var($_POST['spectacle_style'] ?? 'Inconnu', FILTER_SANITIZE_SPECIAL_CHARS);
-        $soirees = isset($_POST['spectacle_soirees']) ? array_map('intval', $_POST['spectacle_soirees']) : [];
-        $description = filter_var($_POST['spectacle_description'] ?? 'Aucune description', FILTER_SANITIZE_SPECIAL_CHARS);
+        $nom = $_POST['spectacle_name'];
+        $horaireDebut = $_POST['spectacle_horaireDebut'];
+        $horaireFin = $_POST['spectacle_horaireFin'];
+        $style = $_POST['spectacle_style'] ?? 'Inconnu';
+        $soirees = isset($_POST['spectacle_soirees']) ? (array)$_POST['spectacle_soirees'] : [];
+        $description = $_POST['spectacle_description'] ?? 'Aucune description';
 
-        // Traitement des artistes sélectionnés
+        // if (!$this->validateTimeFormat($horaireDebut) || !$this->validateTimeFormat($horaireFin)) {
+        //     return "<p>Erreur : L'heure de début ou de fin est invalide. Veuillez utiliser le format HH:MM.</p>" . $this->get();
+        // }
+        
         $artisteSelection = $_POST['spectacle_artistes'] ?? [];
         $repository = NrvRepository::getInstance();
 
-        // Traitement des images téléchargées
         $images = [];
-        $allowedExtensions = ['jpg', 'jpeg', 'png'];
-        $maxFileSize = 10 * 1024 * 1024;
-
         if (isset($_FILES['new_images']) && !empty($_FILES['new_images']['tmp_name'][0])) {
             foreach ($_FILES['new_images']['tmp_name'] as $index => $tmpName) {
                 if ($_FILES['new_images']['error'][$index] === UPLOAD_ERR_OK) {
-                    $extension = strtolower(pathinfo($_FILES['new_images']['name'][$index], PATHINFO_EXTENSION));
-                    if (!in_array($extension, $allowedExtensions)) {
-                        return "<div class='notification is-danger'>Erreur : L'extension du fichier n'est pas autorisée. Extensions autorisées : jpg, jpeg, png.</div>" . $this->get();
-                    }
-
-                    if ($_FILES['new_images']['size'][$index] > $maxFileSize) {
-                        return "<div class='notification is-danger'>Erreur : Le fichier est trop volumineux. La taille maximale autorisée est de 10 Mo.</div>" . $this->get();
-                    }
-
-                    $imageSize = getimagesize($tmpName);
-                    if (!$imageSize) {
-                        return "<div class='notification is-danger'>Erreur : Le fichier téléchargé n'est pas une image valide.</div>" . $this->get();
-                    }
-
-                    $uniqueId = uniqid('img_', true);
-                    $nomfichier = $uniqueId . '.' . $extension;
+                    // Génération d'un nom de fichier unique avec uniquement des chiffres
+                    $extension = pathinfo($_FILES['new_images']['name'][$index], PATHINFO_EXTENSION);
+                    $randomNumber = random_int(100000, 999999); // Génère un nombre aléatoire de 6 chiffres
+                    $nomfichier = 'img_' . $randomNumber . '.' . $extension;
 
                     $dossierImage = "src/assets/images/spectacle-img/";
                     if (!is_dir($dossierImage)) {
@@ -180,55 +166,74 @@ class AddSpectacleAction extends Action
                         $nouvelleIdImage = $repository->uploadImage($nomfichier);
                         $images[] = $nouvelleIdImage;
                     } else {
-                        return "<div class='notification is-danger'>Erreur : Impossible d'importer l'image {$index}</div>" . $this->get();
+                        return "<p>Erreur : Impossible d'importer l'image {$index}</p>" . $this->get();
                     }
                 } else {
-                    return "<div class='notification is-danger'>Erreur : Un problème est survenu avec l'image {$index}</div>" . $this->get();
+                    return "<p>Erreur : Un problème est survenu avec l'image {$index}</p>" . $this->get();
                 }
             }
         } else {
-            return "<div class='notification is-danger'>Erreur : Vous devez importer au moins une image</div>" . $this->get();
+            return "<p>Erreur : Vous devez importer au moins une image</p>" . $this->get();
         }
 
-        // Traitement du fichier audio téléchargé
-        $allowedAudioExtensions = ['mp3'];
-        $audioFile = $_FILES['audio_file'] ?? null;
-        if ($audioFile && $audioFile['error'] === UPLOAD_ERR_OK) {
-            $extension = strtolower(pathinfo($audioFile['name'], PATHINFO_EXTENSION));
-            if (!in_array($extension, $allowedAudioExtensions)) {
-                return "<div class='notification is-danger'>Erreur : L'extension du fichier audio n'est pas autorisée. Extension autorisée : mp3.</div>" . $this->get();
-            }
+        // Traitement de l'upload du fichier audio .mp3
+        $audioFile = null;
+        if (isset($_FILES['audio_file']) && $_FILES['audio_file']['error'] === UPLOAD_ERR_OK) {
+            $audioExtension = pathinfo($_FILES['audio_file']['name'], PATHINFO_EXTENSION);
+            if ($audioExtension === 'mp3') {
+                $randomNumberAudio = random_int(100000, 999999); // Génère un nombre aléatoire de 6 chiffres
+                $audioFilename = 'audio_' . $randomNumberAudio . '.mp3';
 
-            $audioFileSize = $audioFile['size'];
-            $maxAudioFileSize = 10 * 1024 * 1024;
-            if ($audioFileSize > $maxAudioFileSize) {
-                return "<div class='notification is-danger'>Erreur : Le fichier audio est trop volumineux. La taille maximale autorisée est de 10 Mo.</div>" . $this->get();
-            }
+                $audioDir = "src/assets/media";
+                if (!is_dir($audioDir)) {
+                    mkdir($audioDir, 0777, true);
+                }
 
-            $uniqueAudioName = uniqid('audio_', true) . '.' . $extension;
-            $audioDestination = "src/assets/audio/" . $uniqueAudioName;
-            if (!move_uploaded_file($audioFile['tmp_name'], $audioDestination)) {
-                return "<div class='notification is-danger'>Erreur : Impossible de télécharger le fichier audio.</div>" . $this->get();
+                $audioDestination = "$audioDir/$audioFilename";
+                if (move_uploaded_file($_FILES['audio_file']['tmp_name'], $audioDestination)) {
+                    $audioFile = $audioFilename; // Stocke le nom de l'audio
+                } else {
+                    return "<p>Erreur : Impossible de télécharger le fichier audio.</p>" . $this->get();
+                }
+            } else {
+                return "<p>Erreur : Le fichier audio doit être au format .mp3</p>" . $this->get();
             }
         } else {
-            return "<div class='notification is-danger'>Erreur : Le fichier audio est requis.</div>" . $this->get();
+            return "<p>Erreur : Vous devez importer un fichier audio .mp3</p>" . $this->get();
         }
 
-        // Enregistrer le spectacle dans la base de données
         $spectacle = new Spectacle(
             $nom,
-            $description,
             $horaireDebut,
             $horaireFin,
-            $images,
-            $audioDestination,
             $style,
-            $artisteSelection
+            $description,
+            $artisteSelection,
+            $images,
+            $audioFile
         );
 
-        $repository->addSpectacle($spectacle, $soirees);
+        $idSpectacle = $repository->setSpectacle($spectacle,$style);
 
-        // Redirection ou message de succès après l'ajout
-        return "<div class='notification is-success'>Le spectacle a été ajouté avec succès !</div>" . $this->get();
+        foreach ($images as $idImage) {
+            $repository->associerImageAuSpectacle($idImage, $idSpectacle);
+        }
+
+        foreach ($artisteSelection as $idArtiste) {
+            $repository->associerArtisteAuSpectacle($idArtiste, $idSpectacle);
+        }
+
+        $repository->associeSpectacleSoiree($idSpectacle, $soirees);
+
+    
+        // $renderer = new SpectacleRenderer($spectacle);
+        // $spectacleHtml = $renderer->render(1);
+        $url = "Location: index.php?action=programme&id=" . $idSpectacle;
+        header($url);
+        exit;
+
+
+
+        return "";
     }
 }
