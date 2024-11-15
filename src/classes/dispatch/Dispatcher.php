@@ -223,6 +223,7 @@ HTML;
                 navbarMenu.classList.toggle('is-active');
             }
             </script>
+            <script src="src/assets/js/index.js"></script>
 
             $menu
             <main class="section">
