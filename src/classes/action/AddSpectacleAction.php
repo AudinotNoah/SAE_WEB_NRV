@@ -8,35 +8,43 @@ use iutnc\nrv\auth\Authz;
 
 class AddSpectacleAction extends Action
 {
+    // Méthode GET qui génère le formulaire d'ajout d'un spectacle
     protected function get(): string
     {
+        // Vérification du rôle utilisateur (doit être 50 ou plus)
         $user = Authz::checkRole(50);
         if (is_string($user)) {
-            return "<div class='notification is-danger'>$user</div>";
+            return "<div class='notification is-danger'>$user</div>"; // Affiche un message d'erreur si le rôle n'est pas suffisant
         }
 
+        // Récupère les données nécessaires (artistes, soirées, styles) depuis le repository
         $repository = NrvRepository::getInstance();
         $artistes = $repository->getAllNomArtiste();
         $soirees = $repository->getAllSoirees();
         $styles = $repository->getAllStyles();
 
+        // Génère la liste des artistes sous forme de checkboxes
         $artistesListe = '';
         foreach ($artistes as $artiste) {
             $artistesListe .= "<label class='checkbox'><input type='checkbox' name='spectacle_artistes[]' value='{$artiste['idArtiste']}'> " . htmlspecialchars_decode($artiste['nomArtiste']) . "</label><br>";
         }
 
+        // Génère la liste des styles sous forme de radio buttons
         $stylesListe = '';
         foreach ($styles as $style) {
             $stylesListe .= "<label class='radio'><input type='radio' name='spectacle_style' value='{$style['idStyle']}' required> " . htmlspecialchars_decode($style['nomStyle']) . "</label><br>";
         }
 
+        // Génère la liste des soirées sous forme de checkboxes
         $soireesListe = '';
         foreach ($soirees as $soiree) {
             $soireesListe .= "<label class='checkbox'><input type='checkbox' name='spectacle_soirees[]' value='{$soiree['idSoiree']}'> " . htmlspecialchars_decode($soiree['nomSoiree']) . "</label><br>";
         }
 
+        // Retourne le code HTML pour le formulaire d'ajout d'un spectacle
         return <<<HTML
         <form method="post" action="?action=add-spectacle" enctype="multipart/form-data" class="box">
+            <!-- Nom du spectacle -->
             <div class="field">
                 <label class="label" for="spectacle-name">Nom du spectacle :</label>
                 <div class="control">
@@ -44,6 +52,7 @@ class AddSpectacleAction extends Action
                 </div>
             </div>
 
+            <!-- Style de musique -->
             <fieldset class="field">
                 <legend class="label">Style de musique :</legend>
                 <div class="control">
@@ -51,6 +60,7 @@ class AddSpectacleAction extends Action
                 </div>
             </fieldset>
 
+            <!-- Heure de début -->
             <div class="field">
                 <label class="label" for="spectacle-horaireDebut">Heure de début :</label>
                 <div class="control">
@@ -58,6 +68,7 @@ class AddSpectacleAction extends Action
                 </div>
             </div>
 
+            <!-- Heure de fin -->
             <div class="field">
                 <label class="label" for="spectacle-horaireFin">Heure de fin :</label>
                 <div class="control">
@@ -65,6 +76,7 @@ class AddSpectacleAction extends Action
                 </div>
             </div>
 
+            <!-- Description -->
             <div class="field">
                 <label class="label" for="spectacle-description">Description du spectacle :</label>
                 <div class="control">
@@ -72,6 +84,7 @@ class AddSpectacleAction extends Action
                 </div>
             </div>
 
+            <!-- Soirées -->
             <fieldset class="field">
                 <legend class="label">Choisir les soirées où ce spectacle sera joué :</legend>
                 <div class="control">
@@ -79,6 +92,7 @@ class AddSpectacleAction extends Action
                 </div>
             </fieldset>
 
+            <!-- Artistes -->
             <fieldset class="field">
                 <legend class="label">Artistes :</legend>
                 <div class="control">
@@ -86,6 +100,7 @@ class AddSpectacleAction extends Action
                 </div>
             </fieldset>
 
+            <!-- Importer des images -->
             <div class="field">
                 <label class="label" for="liste-image">Importer des images pour le spectacle :</label>
                 <div class="control">
@@ -93,6 +108,7 @@ class AddSpectacleAction extends Action
                 </div>
             </div>
 
+            <!-- Télécharger un extrait audio -->
             <div class="field">
                 <label class="label" for="audio-file">Téléchargez un extrait audio (.mp3) :</label>
                 <div class="control">
@@ -100,6 +116,7 @@ class AddSpectacleAction extends Action
                 </div>
             </div>
 
+            <!-- Soumettre le formulaire -->
             <div class="control">
                 <button class="button is-link" type="submit">Créer le spectacle</button>
             </div>
@@ -107,13 +124,16 @@ class AddSpectacleAction extends Action
         HTML;
     }
 
+    // Méthode POST qui gère le traitement du formulaire et l'ajout du spectacle
     protected function post(): string
     {
+        // Vérification du rôle utilisateur
         $user = Authz::checkRole(50);
         if (is_string($user)) {
             return "<div class='notification is-danger'>$user</div>";
         }
 
+        // Récupère les données soumises via le formulaire
         $nom = filter_var($_POST['spectacle_name'], FILTER_SANITIZE_SPECIAL_CHARS);
         $horaireDebut = filter_var($_POST['spectacle_horaireDebut'], FILTER_SANITIZE_SPECIAL_CHARS);
         $horaireFin = filter_var($_POST['spectacle_horaireFin'], FILTER_SANITIZE_SPECIAL_CHARS);
@@ -121,9 +141,11 @@ class AddSpectacleAction extends Action
         $soirees = isset($_POST['spectacle_soirees']) ? array_map('intval', $_POST['spectacle_soirees']) : [];
         $description = filter_var($_POST['spectacle_description'] ?? 'Aucune description', FILTER_SANITIZE_SPECIAL_CHARS);
 
+        // Traitement des artistes sélectionnés
         $artisteSelection = $_POST['spectacle_artistes'] ?? [];
         $repository = NrvRepository::getInstance();
 
+        // Traitement des images téléchargées
         $images = [];
         $allowedExtensions = ['jpg', 'jpeg', 'png'];
         $maxFileSize = 10 * 1024 * 1024;
@@ -168,73 +190,45 @@ class AddSpectacleAction extends Action
             return "<div class='notification is-danger'>Erreur : Vous devez importer au moins une image</div>" . $this->get();
         }
 
-        $allowedAudioExtension = 'mp3';
-        $maxAudioFileSize = 10 * 1024 * 1024;
-
-        if (isset($_FILES['audio_file']) && $_FILES['audio_file']['error'] === UPLOAD_ERR_OK) {
-            $audioExtension = strtolower(pathinfo($_FILES['audio_file']['name'], PATHINFO_EXTENSION));
-
-            if ($audioExtension !== $allowedAudioExtension) {
-                return "<div class='notification is-danger'>Erreur : Le fichier audio doit être au format .mp3</div>" . $this->get();
+        // Traitement du fichier audio téléchargé
+        $allowedAudioExtensions = ['mp3'];
+        $audioFile = $_FILES['audio_file'] ?? null;
+        if ($audioFile && $audioFile['error'] === UPLOAD_ERR_OK) {
+            $extension = strtolower(pathinfo($audioFile['name'], PATHINFO_EXTENSION));
+            if (!in_array($extension, $allowedAudioExtensions)) {
+                return "<div class='notification is-danger'>Erreur : L'extension du fichier audio n'est pas autorisée. Extension autorisée : mp3.</div>" . $this->get();
             }
 
-            if ($_FILES['audio_file']['size'] > $maxAudioFileSize) {
+            $audioFileSize = $audioFile['size'];
+            $maxAudioFileSize = 10 * 1024 * 1024;
+            if ($audioFileSize > $maxAudioFileSize) {
                 return "<div class='notification is-danger'>Erreur : Le fichier audio est trop volumineux. La taille maximale autorisée est de 10 Mo.</div>" . $this->get();
             }
 
-            $uniqueAudioId = uniqid('audio_', true);
-            $audioFilename = $uniqueAudioId . '.' . $audioExtension;
-
-            $audioDir = "src/assets/media";
-            if (!is_dir($audioDir)) {
-                mkdir($audioDir, 0777, true);
-            }
-
-            $audioDestination = "$audioDir/$audioFilename";
-
-            if (move_uploaded_file($_FILES['audio_file']['tmp_name'], $audioDestination)) {
-                $audioFile = $audioFilename; // Stocke le nom du fichier audio pour une utilisation ultérieure
-            } else {
-                return "<div class='notification is-danger'>Erreur : Impossible d'importer le fichier audio</div>" . $this->get();
+            $uniqueAudioName = uniqid('audio_', true) . '.' . $extension;
+            $audioDestination = "src/assets/audio/" . $uniqueAudioName;
+            if (!move_uploaded_file($audioFile['tmp_name'], $audioDestination)) {
+                return "<div class='notification is-danger'>Erreur : Impossible de télécharger le fichier audio.</div>" . $this->get();
             }
         } else {
-            return "<div class='notification is-danger'>Erreur : Vous devez importer un fichier audio</div>" . $this->get();
+            return "<div class='notification is-danger'>Erreur : Le fichier audio est requis.</div>" . $this->get();
         }
 
-
+        // Enregistrer le spectacle dans la base de données
         $spectacle = new Spectacle(
             $nom,
+            $description,
             $horaireDebut,
             $horaireFin,
-            $style,
-            $description,
-            $artisteSelection,
             $images,
-            $audioFile
+            $audioDestination,
+            $style,
+            $artisteSelection
         );
 
-        $idSpectacle = $repository->setSpectacle($spectacle,$style);
+        $repository->addSpectacle($spectacle, $soirees);
 
-        foreach ($images as $idImage) {
-            $repository->associerImageAuSpectacle($idImage, $idSpectacle);
-        }
-
-        foreach ($artisteSelection as $idArtiste) {
-            $repository->associerArtisteAuSpectacle($idArtiste, $idSpectacle);
-        }
-
-        $repository->associeSpectacleSoiree($idSpectacle, $soirees);
-
-
-        // $renderer = new SpectacleRenderer($spectacle);
-        // $spectacleHtml = $renderer->render(1);
-        $url = "Location: index.php?action=programme&id=" . $idSpectacle;
-        header($url);
-        exit;
-
-
-
-        return "";
+        // Redirection ou message de succès après l'ajout
+        return "<div class='notification is-success'>Le spectacle a été ajouté avec succès !</div>" . $this->get();
     }
 }
-

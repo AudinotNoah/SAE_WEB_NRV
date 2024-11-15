@@ -15,17 +15,21 @@ use iutnc\nrv\action\DisplayStaffMenu;
 use iutnc\nrv\action\AddSoireeAction;
 use iutnc\nrv\auth\Authz;
 
+// Classe Dispatcher : gère l'exécution des actions en fonction de l'URL
 class Dispatcher {
 
-    private string $action;
+    private string $action; // Nom de l'action à exécuter
 
+    // Constructeur : initialise l'action
     public function __construct(string $action) {
         $this->action = $action;
     }
 
+    // Méthode principale pour exécuter l'action
     public function run(): void {
         $html = '';
 
+        // Choix de l'action en fonction de la valeur fournie
         switch ($this->action) {
             case 'modify-soiree':
                 $actionInstance = new ChangeSoireeAction();
@@ -71,12 +75,17 @@ class Dispatcher {
                 $actionInstance = new DefaultAction();
                 break;
         }
+
+        // Exécute l'action et récupère le résultat HTML
         $html = $actionInstance->execute();
+
+        // Affiche la page avec le résultat
         $this->renderPage($html);
     }
 
+    // Méthode pour générer la page avec Bulma
     private function renderPage(string $html): void {
-        // Menu de base avec Bulma, plus stylisé
+        // Menu de navigation
         $menu = <<<HTML
         <nav class="navbar is-spaced is-size-5 py-3" style="background-color: #1C1C5E; color: white;">
             <div class="navbar-brand">
@@ -89,6 +98,7 @@ class Dispatcher {
                 <div class="navbar-end">
         HTML;
 
+        // Vérifie si l'utilisateur a un rôle spécifique
         $user = Authz::checkRole(50);
         if (!is_string($user)) {
             $menu .= <<<HTML
@@ -96,13 +106,13 @@ class Dispatcher {
                 HTML;
         }
 
+        // Ajoute les options en fonction de l'état de connexion
         if (Authz::estCo()) {
             $menu .= <<<HTML
             <span class="navbar-item has-text-white is-size-5">Connecté en tant que : {$_SESSION['user']['email']}</span>
             <a class="navbar-item button is-danger is-danger" href="?action=logout">Se Déconnecter</a>
             HTML;
-        }
-        else{
+        } else {
             $menu .= <<<HTML
             <a class="navbar-item button is-primary is-succes" href="?action=login">Se Connecter</a>
             HTML;
@@ -110,6 +120,7 @@ class Dispatcher {
 
         $menu .= "</div></div></nav>";
 
+        // Génère la page HTML complète
         echo <<<HTML
         <!DOCTYPE html>
         <html lang='fr' class="has-background-grey-darker">

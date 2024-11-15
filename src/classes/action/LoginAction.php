@@ -8,7 +8,7 @@ use iutnc\nrv\auth\AuthnProvider;
 class LoginAction extends Action {
 
     // Limite de tentatives avant de bloquer l'accès temporairement
-    const MAX_ATTEMPTS = 5;
+    const MAX_ATTEMPTS = 10;
     // Temps en secondes avant de réinitialiser le compteur de tentatives après un délai
     const LOCKOUT_TIME = 900; // 15 minutes
 
