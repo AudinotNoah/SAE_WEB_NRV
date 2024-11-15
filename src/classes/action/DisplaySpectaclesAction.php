@@ -69,7 +69,7 @@ class DisplaySpectaclesAction extends Action {
         } elseif ($trichoix === 'lieu') {
             $lieux = $repo->getAllLieux();
             $lieuchoix = filter_var($_GET['lieu'] ?? '', FILTER_SANITIZE_SPECIAL_CHARS);
-            $html .= self::getSelectOptions($lieux, 'lieu', 'lieuAdresse', $lieuchoix);
+            $html .= self::getSelectOptions($lieux, 'lieu', 'LieuAdresse', $lieuchoix);
         }
 
         $html .= "</form>";
