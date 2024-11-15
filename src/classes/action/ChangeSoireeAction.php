@@ -100,6 +100,7 @@ class ChangeSoireeAction extends Action {
 
         // Spectacles
         $html .= "<div class='field'>
+                    <fieldset id='spectacle-selection'>
                     <label class='label'>Choisir les spectacles qui seront joués lors de cette soirée (maximum 3):</label>
                     <div class='control'>";
         foreach ($spectacles as $spectacle) {
