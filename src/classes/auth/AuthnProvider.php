@@ -39,6 +39,10 @@ class AuthnProvider
             throw new AuthnException("Email déjà utilisé");
         }
 
+        if (strlen($password) < 10) {
+            throw new AuthnException("Le mot de passe est trop court (minimum 10 caractères)");
+        }
+
         $hash = password_hash($password, PASSWORD_DEFAULT);
         $repo->createStaff($email, $hash);
     }

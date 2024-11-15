@@ -92,7 +92,7 @@ class Dispatcher {
         $user = Authz::checkRole(50);
         if (!is_string($user)) {
             $menu .= <<<HTML
-                <a class="navbar-item has-text-weight-semibold" href="?action=menu-staff">Menu Gestion</a>
+                <a class="navbar-item has-text-weight-semibold has-text-white" href="?action=menu-staff">Menu Gestion</a>
                 HTML;
         }
 
@@ -122,7 +122,7 @@ class Dispatcher {
         <body>
             <script src="src/assets/js/index.js"></script>
             $menu
-            <main class="section">
+            <main class="section has-background-grey-darker">
                 <div class="container">
                     <p></p> <!-- espace -->
                     $html
