@@ -91,10 +91,10 @@ class Dispatcher {
         <nav class="navbar">
         <div class="is-hidden-mobile">
         <div class="navbar-brand">
-            <a class="navbar-item" href="#">Accueil</a>
-            <a class="navbar-item" href="#">Programme</a>
-            <a class="navbar-item" href="#">Liste des Soirées</a>
-            <a class="navbar-item" href="#">Votre liste de préférence</a>
+            <a class="navbar-item" href="?action=default">Accueil</a>
+            <a class="navbar-item" href="?action=programme">Programme</a>
+            <a class="navbar-item" href="?action=list-soirees">Liste des Soirées</a>
+            <a class="navbar-item" href="?action=programme&trie=preferences">Votre liste de préférence</a>
             <span class="navbar-burger" onclick="toggleMenu()">☰</span>
         </div>
         </div>
