@@ -83,7 +83,7 @@ class Dispatcher {
                 <a class="navbar-item has-text-weight-bold is-size-4" href="?action=default">Accueil</a>
                 <a class="navbar-item has-text-weight-semibold" href="?action=programme">Programme</a>
                 <a class="navbar-item has-text-weight-semibold" href="?action=list-soirees">Liste des Soirées</a>
-                <a class="navbar-item has-text-weight-semibold" href="?action=programme&trie=preferences">Votre liste de préférence</a>
+                <a class="navbar-item has-text-weight-semibold" href="?action=programme&trie=preferences">Vos préférences</a>
             </div>
             <div class="navbar-menu">
                 <div class="navbar-end">

@@ -57,6 +57,8 @@ class LoginAction extends Action {
 
             // Réinitialiser les tentatives après une connexion réussie
             $this->resetLoginAttempts($email);
+            $url = "Location: index.php?action=programme";
+            header($url);
 
             return "<div class='notification is-success'>Vous êtes connecté</div>"; // Après avoir mis à jour la session
         }
