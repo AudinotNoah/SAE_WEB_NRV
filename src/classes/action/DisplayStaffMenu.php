@@ -11,6 +11,7 @@ class DisplayStaffMenu extends Action
         <div class="container">
             <h2 class="title is-3">Menu du Staff</h2>
             <div class="box">
+                <h2 class="title is-4">Menu Staff</h2>
                 <ul class="menu-list">
                     <li><a href='index.php?action=add-soiree' class="button is-link is-fullwidth">Ajouter une soirée</a></li>
                     <li><a href='index.php?action=list-soirees' class="button is-link is-fullwidth">Modifier une soirée</a></li>
