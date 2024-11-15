@@ -8,7 +8,7 @@ Temirov Abdoul-Raouf, AudinotNoah, ThirietEsteban, BesançonMarcelin
 # Liste des fonctionnalités réalisées:
 
 ```
-Tâche Priorité État Colonne 1
+Tâche Priorité État Membres
 1 P 0 Terminé Noah,Esteban
 2 P 1 Terminé Noah
 3 P 1 Terminé Noah
@@ -56,5 +56,7 @@ Identifiants et mots de passe d’utilisateurs de test :
 La modification de soirée et spectacles se fait directement depuis leurs pages respectives, le bouton modifier devient disponible si connecté.
 
 **URL du dépôt Git : <https://github.com/Raouf-blip/SAE_WEB_NRV>**
+
+**URL WEBETU : <https://webetu.iutnc.univ-lorraine.fr/~audinot37u/SAE_WEB_NRV/>**
 
 
