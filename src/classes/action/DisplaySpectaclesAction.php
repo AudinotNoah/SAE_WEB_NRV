@@ -79,12 +79,15 @@ class DisplaySpectaclesAction extends Action {
 
     private function renderFilteredSpectacles($repo, array $spectacles, string $trie, ?string $choix): string {
         $html = '<div class="columns is-multiline">';
+        var_dump($trie);
+        var_dump($choix);
         foreach ($spectacles as $sp) {
             $valide = true;
             switch ($trie) {
                 case 'style':
                     if ($choix !== null) {
-                        $valide = strtolower($choix) === strtolower($repo->getStyleNom($sp['idSpectacle']));
+                        var_dump($sp);
+                        $valide = strtolower($choix) === strtolower($repo->getStyleNom($sp['idStyle']));
                     }
                     break;
                 case 'date':
@@ -114,20 +117,19 @@ class DisplaySpectaclesAction extends Action {
             }
 
             if ($valide) {
-                // Affichage d'une carte par spectacle, avec une mise en page sur une ligne
                 $html .= "<div class='column is-one-third'>";
                 $html .= "<div class='card'>";
                 $html .= "<div class='card-content'>";
-                $html .= self::createSpec($sp, $repo, 2); // Rendu du spectacle
-                $html .= "</div>"; // End card-content
+                $html .= self::createSpec($sp, $repo, 2); 
+                $html .= "</div>"; 
                 $html .= "<footer class='card-footer'>";
                 $html .= "<a href='?action=programme&id={$sp['idSpectacle']}' class='card-footer-item'>Plus d'info</a>";
                 $html .= "</footer>";
-                $html .= "</div>"; // End card
-                $html .= "</div>"; // End column
+                $html .= "</div>";
+                $html .= "</div>"; 
             }
         }
-        $html .= '</div>'; // End columns (is-multiline)
+        $html .= '</div>';
         return $html;
     }
 

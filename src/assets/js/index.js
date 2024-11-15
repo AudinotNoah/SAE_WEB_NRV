@@ -28,13 +28,10 @@ function switchPrefs(spectacleId) {
     let preferences = getPreferences();
     const button = document.getElementById('pref');
 
-    // Vérifier si le spectacle est déjà dans les préférences
     if (preferences.includes(spectacleId.toString())) {
-        // Retirer le spectacle des préférences
         preferences = preferences.filter(id => id !== spectacleId.toString());
         button.textContent = "Ajouter aux préférences";
     } else {
-        // Ajouter le spectacle aux préférences
         preferences.push(spectacleId.toString());
         button.textContent = "Retirer des préférences";
     }
