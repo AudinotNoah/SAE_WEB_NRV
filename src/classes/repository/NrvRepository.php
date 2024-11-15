@@ -246,7 +246,7 @@ class NrvRepository {
                     thematique,
                     horaire
                 FROM Soiree
-                inner join SpectacleSoiree ss on ss.idsoiree = Soiree.idsoiree
+                inner join SpectacleSoiree ss on ss.idSoiree = Soiree.idSoiree
                 where :idSpectacle = ss.idSpectacle
 
             ');
