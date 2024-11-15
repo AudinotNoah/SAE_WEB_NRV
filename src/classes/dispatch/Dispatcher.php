@@ -123,7 +123,7 @@ class Dispatcher {
         // Génère la page HTML complète
         echo <<<HTML
         <!DOCTYPE html>
-        <html lang='fr' class="has-background-grey-darker">
+        <html lang='fr' class="has-background-link-light">
         <head>
             <meta charset='UTF-8'>
             <meta name='viewport' content='width=device-width, initial-scale=1.0'>
