@@ -379,7 +379,7 @@ class NrvRepository {
         return $stmt->execute();
     }
 
-    public function updateSoireesForSpectacle($id, $soirees)
+    public function updateSoireeSpectacle($id, $soirees)
     {
         $stmt = $this->pdo->prepare("DELETE FROM spectaclesoiree WHERE idSpectacle = :id");
         $stmt->bindParam(':id', $id);

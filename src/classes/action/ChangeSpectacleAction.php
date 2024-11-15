@@ -192,7 +192,9 @@ class ChangeSpectacleAction extends Action {
 
         if ($success) {
             $repo->updateSoireeSpectacle($id, $soirees);
-            return "<div class='notification is-success'>Le spectacle a été modifié avec succès.</div>";
+            $url = "Location: index.php?action=programme&id=" . $id;
+            header($url);
+            // return "<div class='notification is-success'>Le spectacle a été modifié avec succès.</div>";
         } else {
             return "<div class='notification is-danger'>Une erreur s'est produite lors de la modification du spectacle.</div>";
         }
