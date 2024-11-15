@@ -8,7 +8,7 @@ class DefaultAction extends Action {
     {
         return "
         <div class='content has-text-centered' style='
-            background-image: url(\"src/assets/images/siteImage/backAccueil.jpg\");
+            background-image: url(\"src/assets/images/backAccueil.jpg\");
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
