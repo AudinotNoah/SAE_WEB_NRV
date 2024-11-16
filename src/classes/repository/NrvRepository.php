@@ -355,7 +355,7 @@ class NrvRepository {
     // Methode pour associer une image a un spectacle
     public function associerImageAuSpectacle(int $idImage, int $idSpectacle): void
     {
-        $stmt = $this->pdo->prepare("INSERT INTO Spectacleimage (idSpectacle, idImage) VALUES (:idSpectacle, :idImage)");
+        $stmt = $this->pdo->prepare("INSERT INTO SpectacleImage (idSpectacle, idImage) VALUES (:idSpectacle, :idImage)");
         $stmt->bindParam(':idSpectacle', $idSpectacle);
         $stmt->bindParam(':idImage', $idImage);
         $stmt->execute();
@@ -555,7 +555,7 @@ class NrvRepository {
     // Methode pour dissocier les images d'un spectacle
     public function dissocierImagesDuSpectacle(mixed $id): void
     {
-        $stmt = $this->pdo->prepare("DELETE FROM Spectacleimage WHERE idSpectacle = :id");
+        $stmt = $this->pdo->prepare("DELETE FROM SpectacleImage WHERE idSpectacle = :id");
         $stmt->bindParam(':id', $id);
         $stmt->execute();
     }
