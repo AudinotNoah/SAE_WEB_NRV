@@ -339,7 +339,7 @@ class NrvRepository {
     // Methode pour obtenir les soirees par id
     public function getSoireeById($id)
     {
-        $stmt = $this->pdo->prepare("SELECT soiree.*, GROUP_CONCAT(spectacle.idSpectacle) AS spectacles_id
+        $stmt = $this->pdo->prepare("SELECT Soiree.*, GROUP_CONCAT(Spectacle.idSpectacle) AS spectacles_id
             FROM Soiree
             LEFT JOIN SpectacleSoiree ss ON Soiree.idSoiree = ss.idSoiree
             LEFT JOIN Spectacle ON ss.idSpectacle = Spectacle.idSpectacle
