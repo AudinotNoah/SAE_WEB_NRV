@@ -78,7 +78,7 @@ class ChangeSoireeAction extends Action {
                             <select id='lieu' name='lieu' required>";
         foreach ($lieux as $lieu) {
             $selected = ($soiree['idLieu'] === $lieu['idLieu']) ? 'selected' : '';
-            $html .= "<option value='" . $lieu['idLieu'] . "' $selected>" . htmlspecialchars_decode($lieu['lieuAdresse'], ENT_QUOTES) . "</option>";
+            $html .= "<option value='" . $lieu['idLieu'] . "' $selected>" . htmlspecialchars_decode($lieu['LieuAdresse'], ENT_QUOTES) . "</option>";
         }
         $html .= "</select></div></div></div>";
 
