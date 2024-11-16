@@ -307,7 +307,7 @@ class NrvRepository {
             'SELECT s.idSoiree, s.nomSoiree, s.dateSoiree, s.horaire, s.thematique, s.tarif, 
                     l.idLieu, l.adresse
             FROM Soiree s
-            INNER JOIN lieu l ON s.idLieu = l.idLieu'
+            INNER JOIN Lieu l ON s.idLieu = l.idLieu'
         );
         $stmt->execute();
 
