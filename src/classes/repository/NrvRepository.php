@@ -442,7 +442,7 @@ class NrvRepository {
     // Methode pour mettre a jour une soiree
     public function updateSoiree($id, $nom, $date, $horaire, $lieu, $tarif, $thematique, array $spectacles)
     {
-        $stmt = $this->pdo->prepare("UPDATE soiree SET 
+        $stmt = $this->pdo->prepare("UPDATE Soiree SET 
                                             nomSoiree = :nom,
                                             dateSoiree = :date,
                                             horaire = :horaire,
